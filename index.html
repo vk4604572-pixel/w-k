@@ -40,13 +40,11 @@
     .custom-table th, .custom-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
     .custom-table th { background: #007bff; color: white; }
     
-    /* Structured Report Styling */
     .company-title-banner { background: #003366; color: #fff; padding: 8px 12px; font-size: 14px; font-weight: bold; border-radius: 4px; margin-top: 15px; }
     .vehicle-header-bar { background: #e9ecef; color: #000; font-weight: bold; padding: 6px 10px; font-size: 13px; border-left: 4px solid #007bff; margin-top: 10px; }
     .vehicle-subtotal-row { background: #fdfdfe; font-weight: bold; color: #0056b3; }
     .company-total-banner { background: #e2e3e5; font-weight: bold; color: #000; padding: 6px 10px; text-align: right; border: 1px solid #ccc; margin-top: 4px; }
     
-    /* Final Summary Styling (Yellow Highlighted as requested) */
     .summary-heading { margin-top: 25px; font-size: 15px; font-weight: bold; color: #222; text-transform: uppercase; border-bottom: 2px solid #333; padding-bottom: 4px; }
     .company-summary-row { background: #ffff00; font-weight: bold; color: #000; }
     .vehicle-summary-row { background: #ffffff; }
@@ -56,7 +54,6 @@
     .modal-content { background: white; padding: 18px; border-radius: 10px; width: 92%; max-width: 380px; }
     .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 12px; }
 
-    /* Print Preview Optimizations */
     @media print {
       body { background: #fff; padding: 0; }
       .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
@@ -214,7 +211,6 @@
       <button type="button" onclick="clearDateFilters()" style="padding:9px 10px; background:#6c757d; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">All</button>
     </div>
 
-    <!-- Container where dynamic report will render -->
     <div id="closingContent">Loading closing data...</div>
   </div>
 
@@ -302,11 +298,8 @@
   let html5QrCode = null;
   let activeScanTarget = "MAIN";
 
-  // **********************************************
-  // PASSWORD SETTING:
+  // PASSWORD LOCK SETTING:
   const CLOSING_PASSWORD = "425151"; 
-  // **********************************************
-
   let isClosingUnlocked = false;
 
   const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
@@ -494,9 +487,11 @@
     } catch (e) { container.innerHTML = "Error loading closing data."; }
   }
 
+  // Robust Date Parser (YYYY-MM-DD)
   function normalizeToISODate(val) {
     if (!val) return "";
     let str = String(val).trim();
+
     let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
     if (m1) return `${m1[1]}-${String(m1[2]).padStart(2, '0')}-${String(m1[3]).padStart(2, '0')}`;
 
@@ -510,10 +505,31 @@
       let d = String(parsedD.getDate()).padStart(2, '0');
       return `${y}-${m}-${d}`;
     }
-    return str.split(" ")[0];
+    return str;
   }
 
-  // DETAILED VEHICLE-WISE REPORT WITH FINAL SUMMARY
+  // Display Date Parser (DD/MM/YYYY)
+  function formatToDisplayDate(val) {
+    if (!val) return "-";
+    let str = String(val).trim();
+
+    let m2 = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (m2) return `${String(m2[1]).padStart(2, '0')}/${String(m2[2]).padStart(2, '0')}/${m2[3]}`;
+
+    let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m1) return `${String(m1[3]).padStart(2, '0')}/${String(m1[2]).padStart(2, '0')}/${m1[1]}`;
+
+    let parsedD = new Date(str);
+    if (!isNaN(parsedD.getTime())) {
+      let d = String(parsedD.getDate()).padStart(2, '0');
+      let m = String(parsedD.getMonth() + 1).padStart(2, '0');
+      let y = parsedD.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+    return str;
+  }
+
+  // DETAILED VEHICLE CONSUMPTION REPORT & FINAL SUMMARY
   function renderClosingReport() {
     const container = document.getElementById("closingContent");
     const sDate = document.getElementById("closingStartDate").value;
@@ -540,7 +556,6 @@
       return;
     }
 
-    // Step 1: Hierarchy Tree Build karein: Company -> Vehicle -> List of Items
     const tree = {};
     const summaryData = {};
     let grandOverallTotal = 0;
@@ -556,7 +571,6 @@
       tree[comp][veh].items.push(r);
       tree[comp][veh].totalAmount += amt;
 
-      // Summary structure
       if (!summaryData[comp]) summaryData[comp] = { total: 0, vehicles: {} };
       summaryData[comp].total += amt;
       summaryData[comp].vehicles[veh] = (summaryData[comp].vehicles[veh] || 0) + amt;
@@ -565,7 +579,6 @@
 
     let html = `<div>`;
 
-    // Part A: Detailed Vehicle-wise sections for each Company
     for (const comp in tree) {
       let compGrandTotal = 0;
       html += `<div class="company-title-banner">🏢 ${comp}</div>`;
@@ -579,7 +592,7 @@
           <table class="custom-table">
             <thead>
               <tr>
-                <th style="width:20%;">Date</th>
+                <th style="width:22%;">Date</th>
                 <th>Item / Spare Part Name</th>
                 <th style="width:12%; text-align:right;">Qty</th>
                 <th style="width:18%; text-align:right;">Rate (₹)</th>
@@ -589,11 +602,11 @@
             <tbody>
         `;
 
-        // Har gaadi ke saare items lagatar aayenge
         vData.items.forEach(it => {
+          let dateToShow = formatToDisplayDate(it.displayDate || it.date);
           html += `
             <tr>
-              <td>${it.displayDate || it.date}</td>
+              <td>${dateToShow}</td>
               <td><b>${it.item}</b></td>
               <td style="text-align:right;">${it.qty}</td>
               <td style="text-align:right;">₹${it.rate.toLocaleString('en-IN')}</td>
@@ -602,7 +615,6 @@
           `;
         });
 
-        // Vehicle Subtotal Row
         html += `
             <tr class="vehicle-subtotal-row">
               <td colspan="4" style="text-align:right;">Vehicle ${veh} Total:</td>
@@ -613,7 +625,6 @@
         `;
       }
 
-      // Company Total Banner
       html += `
         <div class="company-total-banner">
           Total Consumption for ${comp}: <span style="color:#d9534f; font-size:14px;">₹${compGrandTotal.toLocaleString('en-IN')}</span>
@@ -621,7 +632,7 @@
       `;
     }
 
-    // Part B: Final Summary Table (Yellow Highlight Screenshot style at the end)
+    // Final Summary Table
     html += `
       <div class="summary-heading">📌 Month Closing Summary (Company & Vehicle Wise)</div>
       <table class="custom-table" style="margin-top:10px;">
@@ -635,14 +646,12 @@
     `;
 
     for (const comp in summaryData) {
-      // Company row (Yellow highlighted)
       html += `
         <tr class="company-summary-row">
           <td>${comp}</td>
           <td style="text-align:right;">₹${summaryData[comp].total.toLocaleString('en-IN')}</td>
         </tr>
       `;
-      // Under Company: Each Vehicle
       for (const veh in summaryData[comp].vehicles) {
         html += `
           <tr class="vehicle-summary-row">
@@ -653,7 +662,6 @@
       }
     }
 
-    // Grand Total Row
     html += `
         <tr style="background:#343a40; color:#fff; font-weight:bold;">
           <td>GRAND TOTAL CONSUMPTION:</td>
