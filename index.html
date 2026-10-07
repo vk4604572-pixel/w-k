@@ -15,7 +15,7 @@
     .config-box input { margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
 
     .tab-header { display: flex; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 2px solid #007bff; }
-    .tab-btn { flex: 1; padding: 12px; text-align: center; border: none; background: #fff; color: #007bff; font-weight: bold; font-size: 15px; cursor: pointer; }
+    .tab-btn { flex: 1; padding: 10px 4px; text-align: center; border: none; background: #fff; color: #007bff; font-weight: bold; font-size: 13px; cursor: pointer; }
     .tab-btn.active { background: #007bff; color: #fff; }
 
     .form-group { margin-bottom: 12px; }
@@ -36,49 +36,58 @@
     .optional-text { font-size: 11px; color: #777; font-weight: normal; }
     #msg { margin-top: 12px; text-align: center; font-weight: bold; font-size: 14px; }
 
-    /* Modals */
+    /* Summary Table Styling */
+    .summary-box { display: none; }
+    .summary-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    .summary-table th, .summary-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .summary-table th { background: #007bff; color: white; }
+    .summary-table tr:nth-child(even) { background: #f9f9f9; }
+    .balance-badge { font-weight: bold; color: #28a745; }
+
+    /* Modal Styling */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 360px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 92%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
     .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 13px; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Script URL Setting -->
+  <!-- Script URL Configuration -->
   <details class="config-box" id="configDropdown">
     <summary>⚙️ Google Script Web App URL Setting</summary>
     <div>
-      <input type="text" id="scriptUrlInput" placeholder="Yahan Apps Script ka URL paste karein">
+      <input type="text" id="scriptUrlInput" placeholder="Yahan Apps Script ka Web App URL daalein">
       <button type="button" onclick="saveScriptUrl()" style="margin-top: 6px; width: 100%; background: #007bff; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold;">Save URL</button>
     </div>
   </details>
 
-  <!-- Stock Tabs -->
+  <!-- 3 Navigation Tabs -->
   <div class="tab-header">
     <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">Stock In</button>
     <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">Stock Out</button>
+    <button class="tab-btn" id="tabSummaryBtn" onclick="switchTab('SUMMARY')">📊 Stock Summary</button>
   </div>
 
-  <!-- Camera Box -->
+  <!-- Main Camera Box -->
   <div id="reader-container">
     <div id="reader"></div>
     <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
   </div>
 
-  <!-- Main Entry Form -->
+  <!-- Entry Form (IN & OUT) -->
   <form id="stockForm">
     <div class="form-group">
-      <label>Current Date & Time</label>
+      <label>Date & Time</label>
       <input type="text" id="dateTimeDisplay" readonly style="background:#e9ecef;">
     </div>
 
-    <!-- Barcode -->
+    <!-- Main Barcode -->
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
-        <input type="text" id="barcodeInput" placeholder="Scan or type barcode..." oninput="onBarcodeScan(this.value)">
-        <button type="button" class="btn-scan" onclick="startScanner()">📷 Scan</button>
+        <input type="text" id="barcodeInput" placeholder="Scan or enter barcode..." oninput="onBarcodeScan(this.value)">
+        <button type="button" class="btn-scan" onclick="startScanner('MAIN')">📷 Scan</button>
       </div>
     </div>
 
@@ -93,7 +102,7 @@
       </select>
     </div>
 
-    <!-- HSN -->
+    <!-- HSN Code -->
     <div class="form-group">
       <label>HSN Code</label>
       <input type="text" id="hsnInput" placeholder="Auto filled / Manual">
@@ -102,28 +111,28 @@
     <!-- Quantity -->
     <div class="form-group">
       <label>Quantity</label>
-      <input type="number" id="qtyInput" min="1" placeholder="Enter quantity" required oninput="calculateTotal()">
+      <input type="number" id="qtyInput" min="1" placeholder="Quantity" required oninput="calculateTotal()">
     </div>
 
     <!-- Rate -->
     <div class="form-group">
       <label>Rate (per unit)</label>
-      <input type="number" id="rateInput" step="0.01" placeholder="Enter rate" oninput="calculateTotal()">
+      <input type="number" id="rateInput" step="0.01" placeholder="Rate" oninput="calculateTotal()">
     </div>
 
-    <!-- Total -->
+    <!-- Total Amount -->
     <div class="form-group">
       <label>Total Amount</label>
       <input type="number" id="totalAmountInput" readonly style="background:#e9ecef;">
     </div>
 
-    <!-- Stock In Only: Supplier Name -->
+    <!-- Stock In: Supplier / Party -->
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
-      <input type="text" id="partyInput" placeholder="Enter supplier name">
+      <input type="text" id="partyInput" placeholder="Supplier name">
     </div>
 
-    <!-- Stock Out Only: Vehicle -->
+    <!-- Stock Out: Vehicle No -->
     <div class="form-group hidden" id="vehicleGroup">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <label style="margin:0;">Vehicle Number</label>
@@ -134,7 +143,7 @@
       </select>
     </div>
 
-    <!-- Stock Out Only: Company Name (Auto-filled + Add Option) -->
+    <!-- Stock Out: Company Name -->
     <div class="form-group hidden" id="companyGroup">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <label style="margin:0;">Company Name</label>
@@ -147,7 +156,7 @@
       </select>
     </div>
 
-    <!-- Stock Out Only: Driver Name -->
+    <!-- Stock Out: Driver Name -->
     <div class="form-group hidden" id="driverGroup">
       <label>Driver Name</label>
       <input type="text" id="driverInput" placeholder="Driver name">
@@ -156,31 +165,66 @@
     <!-- Remarks -->
     <div class="form-group">
       <label>Remarks <span class="optional-text">(Optional)</span></label>
-      <input type="text" id="remarksInput" placeholder="Challan no / Notes">
+      <input type="text" id="remarksInput" placeholder="Challan / Notes">
     </div>
 
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
+  <!-- Stock Summary Section -->
+  <div class="summary-box" id="summaryView">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:16px;">Live Stock Inventory</h3>
+      <button onclick="loadSummary()" style="padding:5px 10px; font-size:12px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">🔄 Refresh</button>
+    </div>
+    <div id="summaryContent" style="margin-top:12px;">Loading stock summary...</div>
+  </div>
+
   <div id="msg"></div>
 </div>
 
-<!-- Add Product Modal -->
+<!-- Modal: Add Product (With Dedicated Barcode Scanner) -->
 <div class="modal" id="addProductModal">
   <div class="modal-content">
     <h3 style="margin-top:0;">Add New Product</h3>
-    <input type="text" id="newProdBarcode" placeholder="Barcode" style="margin-bottom:8px;">
-    <input type="text" id="newProdName" placeholder="Product Name" style="margin-bottom:8px;" required>
-    <input type="text" id="newProdHsn" placeholder="HSN Code" style="margin-bottom:8px;">
-    <input type="number" id="newProdRate" placeholder="Default Rate" style="margin-bottom:12px;">
-    <div style="display:flex; gap:8px;">
+
+    <!-- Scanner box inside modal -->
+    <div id="modal-reader-container" style="display:none; margin-bottom:12px; border:2px solid #17a2b8; border-radius:8px; padding:6px; background:#000; text-align:center;">
+      <div id="modal-reader" style="width:100%;"></div>
+      <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
+    </div>
+
+    <div class="form-group">
+      <label>Barcode</label>
+      <div class="barcode-row">
+        <input type="text" id="newProdBarcode" placeholder="Barcode">
+        <button type="button" class="btn-scan" onclick="startScanner('MODAL')">📷 Scan</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Product Name</label>
+      <input type="text" id="newProdName" placeholder="Product Name" required>
+    </div>
+
+    <div class="form-group">
+      <label>HSN Code</label>
+      <input type="text" id="newProdHsn" placeholder="HSN Code">
+    </div>
+
+    <div class="form-group">
+      <label>Default Rate</label>
+      <input type="number" id="newProdRate" placeholder="Default Rate">
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:14px;">
       <button type="button" onclick="saveNewProduct()" style="flex:1; background:#28a745; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Save</button>
       <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Add Vehicle Modal -->
+<!-- Modal: Add Vehicle -->
 <div class="modal" id="addVehicleModal">
   <div class="modal-content">
     <h3 style="margin-top:0;">Add New Vehicle</h3>
@@ -192,7 +236,7 @@
   </div>
 </div>
 
-<!-- Add Company Modal -->
+<!-- Modal: Add Company -->
 <div class="modal" id="addCompanyModal">
   <div class="modal-content">
     <h3 style="margin-top:0;">Add Company Name</h3>
@@ -209,15 +253,13 @@
   let currentTab = "IN";
   let productList = [];
   let html5QrCode = null;
+  let activeScanTarget = "MAIN";
 
-  // Master Vehicles List
   const defaultVehicles = [
     "BR01GM0272", "BR01GM0273", "BR01GM0895", "BR01GM0894",
     "BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538",
     "BR01GN7539", "BR01GN7540", "BR01GK0101", "BR01GL0101"
   ];
-
-  // Specific vehicles mapped to COMRAO PVT. LTD
   const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
 
   function populateVehicles(list) {
@@ -232,7 +274,6 @@
   }
   populateVehicles(defaultVehicles);
 
-  // Auto-select company based on vehicle selection
   function onVehicleChange(vNo) {
     const cleanNo = vNo.trim().toUpperCase();
     const compSel = document.getElementById("companyInput");
@@ -249,13 +290,10 @@
 
   function saveScriptUrl() {
     const val = document.getElementById("scriptUrlInput").value.trim();
-    if (!val) {
-      alert("Kripya valid Web App URL daalein!");
-      return;
-    }
+    if (!val) { alert("Valid URL daalein!"); return; }
     localStorage.setItem("sheet_script_url", val);
     SCRIPT_URL = val;
-    alert("URL successfully save ho gaya!");
+    alert("Script URL save ho gaya!");
     document.getElementById("configDropdown").removeAttribute("open");
     loadProducts();
     loadVehicles();
@@ -284,22 +322,36 @@
     currentTab = type;
     document.getElementById("tabInBtn").classList.toggle("active", type === "IN");
     document.getElementById("tabOutBtn").classList.toggle("active", type === "OUT");
-    
+    document.getElementById("tabSummaryBtn").classList.toggle("active", type === "SUMMARY");
+
+    const form = document.getElementById("stockForm");
+    const summaryView = document.getElementById("summaryView");
     const partyGroup = document.getElementById("partyGroup");
     const vehicleGroup = document.getElementById("vehicleGroup");
     const companyGroup = document.getElementById("companyGroup");
     const driverGroup = document.getElementById("driverGroup");
+    const msg = document.getElementById("msg");
+    msg.innerText = "";
 
-    if (type === "OUT") {
-      partyGroup.classList.add("hidden");
-      vehicleGroup.classList.remove("hidden");
-      companyGroup.classList.remove("hidden");
-      driverGroup.classList.remove("hidden");
+    if (type === "SUMMARY") {
+      form.style.display = "none";
+      summaryView.style.display = "block";
+      loadSummary();
     } else {
-      partyGroup.classList.remove("hidden");
-      vehicleGroup.classList.add("hidden");
-      companyGroup.classList.add("hidden");
-      driverGroup.classList.add("hidden");
+      form.style.display = "block";
+      summaryView.style.display = "none";
+
+      if (type === "OUT") {
+        partyGroup.classList.add("hidden");
+        vehicleGroup.classList.remove("hidden");
+        companyGroup.classList.remove("hidden");
+        driverGroup.classList.remove("hidden");
+      } else {
+        partyGroup.classList.remove("hidden");
+        vehicleGroup.classList.add("hidden");
+        companyGroup.classList.add("hidden");
+        driverGroup.classList.add("hidden");
+      }
     }
   }
 
@@ -337,6 +389,53 @@
     }
   }
 
+  async function loadSummary() {
+    const container = document.getElementById("summaryContent");
+    if (!SCRIPT_URL) {
+      container.innerHTML = "<p style='color:red;'>Settings me URL save karein!</p>";
+      return;
+    }
+    container.innerHTML = "Stock data load ho raha hai...";
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getSummary`);
+      const resData = await res.json();
+      if (resData.status === "success") {
+        if (resData.data.length === 0) {
+          container.innerHTML = "<p>Abhi tak koi stock data nahi hai.</p>";
+          return;
+        }
+        let html = `
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Bal</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        resData.data.forEach(row => {
+          html += `
+            <tr>
+              <td><b>${row.item}</b></td>
+              <td>${row.totalIn}</td>
+              <td>${row.totalOut}</td>
+              <td class="balance-badge">${row.balance}</td>
+            </tr>
+          `;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      } else {
+        container.innerHTML = "<p style='color:red;'>Error: " + resData.message + "</p>";
+      }
+    } catch (e) {
+      container.innerHTML = "<p style='color:red;'>Fetch error: " + e.message + "</p>";
+    }
+  }
+
   if (SCRIPT_URL) {
     loadProducts();
     loadVehicles();
@@ -368,18 +467,38 @@
     document.getElementById("totalAmountInput").value = (qty * rate).toFixed(2);
   }
 
-  function startScanner() {
-    const container = document.getElementById("reader-container");
+  // Universal Scanner Function
+  function startScanner(target) {
+    activeScanTarget = target;
+    const elemId = (target === "MODAL") ? "modal-reader" : "reader";
+    const containerId = (target === "MODAL") ? "modal-reader-container" : "reader-container";
+
+    const container = document.getElementById(containerId);
     container.style.display = "block";
-    if (!html5QrCode) {
-      html5QrCode = new Html5Qrcode("reader");
+
+    if (html5QrCode) {
+      html5QrCode.stop().then(() => {
+        initScanner(elemId, container);
+      }).catch(() => {
+        initScanner(elemId, container);
+      });
+    } else {
+      initScanner(elemId, container);
     }
+  }
+
+  function initScanner(elemId, container) {
+    html5QrCode = new Html5Qrcode(elemId);
     html5QrCode.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: 250, height: 150 } },
       (decodedText) => {
-        document.getElementById("barcodeInput").value = decodedText;
-        onBarcodeScan(decodedText);
+        if (activeScanTarget === "MODAL") {
+          document.getElementById("newProdBarcode").value = decodedText;
+        } else {
+          document.getElementById("barcodeInput").value = decodedText;
+          onBarcodeScan(decodedText);
+        }
         stopScanner();
       },
       () => {}
@@ -393,21 +512,25 @@
     if (html5QrCode) {
       html5QrCode.stop().then(() => {
         document.getElementById("reader-container").style.display = "none";
+        document.getElementById("modal-reader-container").style.display = "none";
       }).catch(() => {
         document.getElementById("reader-container").style.display = "none";
+        document.getElementById("modal-reader-container").style.display = "none";
       });
     } else {
       document.getElementById("reader-container").style.display = "none";
+      document.getElementById("modal-reader-container").style.display = "none";
     }
   }
 
-  // Modals Management
+  // Modals
   function openAddProductModal() { document.getElementById("addProductModal").style.display = "flex"; }
-  function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
-
+  function closeAddProductModal() { 
+    stopScanner();
+    document.getElementById("addProductModal").style.display = "none"; 
+  }
   function openAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "flex"; }
   function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
-
   function openAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "flex"; }
   function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
 
@@ -452,10 +575,7 @@
     const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
     if (!vNo) { alert("Vehicle number likhna zaroori hai!"); return; }
 
-    const payload = {
-      type: "ADD_VEHICLE",
-      vehicleNo: vNo
-    };
+    const payload = { type: "ADD_VEHICLE", vehicleNo: vNo };
 
     try {
       const res = await fetch(SCRIPT_URL, {
@@ -479,10 +599,7 @@
 
   function saveNewCompany() {
     const compName = document.getElementById("newCompanyName").value.trim().toUpperCase();
-    if (!compName) {
-      alert("Company name likhna zaroori hai!");
-      return;
-    }
+    if (!compName) { alert("Company name likhna zaroori hai!"); return; }
     const compSel = document.getElementById("companyInput");
     const opt = document.createElement("option");
     opt.value = compName;
@@ -493,11 +610,11 @@
     document.getElementById("newCompanyName").value = "";
   }
 
-  // Form Submit
+  // Submit Main Entry
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!SCRIPT_URL) {
-      alert("Pehle upar setting icon se apna Apps Script URL save karein!");
+      alert("Pehle setting icon se apna Apps Script URL save karein!");
       return;
     }
 
