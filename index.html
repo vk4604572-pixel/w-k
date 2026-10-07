@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory & Fleet Stock App</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+    body { background: #eef2f5; margin: 0; padding: 12px; }
+    .container { max-width: 480px; margin: auto; background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    
+    .config-box { background: #f8f9fa; border: 1px dashed #007bff; border-radius: 8px; padding: 10px; margin-bottom: 15px; }
+    .config-box summary { font-size: 13px; font-weight: bold; color: #007bff; cursor: pointer; }
+    .config-box input { margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+    .tab-header { display: flex; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 2px solid #007bff; }
+    .tab-btn { flex: 1; padding: 12px; text-align: center; border: none; background: #fff; color: #007bff; font-weight: bold; font-size: 15px; cursor: pointer; }
+    .tab-btn.active { background: #007bff; color: #fff; }
+
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #333; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    input:focus, select:focus { outline: none; border-color: #007bff; }
+
+    .barcode-row { display: flex; gap: 8px; }
+    .btn-scan { background: #17a2b8; color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+    #reader-container { display: none; margin-bottom: 15px; border: 2px solid #17a2b8; border-radius: 8px; padding: 8px; background: #000; text-align: center; }
+    #reader { width: 100%; }
+    .btn-close-scan { margin-top: 8px; background: #dc3545; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+    .btn-submit { width: 100%; padding: 12px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .btn-submit:disabled { background: #94d3a2; cursor: not-allowed; }
+    .hidden { display: none; }
+    .optional-text { font-size: 11px; color: #777; font-weight: normal; }
+    #msg { margin-top: 12px; text-align: center; font-weight: bold; font-size: 14px; }
+
+    /* Modals */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 360px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Script URL Setting -->
+  <details class="config-box" id="configDropdown">
+    <summary>⚙️ Google Script Web App URL Setting</summary>
+    <div>
+      <input type="text" id="scriptUrlInput" placeholder="Yahan Apps Script ka URL paste karein">
+      <button type="button" onclick="saveScriptUrl()" style="margin-top: 6px; width: 100%; background: #007bff; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold;">Save URL</button>
+    </div>
+  </details>
+
+  <!-- Stock Tabs -->
+  <div class="tab-header">
+    <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">Stock In</button>
+    <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">Stock Out</button>
+  </div>
+
+  <!-- Camera Box -->
+  <div id="reader-container">
+    <div id="reader"></div>
+    <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
+  </div>
+
+  <!-- Main Entry Form -->
+  <form id="stockForm">
+    <div class="form-group">
+      <label>Current Date & Time</label>
+      <input type="text" id="dateTimeDisplay" readonly style="background:#e9ecef;">
+    </div>
+
+    <!-- Barcode -->
+    <div class="form-group">
+      <label>Barcode</label>
+      <div class="barcode-row">
+        <input type="text" id="barcodeInput" placeholder="Scan or type barcode..." oninput="onBarcodeScan(this.value)">
+        <button type="button" class="btn-scan" onclick="startScanner()">📷 Scan</button>
+      </div>
+    </div>
+
+    <!-- Product Name -->
+    <div class="form-group">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <label style="margin:0;">Product Name</label>
+        <button type="button" class="btn-add-mini" onclick="openAddProductModal()">➕ Add New</button>
+      </div>
+      <select id="productSelect" onchange="onProductSelect(this.value)">
+        <option value="">-- Select Product --</option>
+      </select>
+    </div>
+
+    <!-- HSN -->
+    <div class="form-group">
+      <label>HSN Code</label>
+      <input type="text" id="hsnInput" placeholder="Auto filled / Manual">
+    </div>
+
+    <!-- Quantity -->
+    <div class="form-group">
+      <label>Quantity</label>
+      <input type="number" id="qtyInput" min="1" placeholder="Enter quantity" required oninput="calculateTotal()">
+    </div>
+
+    <!-- Rate -->
+    <div class="form-group">
+      <label>Rate (per unit)</label>
+      <input type="number" id="rateInput" step="0.01" placeholder="Enter rate" oninput="calculateTotal()">
+    </div>
+
+    <!-- Total -->
+    <div class="form-group">
+      <label>Total Amount</label>
+      <input type="number" id="totalAmountInput" readonly style="background:#e9ecef;">
+    </div>
+
+    <!-- Stock In Only: Supplier Name -->
+    <div class="form-group" id="partyGroup">
+      <label>Supplier / Party Name</label>
+      <input type="text" id="partyInput" placeholder="Enter supplier name">
+    </div>
+
+    <!-- Stock Out Only: Vehicle -->
+    <div class="form-group hidden" id="vehicleGroup">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <label style="margin:0;">Vehicle Number</label>
+        <button type="button" class="btn-add-mini" onclick="openAddVehicleModal()">➕ Add New</button>
+      </div>
+      <select id="vehicleInput" onchange="onVehicleChange(this.value)">
+        <option value="">-- Select Vehicle --</option>
+      </select>
+    </div>
+
+    <!-- Stock Out Only: Company Name (Auto-filled + Add Option) -->
+    <div class="form-group hidden" id="companyGroup">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <label style="margin:0;">Company Name</label>
+        <button type="button" class="btn-add-mini" onclick="openAddCompanyModal()">➕ Add New</button>
+      </div>
+      <select id="companyInput">
+        <option value="">-- Select Company --</option>
+        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
+        <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
+      </select>
+    </div>
+
+    <!-- Stock Out Only: Driver Name -->
+    <div class="form-group hidden" id="driverGroup">
+      <label>Driver Name</label>
+      <input type="text" id="driverInput" placeholder="Driver name">
+    </div>
+
+    <!-- Remarks -->
+    <div class="form-group">
+      <label>Remarks <span class="optional-text">(Optional)</span></label>
+      <input type="text" id="remarksInput" placeholder="Challan no / Notes">
+    </div>
+
+    <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
+  </form>
+
+  <div id="msg"></div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal" id="addProductModal">
+  <div class="modal-content">
+    <h3 style="margin-top:0;">Add New Product</h3>
+    <input type="text" id="newProdBarcode" placeholder="Barcode" style="margin-bottom:8px;">
+    <input type="text" id="newProdName" placeholder="Product Name" style="margin-bottom:8px;" required>
+    <input type="text" id="newProdHsn" placeholder="HSN Code" style="margin-bottom:8px;">
+    <input type="number" id="newProdRate" placeholder="Default Rate" style="margin-bottom:12px;">
+    <div style="display:flex; gap:8px;">
+      <button type="button" onclick="saveNewProduct()" style="flex:1; background:#28a745; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Save</button>
+      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Vehicle Modal -->
+<div class="modal" id="addVehicleModal">
+  <div class="modal-content">
+    <h3 style="margin-top:0;">Add New Vehicle</h3>
+    <input type="text" id="newVehicleNo" placeholder="e.g. BR01GL0101" style="margin-bottom:12px; text-transform:uppercase;" required>
+    <div style="display:flex; gap:8px;">
+      <button type="button" onclick="saveNewVehicle()" style="flex:1; background:#28a745; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Save</button>
+      <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Company Modal -->
+<div class="modal" id="addCompanyModal">
+  <div class="modal-content">
+    <h3 style="margin-top:0;">Add Company Name</h3>
+    <input type="text" id="newCompanyName" placeholder="e.g. ABC INFRA PVT LTD" style="margin-bottom:12px;" required>
+    <div style="display:flex; gap:8px;">
+      <button type="button" onclick="saveNewCompany()" style="flex:1; background:#28a745; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Add</button>
+      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let SCRIPT_URL = localStorage.getItem("sheet_script_url") || "";
+  let currentTab = "IN";
+  let productList = [];
+  let html5QrCode = null;
+
+  // Master Vehicles List
+  const defaultVehicles = [
+    "BR01GM0272", "BR01GM0273", "BR01GM0895", "BR01GM0894",
+    "BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538",
+    "BR01GN7539", "BR01GN7540", "BR01GK0101", "BR01GL0101"
+  ];
+
+  // Specific vehicles mapped to COMRAO PVT. LTD
+  const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
+
+  function populateVehicles(list) {
+    const vSel = document.getElementById("vehicleInput");
+    vSel.innerHTML = '<option value="">-- Select Vehicle --</option>';
+    list.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.innerText = v;
+      vSel.appendChild(opt);
+    });
+  }
+  populateVehicles(defaultVehicles);
+
+  // Auto-select company based on vehicle selection
+  function onVehicleChange(vNo) {
+    const cleanNo = vNo.trim().toUpperCase();
+    const compSel = document.getElementById("companyInput");
+    if (!cleanNo) {
+      compSel.value = "";
+      return;
+    }
+    if (comraoVehicles.includes(cleanNo)) {
+      compSel.value = "COMRAO PVT. LTD";
+    } else {
+      compSel.value = "GOKULESHWAR RD PVT. LTD";
+    }
+  }
+
+  function saveScriptUrl() {
+    const val = document.getElementById("scriptUrlInput").value.trim();
+    if (!val) {
+      alert("Kripya valid Web App URL daalein!");
+      return;
+    }
+    localStorage.setItem("sheet_script_url", val);
+    SCRIPT_URL = val;
+    alert("URL successfully save ho gaya!");
+    document.getElementById("configDropdown").removeAttribute("open");
+    loadProducts();
+    loadVehicles();
+  }
+
+  if (SCRIPT_URL) {
+    document.getElementById("scriptUrlInput").value = SCRIPT_URL;
+  } else {
+    document.getElementById("configDropdown").setAttribute("open", true);
+  }
+
+  function updateClock() {
+    const now = new Date();
+    const d = String(now.getDate()).padStart(2, '0');
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const y = now.getFullYear();
+    const hr = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const sec = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById("dateTimeDisplay").value = `${d}/${m}/${y} ${hr}:${min}:${sec}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function switchTab(type) {
+    currentTab = type;
+    document.getElementById("tabInBtn").classList.toggle("active", type === "IN");
+    document.getElementById("tabOutBtn").classList.toggle("active", type === "OUT");
+    
+    const partyGroup = document.getElementById("partyGroup");
+    const vehicleGroup = document.getElementById("vehicleGroup");
+    const companyGroup = document.getElementById("companyGroup");
+    const driverGroup = document.getElementById("driverGroup");
+
+    if (type === "OUT") {
+      partyGroup.classList.add("hidden");
+      vehicleGroup.classList.remove("hidden");
+      companyGroup.classList.remove("hidden");
+      driverGroup.classList.remove("hidden");
+    } else {
+      partyGroup.classList.remove("hidden");
+      vehicleGroup.classList.add("hidden");
+      companyGroup.classList.add("hidden");
+      driverGroup.classList.add("hidden");
+    }
+  }
+
+  async function loadProducts() {
+    if (!SCRIPT_URL) return;
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getProducts`);
+      const data = await res.json();
+      if (data.status === "success") {
+        productList = data.data;
+        const sel = document.getElementById("productSelect");
+        sel.innerHTML = '<option value="">-- Select Product --</option>';
+        productList.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.name;
+          opt.innerText = p.name;
+          sel.appendChild(opt);
+        });
+      }
+    } catch (e) {
+      console.log("Error loading products", e);
+    }
+  }
+
+  async function loadVehicles() {
+    if (!SCRIPT_URL) return;
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getVehicles`);
+      const data = await res.json();
+      if (data.status === "success" && data.data.length > 0) {
+        populateVehicles(data.data);
+      }
+    } catch (e) {
+      console.log("Error loading vehicles", e);
+    }
+  }
+
+  if (SCRIPT_URL) {
+    loadProducts();
+    loadVehicles();
+  }
+
+  function onBarcodeScan(val) {
+    const match = productList.find(p => String(p.barcode).trim() === String(val).trim());
+    if (match) {
+      document.getElementById("productSelect").value = match.name;
+      document.getElementById("hsnInput").value = match.hsn;
+      document.getElementById("rateInput").value = match.rate;
+      calculateTotal();
+    }
+  }
+
+  function onProductSelect(val) {
+    const match = productList.find(p => p.name === val);
+    if (match) {
+      document.getElementById("barcodeInput").value = match.barcode;
+      document.getElementById("hsnInput").value = match.hsn;
+      document.getElementById("rateInput").value = match.rate;
+      calculateTotal();
+    }
+  }
+
+  function calculateTotal() {
+    const qty = parseFloat(document.getElementById("qtyInput").value) || 0;
+    const rate = parseFloat(document.getElementById("rateInput").value) || 0;
+    document.getElementById("totalAmountInput").value = (qty * rate).toFixed(2);
+  }
+
+  function startScanner() {
+    const container = document.getElementById("reader-container");
+    container.style.display = "block";
+    if (!html5QrCode) {
+      html5QrCode = new Html5Qrcode("reader");
+    }
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 150 } },
+      (decodedText) => {
+        document.getElementById("barcodeInput").value = decodedText;
+        onBarcodeScan(decodedText);
+        stopScanner();
+      },
+      () => {}
+    ).catch(err => {
+      alert("Camera permission allow karein: " + err);
+      container.style.display = "none";
+    });
+  }
+
+  function stopScanner() {
+    if (html5QrCode) {
+      html5QrCode.stop().then(() => {
+        document.getElementById("reader-container").style.display = "none";
+      }).catch(() => {
+        document.getElementById("reader-container").style.display = "none";
+      });
+    } else {
+      document.getElementById("reader-container").style.display = "none";
+    }
+  }
+
+  // Modals Management
+  function openAddProductModal() { document.getElementById("addProductModal").style.display = "flex"; }
+  function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
+
+  function openAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "flex"; }
+  function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
+
+  function openAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "flex"; }
+  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
+
+  async function saveNewProduct() {
+    if (!SCRIPT_URL) { alert("Pehle setting se URL save karein!"); return; }
+    const name = document.getElementById("newProdName").value.trim();
+    if (!name) { alert("Product name likhna zaroori hai!"); return; }
+
+    const payload = {
+      type: "ADD_PRODUCT",
+      barcode: document.getElementById("newProdBarcode").value,
+      itemName: name,
+      hsn: document.getElementById("newProdHsn").value,
+      rate: document.getElementById("newProdRate").value
+    };
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+      if (result.status === "success") {
+        alert("✅ Product add ho gaya!");
+        closeAddProductModal();
+        document.getElementById("newProdBarcode").value = "";
+        document.getElementById("newProdName").value = "";
+        document.getElementById("newProdHsn").value = "";
+        document.getElementById("newProdRate").value = "";
+        loadProducts();
+      } else {
+        alert("Error: " + result.message);
+      }
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  }
+
+  async function saveNewVehicle() {
+    if (!SCRIPT_URL) { alert("Pehle setting se URL save karein!"); return; }
+    const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
+    if (!vNo) { alert("Vehicle number likhna zaroori hai!"); return; }
+
+    const payload = {
+      type: "ADD_VEHICLE",
+      vehicleNo: vNo
+    };
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+      if (result.status === "success") {
+        alert("✅ Vehicle add ho gaya!");
+        closeAddVehicleModal();
+        document.getElementById("newVehicleNo").value = "";
+        loadVehicles();
+      } else {
+        alert("Error: " + result.message);
+      }
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  }
+
+  function saveNewCompany() {
+    const compName = document.getElementById("newCompanyName").value.trim().toUpperCase();
+    if (!compName) {
+      alert("Company name likhna zaroori hai!");
+      return;
+    }
+    const compSel = document.getElementById("companyInput");
+    const opt = document.createElement("option");
+    opt.value = compName;
+    opt.innerText = compName;
+    compSel.appendChild(opt);
+    compSel.value = compName;
+    closeAddCompanyModal();
+    document.getElementById("newCompanyName").value = "";
+  }
+
+  // Form Submit
+  document.getElementById("stockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!SCRIPT_URL) {
+      alert("Pehle upar setting icon se apna Apps Script URL save karein!");
+      return;
+    }
+
+    const btn = document.getElementById("submitBtn");
+    const msg = document.getElementById("msg");
+    btn.disabled = true;
+    msg.innerText = "⏳ Saving entry to Google Sheet...";
+    msg.style.color = "#007bff";
+
+    const payload = {
+      type: currentTab,
+      barcode: document.getElementById("barcodeInput").value,
+      itemName: document.getElementById("productSelect").value,
+      hsn: document.getElementById("hsnInput").value,
+      qty: document.getElementById("qtyInput").value,
+      rate: document.getElementById("rateInput").value,
+      totalAmount: document.getElementById("totalAmountInput").value,
+      partyName: document.getElementById("partyInput").value,
+      companyName: document.getElementById("companyInput").value,
+      vehicleNo: document.getElementById("vehicleInput").value,
+      driverName: document.getElementById("driverInput").value,
+      remarks: document.getElementById("remarksInput").value
+    };
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+
+      if (result.status === "success") {
+        msg.innerText = "✅ " + result.message;
+        msg.style.color = "green";
+        document.getElementById("stockForm").reset();
+        updateClock();
+        if (currentTab === "OUT") {
+          document.getElementById("partyGroup").classList.add("hidden");
+          document.getElementById("vehicleGroup").classList.remove("hidden");
+          document.getElementById("companyGroup").classList.remove("hidden");
+          document.getElementById("driverGroup").classList.remove("hidden");
+        }
+      } else {
+        msg.innerText = "❌ Failed: " + result.message;
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      msg.innerText = "❌ Request Error: " + err.message;
+      msg.style.color = "red";
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
