@@ -40,7 +40,6 @@
     .custom-table th, .custom-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
     .custom-table th { background: #007bff; color: white; }
     
-    /* Screenshot Style Layout */
     .company-header-row { background: #ffff00; font-weight: bold; color: #000; font-size: 13px; }
     .vehicle-row { background: #ffffff; }
     .vehicle-row td:first-child { padding-left: 20px; color: #333; }
@@ -49,7 +48,6 @@
     .modal-content { background: white; padding: 18px; border-radius: 10px; width: 92%; max-width: 380px; }
     .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 12px; }
 
-    /* Print Styles */
     @media print {
       body { background: #fff; padding: 0; }
       .container { max-width: 100%; box-shadow: none; padding: 0; }
@@ -187,14 +185,14 @@
     <div id="summaryContent" style="margin-top:10px;">Loading stock summary...</div>
   </div>
 
-  <!-- Month Closing Report View (Screenshot Style + Print)[cite: 1] -->
+  <!-- Month Closing Report View -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h3 style="margin:0; font-size:14px;">Month Closing Report</h3>
       <button type="button" class="btn-print" onclick="window.print()" style="padding:4px 10px; font-size:11px; background:#17a2b8; color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">🖨️ Print / PDF</button>
     </div>
     
-    <div id="closingDateFilters" style="display:flex; gap:8px; margin-bottom:10px;">
+    <div id="closingDateFilters" style="display:flex; gap:6px; align-items:flex-end; margin-bottom:10px;">
       <div style="flex:1;">
         <label>Start Date</label>
         <input type="date" id="closingStartDate" onchange="renderClosingReport()">
@@ -203,6 +201,7 @@
         <label>End Date</label>
         <input type="date" id="closingEndDate" onchange="renderClosingReport()">
       </div>
+      <button type="button" onclick="clearDateFilters()" style="padding:9px 10px; background:#6c757d; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">All</button>
     </div>
     <div id="closingContent">Loading closing data...</div>
   </div>
@@ -210,7 +209,7 @@
   <div id="msg"></div>
 </div>
 
-<!-- Modal: Password Protection -->
+<!-- Password Modal -->
 <div class="modal" id="authModal">
   <div class="modal-content" style="text-align:center;">
     <h3 style="margin-top:0;">🔒 Security Lock</h3>
@@ -292,7 +291,7 @@
   let activeScanTarget = "MAIN";
 
   // Password Lock Settings
-  const CLOSING_PASSWORD = "425151"; // Yahan password change kar sakte hain
+  const CLOSING_PASSWORD = "425151"; 
   let isClosingUnlocked = false;
 
   const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
@@ -336,7 +335,6 @@
   updateClock();
 
   function switchTab(type) {
-    // Password protection check for Month Closing
     if (type === "CLOSING" && !isClosingUnlocked) {
       document.getElementById("authErrMsg").innerText = "";
       document.getElementById("closingPasswordInput").value = "";
@@ -408,7 +406,6 @@
     document.getElementById("authModal").style.display = "none";
   }
 
-  // Fast One-time Master Data Fetch
   async function fetchMasterData() {
     if (!SCRIPT_URL) return;
     try {
@@ -440,7 +437,6 @@
     } catch (e) { console.log(e); }
   }
 
-  // Instant Manual Barcode Typing Match
   document.getElementById("barcodeInput").addEventListener("input", function() {
     const val = this.value.trim().toLowerCase();
     if (!val) return;
@@ -469,7 +465,6 @@
     document.getElementById("totalAmountInput").value = (qty * rate).toFixed(2);
   }
 
-  // Month Closing Load & Render (Exact Screenshot Layout + Date Range)[cite: 1]
   async function loadClosingData() {
     const container = document.getElementById("closingContent");
     if (!SCRIPT_URL) { container.innerHTML = "Save URL first!"; return; }
@@ -484,37 +479,63 @@
     } catch (e) { container.innerHTML = "Error loading closing data."; }
   }
 
+  // Universal Date Helper
+  function normalizeToISODate(val) {
+    if (!val) return "";
+    let str = String(val).trim();
+    
+    let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m1) return `${m1[1]}-${String(m1[2]).padStart(2, '0')}-${String(m1[3]).padStart(2, '0')}`;
+
+    let m2 = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (m2) return `${m2[3]}-${String(m2[2]).padStart(2, '0')}-${String(m2[1]).padStart(2, '0')}`;
+
+    let parsedD = new Date(str);
+    if (!isNaN(parsedD.getTime())) {
+      let y = parsedD.getFullYear();
+      let m = String(parsedD.getMonth() + 1).padStart(2, '0');
+      let d = String(parsedD.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    return str.split(" ")[0];
+  }
+
   function renderClosingReport() {
     const container = document.getElementById("closingContent");
     const sDate = document.getElementById("closingStartDate").value;
     const eDate = document.getElementById("closingEndDate").value;
 
+    if (!closingRawData || closingRawData.length === 0) {
+      container.innerHTML = "<p style='color:#666;'>Sheet me abhi koi Stock Out entry nahi mili.</p>";
+      return;
+    }
+
     let filtered = closingRawData.filter(r => {
-      if (!r.date) return false;
-      let rowDate = r.date;
-      if (rowDate.includes("/")) {
-        let p = rowDate.split(" ")[0].split("/");
-        if (p.length === 3 && p[2].length === 4) {
-          rowDate = `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
-        }
-      }
+      let rowDate = normalizeToISODate(r.date);
       if (sDate && rowDate < sDate) return false;
       if (eDate && rowDate > eDate) return false;
       return true;
     });
 
     if (filtered.length === 0) {
-      container.innerHTML = "<p style='color: #666; font-size: 13px;'>Selected date range mein data nahi mila.</p>";
+      container.innerHTML = `
+        <div style="text-align:center; padding:15px; color:#666;">
+          <p>⚠️ Is date range me koi data nahi mila.</p>
+          <button type="button" onclick="clearDateFilters()" style="padding:6px 14px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">Saara Data Dekhein</button>
+        </div>`;
       return;
     }
 
     const groups = {};
     filtered.forEach(r => {
-      const comp = r.company || "OTHER";
-      const veh = r.vehicle || "UNKNOWN";
+      const comp = String(r.company || "OTHER").trim().toUpperCase();
+      const veh = String(r.vehicle || "UNKNOWN").trim().toUpperCase();
+      const amt = Number(r.amount) || 0;
+
       if (!groups[comp]) groups[comp] = { total: 0, vehicles: {} };
-      groups[comp].total += r.amount;
-      groups[comp].vehicles[veh] = (groups[comp].vehicles[veh] || 0) + r.amount;
+      groups[comp].total += amt;
+      groups[comp].vehicles[veh] = (groups[comp].vehicles[veh] || 0) + amt;
     });
 
     let html = `<table class="custom-table">
@@ -539,7 +560,12 @@
     container.innerHTML = html;
   }
 
-  // Stock Summary Table
+  function clearDateFilters() {
+    document.getElementById("closingStartDate").value = "";
+    document.getElementById("closingEndDate").value = "";
+    renderClosingReport();
+  }
+
   async function loadSummary() {
     const container = document.getElementById("summaryContent");
     if (!SCRIPT_URL) return;
@@ -563,7 +589,6 @@
 
   if (SCRIPT_URL) fetchMasterData();
 
-  // Scanner
   function startScanner(target) {
     activeScanTarget = target;
     const elemId = (target === "MODAL") ? "modal-reader" : "reader";
@@ -598,7 +623,6 @@
   function openAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "flex"; }
   function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
 
-  // Fast Add Product (Optimistic UI)
   async function saveNewProduct() {
     const btn = document.getElementById("saveProdBtn");
     btn.disabled = true;
@@ -627,7 +651,6 @@
     await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(newProd) });
   }
 
-  // Fast Add Vehicle
   async function saveNewVehicle() {
     const btn = document.getElementById("saveVehBtn");
     const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
@@ -657,7 +680,6 @@
     closeAddCompanyModal();
   }
 
-  // Ultra-fast Submit
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
