@@ -3,98 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventory & Fleet Stock App</title>
+  <title>Fleet & Inventory Pro</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body { background: #eef2f5; margin: 0; padding: 12px; }
-    .container { max-width: 480px; margin: auto; background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .container { max-width: 500px; margin: auto; background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     
-    .config-box { background: #f8f9fa; border: 1px dashed #007bff; border-radius: 8px; padding: 10px; margin-bottom: 15px; }
+    .config-box { background: #f8f9fa; border: 1px dashed #007bff; border-radius: 8px; padding: 10px; margin-bottom: 12px; }
     .config-box summary { font-size: 13px; font-weight: bold; color: #007bff; cursor: pointer; }
     .config-box input { margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
 
-    .tab-header { display: flex; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 2px solid #007bff; }
-    .tab-btn { flex: 1; padding: 10px 4px; text-align: center; border: none; background: #fff; color: #007bff; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .tab-header { display: flex; margin-bottom: 14px; border-radius: 8px; overflow: hidden; border: 2px solid #007bff; }
+    .tab-btn { flex: 1; padding: 9px 2px; text-align: center; border: none; background: #fff; color: #007bff; font-weight: bold; font-size: 11px; cursor: pointer; }
     .tab-btn.active { background: #007bff; color: #fff; }
 
-    .form-group { margin-bottom: 12px; }
-    label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #333; }
-    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    .form-group { margin-bottom: 11px; }
+    label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 12px; color: #333; }
+    input, select { width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
     input:focus, select:focus { outline: none; border-color: #007bff; }
 
     .barcode-row { display: flex; gap: 8px; }
     .btn-scan { background: #17a2b8; color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-    #reader-container { display: none; margin-bottom: 15px; border: 2px solid #17a2b8; border-radius: 8px; padding: 8px; background: #000; text-align: center; }
+    #reader-container { display: none; margin-bottom: 12px; border: 2px solid #17a2b8; border-radius: 8px; padding: 6px; background: #000; text-align: center; }
     #reader { width: 100%; }
-    .btn-close-scan { margin-top: 8px; background: #dc3545; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    .btn-close-scan { margin-top: 6px; background: #dc3545; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; }
 
-    .btn-submit { width: 100%; padding: 12px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .btn-submit { width: 100%; padding: 12px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 8px; }
     .btn-submit:disabled { background: #94d3a2; cursor: not-allowed; }
     .hidden { display: none; }
-    .optional-text { font-size: 11px; color: #777; font-weight: normal; }
-    #msg { margin-top: 12px; text-align: center; font-weight: bold; font-size: 14px; }
+    #msg { margin-top: 10px; text-align: center; font-weight: bold; font-size: 13px; }
 
-    /* Summary Table Styling */
-    .summary-box { display: none; }
-    .summary-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    .summary-table th, .summary-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .summary-table th { background: #007bff; color: white; }
-    .summary-table tr:nth-child(even) { background: #f9f9f9; }
-    .balance-badge { font-weight: bold; color: #28a745; }
-
-    /* Modal Styling */
+    .view-box { display: none; }
+    .custom-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+    .custom-table th, .custom-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+    .custom-table th { background: #007bff; color: white; }
+    
+    .company-header-row { background: #ffff00; font-weight: bold; color: #000; font-size: 13px; }
+    .vehicle-row { background: #ffffff; }
+    .vehicle-row td:first-child { padding-left: 20px; color: #333; }
+    
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 92%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
-    .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 13px; }
+    .modal-content { background: white; padding: 18px; border-radius: 10px; width: 92%; max-width: 380px; }
+    .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 12px; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Script URL Configuration -->
+  <!-- Settings URL -->
   <details class="config-box" id="configDropdown">
-    <summary>⚙️ Google Script Web App URL Setting</summary>
+    <summary>⚙️ Apps Script Web App URL Setting</summary>
     <div>
-      <input type="text" id="scriptUrlInput" placeholder="Yahan Apps Script ka Web App URL daalein">
-      <button type="button" onclick="saveScriptUrl()" style="margin-top: 6px; width: 100%; background: #007bff; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold;">Save URL</button>
+      <input type="text" id="scriptUrlInput" placeholder="Apps Script Web App URL paste karein">
+      <button type="button" onclick="saveScriptUrl()" style="margin-top: 6px; width: 100%; background: #007bff; color: white; border: none; padding: 7px; border-radius: 4px; font-weight: bold; cursor: pointer;">Save URL</button>
     </div>
   </details>
 
-  <!-- 3 Navigation Tabs -->
+  <!-- Tabs -->
   <div class="tab-header">
     <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">Stock In</button>
     <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">Stock Out</button>
     <button class="tab-btn" id="tabSummaryBtn" onclick="switchTab('SUMMARY')">📊 Stock Summary</button>
+    <button class="tab-btn" id="tabClosingBtn" onclick="switchTab('CLOSING')">📑 Month Closing</button>
   </div>
 
-  <!-- Main Camera Box -->
+  <!-- Camera -->
   <div id="reader-container">
     <div id="reader"></div>
     <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
   </div>
 
-  <!-- Entry Form (IN & OUT) -->
+  <!-- Entry Form -->
   <form id="stockForm">
     <div class="form-group">
       <label>Date & Time</label>
       <input type="text" id="dateTimeDisplay" readonly style="background:#e9ecef;">
     </div>
 
-    <!-- Main Barcode -->
+    <!-- Fast Barcode Input -->
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
-        <input type="text" id="barcodeInput" placeholder="Scan or enter barcode..." oninput="onBarcodeScan(this.value)">
+        <input type="text" id="barcodeInput" placeholder="Type barcode or scan..." autocomplete="off">
         <button type="button" class="btn-scan" onclick="startScanner('MAIN')">📷 Scan</button>
       </div>
     </div>
 
-    <!-- Product Name -->
     <div class="form-group">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-        <label style="margin:0;">Product Name</label>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>Product Name</label>
         <button type="button" class="btn-add-mini" onclick="openAddProductModal()">➕ Add New</button>
       </div>
       <select id="productSelect" onchange="onProductSelect(this.value)">
@@ -102,40 +101,34 @@
       </select>
     </div>
 
-    <!-- HSN Code -->
     <div class="form-group">
       <label>HSN Code</label>
-      <input type="text" id="hsnInput" placeholder="Auto filled / Manual">
+      <input type="text" id="hsnInput" placeholder="Auto filled">
     </div>
 
-    <!-- Quantity -->
     <div class="form-group">
       <label>Quantity</label>
       <input type="number" id="qtyInput" min="1" placeholder="Quantity" required oninput="calculateTotal()">
     </div>
 
-    <!-- Rate -->
     <div class="form-group">
       <label>Rate (per unit)</label>
       <input type="number" id="rateInput" step="0.01" placeholder="Rate" oninput="calculateTotal()">
     </div>
 
-    <!-- Total Amount -->
     <div class="form-group">
       <label>Total Amount</label>
       <input type="number" id="totalAmountInput" readonly style="background:#e9ecef;">
     </div>
 
-    <!-- Stock In: Supplier / Party -->
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
       <input type="text" id="partyInput" placeholder="Supplier name">
     </div>
 
-    <!-- Stock Out: Vehicle No -->
     <div class="form-group hidden" id="vehicleGroup">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-        <label style="margin:0;">Vehicle Number</label>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>Vehicle Number</label>
         <button type="button" class="btn-add-mini" onclick="openAddVehicleModal()">➕ Add New</button>
       </div>
       <select id="vehicleInput" onchange="onVehicleChange(this.value)">
@@ -143,10 +136,9 @@
       </select>
     </div>
 
-    <!-- Stock Out: Company Name -->
     <div class="form-group hidden" id="companyGroup">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-        <label style="margin:0;">Company Name</label>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>Company Name</label>
         <button type="button" class="btn-add-mini" onclick="openAddCompanyModal()">➕ Add New</button>
       </div>
       <select id="companyInput">
@@ -156,44 +148,55 @@
       </select>
     </div>
 
-    <!-- Stock Out: Driver Name -->
     <div class="form-group hidden" id="driverGroup">
       <label>Driver Name</label>
       <input type="text" id="driverInput" placeholder="Driver name">
     </div>
 
-    <!-- Remarks -->
     <div class="form-group">
-      <label>Remarks <span class="optional-text">(Optional)</span></label>
+      <label>Remarks</label>
       <input type="text" id="remarksInput" placeholder="Challan / Notes">
     </div>
 
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
-  <!-- Stock Summary Section -->
-  <div class="summary-box" id="summaryView">
+  <!-- Stock Summary View -->
+  <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="margin:0; font-size:16px;">Live Stock Inventory</h3>
-      <button onclick="loadSummary()" style="padding:5px 10px; font-size:12px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">🔄 Refresh</button>
+      <h3 style="margin:0; font-size:14px;">Live Stock & Total Value</h3>
+      <button onclick="loadSummary()" style="padding:4px 8px; font-size:11px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">🔄 Refresh</button>
     </div>
-    <div id="summaryContent" style="margin-top:12px;">Loading stock summary...</div>
+    <div id="summaryContent" style="margin-top:10px;">Loading stock summary...</div>
+  </div>
+
+  <!-- Month Closing Report View[cite: 1] -->
+  <div class="view-box" id="closingView">
+    <h3 style="margin:0 0 10px 0; font-size:14px;">Month Closing Report</h3>
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <div style="flex:1;">
+        <label>Start Date</label>
+        <input type="date" id="closingStartDate" onchange="renderClosingReport()">
+      </div>
+      <div style="flex:1;">
+        <label>End Date</label>
+        <input type="date" id="closingEndDate" onchange="renderClosingReport()">
+      </div>
+    </div>
+    <div id="closingContent">Loading closing data...</div>
   </div>
 
   <div id="msg"></div>
 </div>
 
-<!-- Modal: Add Product (With Dedicated Barcode Scanner) -->
+<!-- Modal: Add Product -->
 <div class="modal" id="addProductModal">
   <div class="modal-content">
     <h3 style="margin-top:0;">Add New Product</h3>
-
-    <!-- Scanner box inside modal -->
-    <div id="modal-reader-container" style="display:none; margin-bottom:12px; border:2px solid #17a2b8; border-radius:8px; padding:6px; background:#000; text-align:center;">
-      <div id="modal-reader" style="width:100%;"></div>
+    <div id="modal-reader-container" style="display:none; margin-bottom:10px; border:2px solid #17a2b8; border-radius:8px; padding:6px; background:#000; text-align:center;">
+      <div id="modal-reader"></div>
       <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
     </div>
-
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
@@ -201,25 +204,21 @@
         <button type="button" class="btn-scan" onclick="startScanner('MODAL')">📷 Scan</button>
       </div>
     </div>
-
     <div class="form-group">
       <label>Product Name</label>
-      <input type="text" id="newProdName" placeholder="Product Name" required>
+      <input type="text" id="newProdName" required>
     </div>
-
     <div class="form-group">
       <label>HSN Code</label>
-      <input type="text" id="newProdHsn" placeholder="HSN Code">
+      <input type="text" id="newProdHsn">
     </div>
-
     <div class="form-group">
       <label>Default Rate</label>
-      <input type="number" id="newProdRate" placeholder="Default Rate">
+      <input type="number" id="newProdRate">
     </div>
-
-    <div style="display:flex; gap:8px; margin-top:14px;">
-      <button type="button" onclick="saveNewProduct()" style="flex:1; background:#28a745; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Save</button>
-      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <button type="button" id="saveProdBtn" onclick="saveNewProduct()" style="flex:1; background:#28a745; color:#fff; border:none; padding:9px; border-radius:5px; font-weight:bold; cursor:pointer;">Save</button>
+      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:9px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
@@ -227,11 +226,11 @@
 <!-- Modal: Add Vehicle -->
 <div class="modal" id="addVehicleModal">
   <div class="modal-content">
-    <h3 style="margin-top:0;">Add New Vehicle</h3>
-    <input type="text" id="newVehicleNo" placeholder="e.g. BR01GL0101" style="margin-bottom:12px; text-transform:uppercase;" required>
+    <h3 style="margin-top:0;">Add Vehicle</h3>
+    <input type="text" id="newVehicleNo" placeholder="BR01GL0101" style="margin-bottom:12px; text-transform:uppercase;">
     <div style="display:flex; gap:8px;">
-      <button type="button" onclick="saveNewVehicle()" style="flex:1; background:#28a745; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Save</button>
-      <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
+      <button type="button" id="saveVehBtn" onclick="saveNewVehicle()" style="flex:1; background:#28a745; color:#fff; border:none; padding:9px; border-radius:5px; font-weight:bold; cursor:pointer;">Save</button>
+      <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:9px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
@@ -239,11 +238,11 @@
 <!-- Modal: Add Company -->
 <div class="modal" id="addCompanyModal">
   <div class="modal-content">
-    <h3 style="margin-top:0;">Add Company Name</h3>
-    <input type="text" id="newCompanyName" placeholder="e.g. ABC INFRA PVT LTD" style="margin-bottom:12px;" required>
+    <h3 style="margin-top:0;">Add Company</h3>
+    <input type="text" id="newCompanyName" placeholder="Company Name" style="margin-bottom:12px;">
     <div style="display:flex; gap:8px;">
-      <button type="button" onclick="saveNewCompany()" style="flex:1; background:#28a745; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Add</button>
-      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
+      <button type="button" onclick="saveNewCompany()" style="flex:1; background:#28a745; color:#fff; border:none; padding:9px; border-radius:5px; font-weight:bold; cursor:pointer;">Add</button>
+      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:9px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
@@ -251,52 +250,37 @@
 <script>
   let SCRIPT_URL = localStorage.getItem("sheet_script_url") || "";
   let currentTab = "IN";
-  let productList = [];
+  let productList = JSON.parse(localStorage.getItem("cached_products") || "[]");
+  let barcodeMap = new Map();
+  let closingRawData = [];
   let html5QrCode = null;
   let activeScanTarget = "MAIN";
 
-  const defaultVehicles = [
-    "BR01GM0272", "BR01GM0273", "BR01GM0895", "BR01GM0894",
-    "BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538",
-    "BR01GN7539", "BR01GN7540", "BR01GK0101", "BR01GL0101"
-  ];
   const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
 
-  function populateVehicles(list) {
-    const vSel = document.getElementById("vehicleInput");
-    vSel.innerHTML = '<option value="">-- Select Vehicle --</option>';
-    list.forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.innerText = v;
-      vSel.appendChild(opt);
+  function buildBarcodeMap() {
+    barcodeMap.clear();
+    productList.forEach(p => {
+      if (p.barcode) barcodeMap.set(String(p.barcode).trim().toLowerCase(), p);
     });
   }
-  populateVehicles(defaultVehicles);
+  buildBarcodeMap();
 
   function onVehicleChange(vNo) {
     const cleanNo = vNo.trim().toUpperCase();
     const compSel = document.getElementById("companyInput");
-    if (!cleanNo) {
-      compSel.value = "";
-      return;
-    }
-    if (comraoVehicles.includes(cleanNo)) {
-      compSel.value = "COMRAO PVT. LTD";
-    } else {
-      compSel.value = "GOKULESHWAR RD PVT. LTD";
-    }
+    if (!cleanNo) { compSel.value = ""; return; }
+    compSel.value = comraoVehicles.includes(cleanNo) ? "COMRAO PVT. LTD" : "GOKULESHWAR RD PVT. LTD";
   }
 
   function saveScriptUrl() {
     const val = document.getElementById("scriptUrlInput").value.trim();
-    if (!val) { alert("Valid URL daalein!"); return; }
+    if (!val) return;
     localStorage.setItem("sheet_script_url", val);
     SCRIPT_URL = val;
-    alert("Script URL save ho gaya!");
+    alert("Saved!");
     document.getElementById("configDropdown").removeAttribute("open");
-    loadProducts();
-    loadVehicles();
+    fetchMasterData();
   }
 
   if (SCRIPT_URL) {
@@ -307,13 +291,7 @@
 
   function updateClock() {
     const now = new Date();
-    const d = String(now.getDate()).padStart(2, '0');
-    const m = String(now.getMonth() + 1).padStart(2, '0');
-    const y = now.getFullYear();
-    const hr = String(now.getHours()).padStart(2, '0');
-    const min = String(now.getMinutes()).padStart(2, '0');
-    const sec = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById("dateTimeDisplay").value = `${d}/${m}/${y} ${hr}:${min}:${sec}`;
+    document.getElementById("dateTimeDisplay").value = now.toLocaleString('en-GB');
   }
   setInterval(updateClock, 1000);
   updateClock();
@@ -323,23 +301,31 @@
     document.getElementById("tabInBtn").classList.toggle("active", type === "IN");
     document.getElementById("tabOutBtn").classList.toggle("active", type === "OUT");
     document.getElementById("tabSummaryBtn").classList.toggle("active", type === "SUMMARY");
+    document.getElementById("tabClosingBtn").classList.toggle("active", type === "CLOSING");
 
     const form = document.getElementById("stockForm");
     const summaryView = document.getElementById("summaryView");
+    const closingView = document.getElementById("closingView");
     const partyGroup = document.getElementById("partyGroup");
     const vehicleGroup = document.getElementById("vehicleGroup");
     const companyGroup = document.getElementById("companyGroup");
     const driverGroup = document.getElementById("driverGroup");
-    const msg = document.getElementById("msg");
-    msg.innerText = "";
+    document.getElementById("msg").innerText = "";
 
     if (type === "SUMMARY") {
       form.style.display = "none";
+      closingView.style.display = "none";
       summaryView.style.display = "block";
       loadSummary();
+    } else if (type === "CLOSING") {
+      form.style.display = "none";
+      summaryView.style.display = "none";
+      closingView.style.display = "block";
+      loadClosingData();
     } else {
       form.style.display = "block";
       summaryView.style.display = "none";
+      closingView.style.display = "none";
 
       if (type === "OUT") {
         partyGroup.classList.add("hidden");
@@ -355,13 +341,17 @@
     }
   }
 
-  async function loadProducts() {
+  // Fast One-time Initial Data Fetch
+  async function fetchMasterData() {
     if (!SCRIPT_URL) return;
     try {
-      const res = await fetch(`${SCRIPT_URL}?action=getProducts`);
+      const res = await fetch(`${SCRIPT_URL}?action=getInitialData`);
       const data = await res.json();
       if (data.status === "success") {
-        productList = data.data;
+        productList = data.products;
+        localStorage.setItem("cached_products", JSON.stringify(productList));
+        buildBarcodeMap();
+
         const sel = document.getElementById("productSelect");
         sel.innerHTML = '<option value="">-- Select Product --</option>';
         productList.forEach(p => {
@@ -370,93 +360,38 @@
           opt.innerText = p.name;
           sel.appendChild(opt);
         });
-      }
-    } catch (e) {
-      console.log("Error loading products", e);
-    }
-  }
 
-  async function loadVehicles() {
-    if (!SCRIPT_URL) return;
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getVehicles`);
-      const data = await res.json();
-      if (data.status === "success" && data.data.length > 0) {
-        populateVehicles(data.data);
-      }
-    } catch (e) {
-      console.log("Error loading vehicles", e);
-    }
-  }
-
-  async function loadSummary() {
-    const container = document.getElementById("summaryContent");
-    if (!SCRIPT_URL) {
-      container.innerHTML = "<p style='color:red;'>Settings me URL save karein!</p>";
-      return;
-    }
-    container.innerHTML = "Stock data load ho raha hai...";
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getSummary`);
-      const resData = await res.json();
-      if (resData.status === "success") {
-        if (resData.data.length === 0) {
-          container.innerHTML = "<p>Abhi tak koi stock data nahi hai.</p>";
-          return;
-        }
-        let html = `
-          <table class="summary-table">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>In</th>
-                <th>Out</th>
-                <th>Bal</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-        resData.data.forEach(row => {
-          html += `
-            <tr>
-              <td><b>${row.item}</b></td>
-              <td>${row.totalIn}</td>
-              <td>${row.totalOut}</td>
-              <td class="balance-badge">${row.balance}</td>
-            </tr>
-          `;
+        const vSel = document.getElementById("vehicleInput");
+        vSel.innerHTML = '<option value="">-- Select Vehicle --</option>';
+        data.vehicles.forEach(v => {
+          const opt = document.createElement("option");
+          opt.value = v;
+          opt.innerText = v;
+          vSel.appendChild(opt);
         });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-      } else {
-        container.innerHTML = "<p style='color:red;'>Error: " + resData.message + "</p>";
       }
-    } catch (e) {
-      container.innerHTML = "<p style='color:red;'>Fetch error: " + e.message + "</p>";
-    }
+    } catch (e) { console.log(e); }
   }
 
-  if (SCRIPT_URL) {
-    loadProducts();
-    loadVehicles();
-  }
-
-  function onBarcodeScan(val) {
-    const match = productList.find(p => String(p.barcode).trim() === String(val).trim());
-    if (match) {
-      document.getElementById("productSelect").value = match.name;
-      document.getElementById("hsnInput").value = match.hsn;
-      document.getElementById("rateInput").value = match.rate;
+  // Instant Barcode Lookup (Realtime typing)
+  document.getElementById("barcodeInput").addEventListener("input", function() {
+    const val = this.value.trim().toLowerCase();
+    if (!val) return;
+    if (barcodeMap.has(val)) {
+      const p = barcodeMap.get(val);
+      document.getElementById("productSelect").value = p.name;
+      document.getElementById("hsnInput").value = p.hsn;
+      document.getElementById("rateInput").value = p.rate;
       calculateTotal();
     }
-  }
+  });
 
   function onProductSelect(val) {
-    const match = productList.find(p => p.name === val);
-    if (match) {
-      document.getElementById("barcodeInput").value = match.barcode;
-      document.getElementById("hsnInput").value = match.hsn;
-      document.getElementById("rateInput").value = match.rate;
+    const p = productList.find(x => x.name === val);
+    if (p) {
+      document.getElementById("barcodeInput").value = p.barcode;
+      document.getElementById("hsnInput").value = p.hsn;
+      document.getElementById("rateInput").value = p.rate;
       calculateTotal();
     }
   }
@@ -467,162 +402,194 @@
     document.getElementById("totalAmountInput").value = (qty * rate).toFixed(2);
   }
 
-  // Universal Scanner Function
+  // Closing Report View[cite: 1]
+  async function loadClosingData() {
+    const container = document.getElementById("closingContent");
+    if (!SCRIPT_URL) { container.innerHTML = "Save URL first!"; return; }
+    container.innerHTML = "Fetching closing records...";
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData`);
+      const resData = await res.json();
+      if (resData.status === "success") {
+        closingRawData = resData.data;
+        renderClosingReport();
+      }
+    } catch (e) { container.innerHTML = "Error loading closing data."; }
+  }
+
+  function renderClosingReport() {
+    const container = document.getElementById("closingContent");
+    const sDate = document.getElementById("closingStartDate").value;
+    const eDate = document.getElementById("closingEndDate").value;
+
+    let filtered = closingRawData;
+    if (sDate) filtered = filtered.filter(r => r.date >= sDate);
+    if (eDate) filtered = filtered.filter(r => r.date <= eDate);
+
+    if (filtered.length === 0) {
+      container.innerHTML = "<p>Selected date range mein data nahi mila.</p>";
+      return;
+    }
+
+    const groups = {};
+    filtered.forEach(r => {
+      const comp = r.company || "OTHER";
+      const veh = r.vehicle || "UNKNOWN";
+      if (!groups[comp]) groups[comp] = { total: 0, vehicles: {} };
+      groups[comp].total += r.amount;
+      groups[comp].vehicles[veh] = (groups[comp].vehicles[veh] || 0) + r.amount;
+    });
+
+    let html = `<table class="custom-table">
+      <thead><tr><th>Company / Vehicle</th><th>Total Amount (₹)</th></tr></thead>
+      <tbody>`;
+
+    for (const comp in groups) {
+      html += `
+        <tr class="company-header-row">
+          <td>${comp}</td>
+          <td>₹${groups[comp].total.toLocaleString('en-IN')}</td>
+        </tr>`;
+      for (const veh in groups[comp].vehicles) {
+        html += `
+          <tr class="vehicle-row">
+            <td>${veh}</td>
+            <td>₹${groups[comp].vehicles[veh].toLocaleString('en-IN')}</td>
+          </tr>`;
+      }
+    }
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+  }
+
+  // Stock Summary Table
+  async function loadSummary() {
+    const container = document.getElementById("summaryContent");
+    if (!SCRIPT_URL) return;
+    container.innerHTML = "Loading...";
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getSummary`);
+      const resData = await res.json();
+      if (resData.status === "success") {
+        let grandTotal = 0;
+        let html = `<table class="custom-table">
+          <thead><tr><th>Item</th><th>In</th><th>Out</th><th>Bal</th><th>Value (₹)</th></tr></thead><tbody>`;
+        resData.data.forEach(r => {
+          grandTotal += r.totalValue;
+          html += `<tr><td><b>${r.item}</b></td><td>${r.totalIn}</td><td>${r.totalOut}</td><td style="color:green;font-weight:bold;">${r.balance}</td><td>₹${r.totalValue.toLocaleString('en-IN')}</td></tr>`;
+        });
+        html += `<tr style="background:#eef2f5;font-weight:bold;"><td colspan="4" style="text-align:right;">Grand Total:</td><td style="color:#d9534f;">₹${grandTotal.toLocaleString('en-IN')}</td></tr></tbody></table>`;
+        container.innerHTML = html;
+      }
+    } catch(e) { container.innerHTML = "Error loading summary"; }
+  }
+
+  if (SCRIPT_URL) fetchMasterData();
+
+  // Scanner
   function startScanner(target) {
     activeScanTarget = target;
     const elemId = (target === "MODAL") ? "modal-reader" : "reader";
     const containerId = (target === "MODAL") ? "modal-reader-container" : "reader-container";
-
     const container = document.getElementById(containerId);
     container.style.display = "block";
-
-    if (html5QrCode) {
-      html5QrCode.stop().then(() => {
-        initScanner(elemId, container);
-      }).catch(() => {
-        initScanner(elemId, container);
-      });
-    } else {
-      initScanner(elemId, container);
-    }
-  }
-
-  function initScanner(elemId, container) {
     html5QrCode = new Html5Qrcode(elemId);
     html5QrCode.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 250, height: 150 } },
-      (decodedText) => {
+      { facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
+      (decoded) => {
         if (activeScanTarget === "MODAL") {
-          document.getElementById("newProdBarcode").value = decodedText;
+          document.getElementById("newProdBarcode").value = decoded;
         } else {
-          document.getElementById("barcodeInput").value = decodedText;
-          onBarcodeScan(decodedText);
+          document.getElementById("barcodeInput").value = decoded;
+          document.getElementById("barcodeInput").dispatchEvent(new Event("input"));
         }
         stopScanner();
-      },
-      () => {}
-    ).catch(err => {
-      alert("Camera permission allow karein: " + err);
-      container.style.display = "none";
-    });
+      }, () => {}
+    );
   }
 
   function stopScanner() {
-    if (html5QrCode) {
-      html5QrCode.stop().then(() => {
-        document.getElementById("reader-container").style.display = "none";
-        document.getElementById("modal-reader-container").style.display = "none";
-      }).catch(() => {
-        document.getElementById("reader-container").style.display = "none";
-        document.getElementById("modal-reader-container").style.display = "none";
-      });
-    } else {
-      document.getElementById("reader-container").style.display = "none";
-      document.getElementById("modal-reader-container").style.display = "none";
-    }
+    if (html5QrCode) html5QrCode.stop();
+    document.getElementById("reader-container").style.display = "none";
+    document.getElementById("modal-reader-container").style.display = "none";
   }
 
-  // Modals
   function openAddProductModal() { document.getElementById("addProductModal").style.display = "flex"; }
-  function closeAddProductModal() { 
-    stopScanner();
-    document.getElementById("addProductModal").style.display = "none"; 
-  }
+  function closeAddProductModal() { stopScanner(); document.getElementById("addProductModal").style.display = "none"; }
   function openAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "flex"; }
   function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
   function openAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "flex"; }
   function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
 
+  // Superfast Add Product
   async function saveNewProduct() {
-    if (!SCRIPT_URL) { alert("Pehle setting se URL save karein!"); return; }
-    const name = document.getElementById("newProdName").value.trim();
-    if (!name) { alert("Product name likhna zaroori hai!"); return; }
+    const btn = document.getElementById("saveProdBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving...";
 
-    const payload = {
+    const newProd = {
       type: "ADD_PRODUCT",
-      barcode: document.getElementById("newProdBarcode").value,
-      itemName: name,
-      hsn: document.getElementById("newProdHsn").value,
-      rate: document.getElementById("newProdRate").value
+      barcode: document.getElementById("newProdBarcode").value.trim(),
+      itemName: document.getElementById("newProdName").value.trim(),
+      hsn: document.getElementById("newProdHsn").value.trim(),
+      rate: Number(document.getElementById("newProdRate").value || 0)
     };
 
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
-      if (result.status === "success") {
-        alert("✅ Product add ho gaya!");
-        closeAddProductModal();
-        document.getElementById("newProdBarcode").value = "";
-        document.getElementById("newProdName").value = "";
-        document.getElementById("newProdHsn").value = "";
-        document.getElementById("newProdRate").value = "";
-        loadProducts();
-      } else {
-        alert("Error: " + result.message);
-      }
-    } catch (err) {
-      alert("Error: " + err.message);
-    }
+    // Optimistic UI update: local cache me turant jod lo bina wait kiye
+    productList.push(newProd);
+    buildBarcodeMap();
+    const sel = document.getElementById("productSelect");
+    const opt = document.createElement("option");
+    opt.value = newProd.itemName;
+    opt.innerText = newProd.itemName;
+    sel.appendChild(opt);
+
+    closeAddProductModal();
+    btn.disabled = false;
+    btn.innerText = "Save";
+
+    // Background sync
+    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(newProd) });
   }
 
+  // Superfast Add Vehicle
   async function saveNewVehicle() {
-    if (!SCRIPT_URL) { alert("Pehle setting se URL save karein!"); return; }
+    const btn = document.getElementById("saveVehBtn");
     const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
-    if (!vNo) { alert("Vehicle number likhna zaroori hai!"); return; }
+    if (!vNo) return;
+    btn.disabled = true;
+    btn.innerText = "Saving...";
 
-    const payload = { type: "ADD_VEHICLE", vehicleNo: vNo };
+    const vSel = document.getElementById("vehicleInput");
+    const opt = document.createElement("option");
+    opt.value = vNo;
+    opt.innerText = vNo;
+    vSel.appendChild(opt);
 
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
-      if (result.status === "success") {
-        alert("✅ Vehicle add ho gaya!");
-        closeAddVehicleModal();
-        document.getElementById("newVehicleNo").value = "";
-        loadVehicles();
-      } else {
-        alert("Error: " + result.message);
-      }
-    } catch (err) {
-      alert("Error: " + err.message);
-    }
+    closeAddVehicleModal();
+    btn.disabled = false;
+    btn.innerText = "Save";
+
+    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ type: "ADD_VEHICLE", vehicleNo: vNo }) });
   }
 
   function saveNewCompany() {
-    const compName = document.getElementById("newCompanyName").value.trim().toUpperCase();
-    if (!compName) { alert("Company name likhna zaroori hai!"); return; }
-    const compSel = document.getElementById("companyInput");
-    const opt = document.createElement("option");
-    opt.value = compName;
-    opt.innerText = compName;
-    compSel.appendChild(opt);
-    compSel.value = compName;
+    const comp = document.getElementById("newCompanyName").value.trim().toUpperCase();
+    if (!comp) return;
+    const opt = document.createElement("option"); opt.value = comp; opt.innerText = comp;
+    document.getElementById("companyInput").appendChild(opt);
+    document.getElementById("companyInput").value = comp;
     closeAddCompanyModal();
-    document.getElementById("newCompanyName").value = "";
   }
 
-  // Submit Main Entry
+  // Fast Form Submit
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!SCRIPT_URL) {
-      alert("Pehle setting icon se apna Apps Script URL save karein!");
-      return;
-    }
-
     const btn = document.getElementById("submitBtn");
     const msg = document.getElementById("msg");
     btn.disabled = true;
-    msg.innerText = "⏳ Saving entry to Google Sheet...";
-    msg.style.color = "#007bff";
+    btn.innerText = "Saving...";
+    msg.innerText = "";
 
     const payload = {
       type: currentTab,
@@ -640,36 +607,20 @@
     };
 
     try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
-
-      if (result.status === "success") {
-        msg.innerText = "✅ " + result.message;
-        msg.style.color = "green";
-        document.getElementById("stockForm").reset();
-        updateClock();
-        if (currentTab === "OUT") {
-          document.getElementById("partyGroup").classList.add("hidden");
-          document.getElementById("vehicleGroup").classList.remove("hidden");
-          document.getElementById("companyGroup").classList.remove("hidden");
-          document.getElementById("driverGroup").classList.remove("hidden");
-        }
-      } else {
-        msg.innerText = "❌ Failed: " + result.message;
-        msg.style.color = "red";
-      }
-    } catch (err) {
-      msg.innerText = "❌ Request Error: " + err.message;
+      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+      const data = await res.json();
+      msg.innerText = "✅ " + data.message;
+      msg.style.color = "green";
+      document.getElementById("stockForm").reset();
+      updateClock();
+    } catch(err) {
+      msg.innerText = "❌ Error: " + err.message;
       msg.style.color = "red";
     } finally {
       btn.disabled = false;
+      btn.innerText = "Save Entry";
     }
   });
 </script>
-
 </body>
 </html>
