@@ -6,7 +6,7 @@
   <title>Fleet & Inventory Pro</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
     body { background: #eef2f5; margin: 0; padding: 12px; }
     .container { max-width: 500px; margin: auto; background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     
@@ -40,6 +40,7 @@
     .custom-table th, .custom-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
     .custom-table th { background: #007bff; color: white; }
     
+    /* Screenshot Style Layout */
     .company-header-row { background: #ffff00; font-weight: bold; color: #000; font-size: 13px; }
     .vehicle-row { background: #ffffff; }
     .vehicle-row td:first-child { padding-left: 20px; color: #333; }
@@ -47,6 +48,19 @@
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 18px; border-radius: 10px; width: 92%; max-width: 380px; }
     .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 12px; }
+
+    /* Print Styles */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .container { max-width: 100%; box-shadow: none; padding: 0; }
+      .config-box, .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, .refresh-btn {
+        display: none !important;
+      }
+      .view-box { display: block !important; }
+      .custom-table { width: 100%; border: 1px solid #000; }
+      .custom-table th, .custom-table td { border: 1px solid #000; padding: 6px; color: #000; }
+      .company-header-row { background: #ffff00 !important; -webkit-print-color-adjust: exact; }
+    }
   </style>
 </head>
 <body>
@@ -61,28 +75,28 @@
     </div>
   </details>
 
-  <!-- Tabs -->
+  <!-- 4 Navigation Tabs -->
   <div class="tab-header">
     <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">Stock In</button>
     <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">Stock Out</button>
     <button class="tab-btn" id="tabSummaryBtn" onclick="switchTab('SUMMARY')">📊 Stock Summary</button>
-    <button class="tab-btn" id="tabClosingBtn" onclick="switchTab('CLOSING')">📑 Month Closing</button>
+    <button class="tab-btn" id="tabClosingBtn" onclick="switchTab('CLOSING')">🔒 Month Closing</button>
   </div>
 
-  <!-- Camera -->
+  <!-- Camera Scanner Box -->
   <div id="reader-container">
     <div id="reader"></div>
     <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
   </div>
 
-  <!-- Entry Form -->
+  <!-- Entry Form (IN & OUT) -->
   <form id="stockForm">
     <div class="form-group">
       <label>Date & Time</label>
       <input type="text" id="dateTimeDisplay" readonly style="background:#e9ecef;">
     </div>
 
-    <!-- Fast Barcode Input -->
+    <!-- Instant Barcode Input -->
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
@@ -165,15 +179,22 @@
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h3 style="margin:0; font-size:14px;">Live Stock & Total Value</h3>
-      <button onclick="loadSummary()" style="padding:4px 8px; font-size:11px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">🔄 Refresh</button>
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="btn-print" onclick="window.print()" style="padding:4px 8px; font-size:11px; background:#17a2b8; color:white; border:none; border-radius:4px; cursor:pointer;">🖨️ Print</button>
+        <button type="button" class="refresh-btn" onclick="loadSummary()" style="padding:4px 8px; font-size:11px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">🔄 Refresh</button>
+      </div>
     </div>
     <div id="summaryContent" style="margin-top:10px;">Loading stock summary...</div>
   </div>
 
-  <!-- Month Closing Report View[cite: 1] -->
+  <!-- Month Closing Report View (Screenshot Style + Print)[cite: 1] -->
   <div class="view-box" id="closingView">
-    <h3 style="margin:0 0 10px 0; font-size:14px;">Month Closing Report</h3>
-    <div style="display:flex; gap:8px; margin-bottom:10px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 style="margin:0; font-size:14px;">Month Closing Report</h3>
+      <button type="button" class="btn-print" onclick="window.print()" style="padding:4px 10px; font-size:11px; background:#17a2b8; color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">🖨️ Print / PDF</button>
+    </div>
+    
+    <div id="closingDateFilters" style="display:flex; gap:8px; margin-bottom:10px;">
       <div style="flex:1;">
         <label>Start Date</label>
         <input type="date" id="closingStartDate" onchange="renderClosingReport()">
@@ -187,6 +208,20 @@
   </div>
 
   <div id="msg"></div>
+</div>
+
+<!-- Modal: Password Protection -->
+<div class="modal" id="authModal">
+  <div class="modal-content" style="text-align:center;">
+    <h3 style="margin-top:0;">🔒 Security Lock</h3>
+    <p style="font-size:13px; color:#555; margin-bottom:12px;">Month Closing dekhne ke liye password daalein:</p>
+    <input type="password" id="closingPasswordInput" placeholder="Password daalein" style="text-align:center; font-size:16px; margin-bottom:12px;" autofocus>
+    <div style="display:flex; gap:8px;">
+      <button type="button" onclick="verifyPassword()" style="flex:1; background:#007bff; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Unlock</button>
+      <button type="button" onclick="cancelPassword()" style="flex:1; background:#6c757d; color:#fff; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;">Cancel</button>
+    </div>
+    <div id="authErrMsg" style="color:red; font-size:12px; margin-top:8px;"></div>
+  </div>
 </div>
 
 <!-- Modal: Add Product -->
@@ -256,6 +291,10 @@
   let html5QrCode = null;
   let activeScanTarget = "MAIN";
 
+  // Password Lock Settings
+  const CLOSING_PASSWORD = "425151"; // Yahan password change kar sakte hain
+  let isClosingUnlocked = false;
+
   const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
 
   function buildBarcodeMap() {
@@ -278,7 +317,7 @@
     if (!val) return;
     localStorage.setItem("sheet_script_url", val);
     SCRIPT_URL = val;
-    alert("Saved!");
+    alert("Script URL Saved!");
     document.getElementById("configDropdown").removeAttribute("open");
     fetchMasterData();
   }
@@ -297,6 +336,14 @@
   updateClock();
 
   function switchTab(type) {
+    // Password protection check for Month Closing
+    if (type === "CLOSING" && !isClosingUnlocked) {
+      document.getElementById("authErrMsg").innerText = "";
+      document.getElementById("closingPasswordInput").value = "";
+      document.getElementById("authModal").style.display = "flex";
+      return;
+    }
+
     currentTab = type;
     document.getElementById("tabInBtn").classList.toggle("active", type === "IN");
     document.getElementById("tabOutBtn").classList.toggle("active", type === "OUT");
@@ -341,7 +388,27 @@
     }
   }
 
-  // Fast One-time Initial Data Fetch
+  function verifyPassword() {
+    const inputPass = document.getElementById("closingPasswordInput").value;
+    if (inputPass === CLOSING_PASSWORD) {
+      isClosingUnlocked = true;
+      document.getElementById("authModal").style.display = "none";
+      switchTab("CLOSING");
+    } else {
+      document.getElementById("authErrMsg").innerText = "❌ Galat Password! Access Denied.";
+      document.getElementById("closingPasswordInput").value = "";
+    }
+  }
+
+  document.getElementById("closingPasswordInput").addEventListener("keyup", function(e) {
+    if (e.key === "Enter") verifyPassword();
+  });
+
+  function cancelPassword() {
+    document.getElementById("authModal").style.display = "none";
+  }
+
+  // Fast One-time Master Data Fetch
   async function fetchMasterData() {
     if (!SCRIPT_URL) return;
     try {
@@ -373,7 +440,7 @@
     } catch (e) { console.log(e); }
   }
 
-  // Instant Barcode Lookup (Realtime typing)
+  // Instant Manual Barcode Typing Match
   document.getElementById("barcodeInput").addEventListener("input", function() {
     const val = this.value.trim().toLowerCase();
     if (!val) return;
@@ -402,7 +469,7 @@
     document.getElementById("totalAmountInput").value = (qty * rate).toFixed(2);
   }
 
-  // Closing Report View[cite: 1]
+  // Month Closing Load & Render (Exact Screenshot Layout + Date Range)[cite: 1]
   async function loadClosingData() {
     const container = document.getElementById("closingContent");
     if (!SCRIPT_URL) { container.innerHTML = "Save URL first!"; return; }
@@ -422,12 +489,22 @@
     const sDate = document.getElementById("closingStartDate").value;
     const eDate = document.getElementById("closingEndDate").value;
 
-    let filtered = closingRawData;
-    if (sDate) filtered = filtered.filter(r => r.date >= sDate);
-    if (eDate) filtered = filtered.filter(r => r.date <= eDate);
+    let filtered = closingRawData.filter(r => {
+      if (!r.date) return false;
+      let rowDate = r.date;
+      if (rowDate.includes("/")) {
+        let p = rowDate.split(" ")[0].split("/");
+        if (p.length === 3 && p[2].length === 4) {
+          rowDate = `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+        }
+      }
+      if (sDate && rowDate < sDate) return false;
+      if (eDate && rowDate > eDate) return false;
+      return true;
+    });
 
     if (filtered.length === 0) {
-      container.innerHTML = "<p>Selected date range mein data nahi mila.</p>";
+      container.innerHTML = "<p style='color: #666; font-size: 13px;'>Selected date range mein data nahi mila.</p>";
       return;
     }
 
@@ -521,7 +598,7 @@
   function openAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "flex"; }
   function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
 
-  // Superfast Add Product
+  // Fast Add Product (Optimistic UI)
   async function saveNewProduct() {
     const btn = document.getElementById("saveProdBtn");
     btn.disabled = true;
@@ -535,7 +612,6 @@
       rate: Number(document.getElementById("newProdRate").value || 0)
     };
 
-    // Optimistic UI update: local cache me turant jod lo bina wait kiye
     productList.push(newProd);
     buildBarcodeMap();
     const sel = document.getElementById("productSelect");
@@ -548,11 +624,10 @@
     btn.disabled = false;
     btn.innerText = "Save";
 
-    // Background sync
     await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(newProd) });
   }
 
-  // Superfast Add Vehicle
+  // Fast Add Vehicle
   async function saveNewVehicle() {
     const btn = document.getElementById("saveVehBtn");
     const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
@@ -582,7 +657,7 @@
     closeAddCompanyModal();
   }
 
-  // Fast Form Submit
+  // Ultra-fast Submit
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
