@@ -8,7 +8,7 @@
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
     body { background: #eef2f5; margin: 0; padding: 12px; }
-    .container { max-width: 500px; margin: auto; background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .container { max-width: 600px; margin: auto; background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     
     .config-box { background: #f8f9fa; border: 1px dashed #007bff; border-radius: 8px; padding: 10px; margin-bottom: 12px; }
     .config-box summary { font-size: 13px; font-weight: bold; color: #007bff; cursor: pointer; }
@@ -36,28 +36,38 @@
     #msg { margin-top: 10px; text-align: center; font-weight: bold; font-size: 13px; }
 
     .view-box { display: none; }
-    .custom-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+    .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
     .custom-table th, .custom-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
     .custom-table th { background: #007bff; color: white; }
     
-    .company-header-row { background: #ffff00; font-weight: bold; color: #000; font-size: 13px; }
-    .vehicle-row { background: #ffffff; }
-    .vehicle-row td:first-child { padding-left: 20px; color: #333; }
+    /* Structured Report Styling */
+    .company-title-banner { background: #003366; color: #fff; padding: 8px 12px; font-size: 14px; font-weight: bold; border-radius: 4px; margin-top: 15px; }
+    .vehicle-header-bar { background: #e9ecef; color: #000; font-weight: bold; padding: 6px 10px; font-size: 13px; border-left: 4px solid #007bff; margin-top: 10px; }
+    .vehicle-subtotal-row { background: #fdfdfe; font-weight: bold; color: #0056b3; }
+    .company-total-banner { background: #e2e3e5; font-weight: bold; color: #000; padding: 6px 10px; text-align: right; border: 1px solid #ccc; margin-top: 4px; }
     
+    /* Final Summary Styling (Yellow Highlighted as requested) */
+    .summary-heading { margin-top: 25px; font-size: 15px; font-weight: bold; color: #222; text-transform: uppercase; border-bottom: 2px solid #333; padding-bottom: 4px; }
+    .company-summary-row { background: #ffff00; font-weight: bold; color: #000; }
+    .vehicle-summary-row { background: #ffffff; }
+    .vehicle-summary-row td:first-child { padding-left: 20px; color: #444; }
+
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 18px; border-radius: 10px; width: 92%; max-width: 380px; }
     .btn-add-mini { background: none; border: none; color: #007bff; font-weight: bold; cursor: pointer; font-size: 12px; }
 
+    /* Print Preview Optimizations */
     @media print {
       body { background: #fff; padding: 0; }
-      .container { max-width: 100%; box-shadow: none; padding: 0; }
+      .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
       .config-box, .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, .refresh-btn {
         display: none !important;
       }
       .view-box { display: block !important; }
-      .custom-table { width: 100%; border: 1px solid #000; }
-      .custom-table th, .custom-table td { border: 1px solid #000; padding: 6px; color: #000; }
-      .company-header-row { background: #ffff00 !important; -webkit-print-color-adjust: exact; }
+      .custom-table { width: 100%; border: 1px solid #000; font-size: 11px; }
+      .custom-table th, .custom-table td { border: 1px solid #000; padding: 4px 6px; color: #000; }
+      .company-title-banner { background: #ddd !important; color: #000 !important; border: 1px solid #000; -webkit-print-color-adjust: exact; }
+      .company-summary-row { background: #ffff00 !important; -webkit-print-color-adjust: exact; }
     }
   </style>
 </head>
@@ -185,14 +195,14 @@
     <div id="summaryContent" style="margin-top:10px;">Loading stock summary...</div>
   </div>
 
-  <!-- Month Closing Report View -->
+  <!-- Detailed Month Closing Report View with Final Summary -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="margin:0; font-size:14px;">Month Closing Report</h3>
-      <button type="button" class="btn-print" onclick="window.print()" style="padding:4px 10px; font-size:11px; background:#17a2b8; color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">🖨️ Print / PDF</button>
+      <h3 style="margin:0; font-size:15px;">Monthly Vehicle Consumption Report</h3>
+      <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 12px; font-size:12px; background:#17a2b8; color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">🖨️ Print / Save PDF</button>
     </div>
     
-    <div id="closingDateFilters" style="display:flex; gap:6px; align-items:flex-end; margin-bottom:10px;">
+    <div id="closingDateFilters" style="display:flex; gap:6px; align-items:flex-end; margin-bottom:12px;">
       <div style="flex:1;">
         <label>Start Date</label>
         <input type="date" id="closingStartDate" onchange="renderClosingReport()">
@@ -203,6 +213,8 @@
       </div>
       <button type="button" onclick="clearDateFilters()" style="padding:9px 10px; background:#6c757d; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">All</button>
     </div>
+
+    <!-- Container where dynamic report will render -->
     <div id="closingContent">Loading closing data...</div>
   </div>
 
@@ -290,8 +302,11 @@
   let html5QrCode = null;
   let activeScanTarget = "MAIN";
 
-  // Password Lock Settings
+  // **********************************************
+  // PASSWORD SETTING:
   const CLOSING_PASSWORD = "425151"; 
+  // **********************************************
+
   let isClosingUnlocked = false;
 
   const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
@@ -479,11 +494,9 @@
     } catch (e) { container.innerHTML = "Error loading closing data."; }
   }
 
-  // Universal Date Helper
   function normalizeToISODate(val) {
     if (!val) return "";
     let str = String(val).trim();
-    
     let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
     if (m1) return `${m1[1]}-${String(m1[2]).padStart(2, '0')}-${String(m1[3]).padStart(2, '0')}`;
 
@@ -497,10 +510,10 @@
       let d = String(parsedD.getDate()).padStart(2, '0');
       return `${y}-${m}-${d}`;
     }
-
     return str.split(" ")[0];
   }
 
+  // DETAILED VEHICLE-WISE REPORT WITH FINAL SUMMARY
   function renderClosingReport() {
     const container = document.getElementById("closingContent");
     const sDate = document.getElementById("closingStartDate").value;
@@ -527,36 +540,129 @@
       return;
     }
 
-    const groups = {};
+    // Step 1: Hierarchy Tree Build karein: Company -> Vehicle -> List of Items
+    const tree = {};
+    const summaryData = {};
+    let grandOverallTotal = 0;
+
     filtered.forEach(r => {
       const comp = String(r.company || "OTHER").trim().toUpperCase();
       const veh = String(r.vehicle || "UNKNOWN").trim().toUpperCase();
       const amt = Number(r.amount) || 0;
 
-      if (!groups[comp]) groups[comp] = { total: 0, vehicles: {} };
-      groups[comp].total += amt;
-      groups[comp].vehicles[veh] = (groups[comp].vehicles[veh] || 0) + amt;
+      if (!tree[comp]) tree[comp] = {};
+      if (!tree[comp][veh]) tree[comp][veh] = { items: [], totalAmount: 0 };
+
+      tree[comp][veh].items.push(r);
+      tree[comp][veh].totalAmount += amt;
+
+      // Summary structure
+      if (!summaryData[comp]) summaryData[comp] = { total: 0, vehicles: {} };
+      summaryData[comp].total += amt;
+      summaryData[comp].vehicles[veh] = (summaryData[comp].vehicles[veh] || 0) + amt;
+      grandOverallTotal += amt;
     });
 
-    let html = `<table class="custom-table">
-      <thead><tr><th>Company / Vehicle</th><th>Total Amount (₹)</th></tr></thead>
-      <tbody>`;
+    let html = `<div>`;
 
-    for (const comp in groups) {
-      html += `
-        <tr class="company-header-row">
-          <td>${comp}</td>
-          <td>₹${groups[comp].total.toLocaleString('en-IN')}</td>
-        </tr>`;
-      for (const veh in groups[comp].vehicles) {
+    // Part A: Detailed Vehicle-wise sections for each Company
+    for (const comp in tree) {
+      let compGrandTotal = 0;
+      html += `<div class="company-title-banner">🏢 ${comp}</div>`;
+
+      for (const veh in tree[comp]) {
+        const vData = tree[comp][veh];
+        compGrandTotal += vData.totalAmount;
+
         html += `
-          <tr class="vehicle-row">
+          <div class="vehicle-header-bar">🚛 Vehicle: ${veh}</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width:20%;">Date</th>
+                <th>Item / Spare Part Name</th>
+                <th style="width:12%; text-align:right;">Qty</th>
+                <th style="width:18%; text-align:right;">Rate (₹)</th>
+                <th style="width:20%; text-align:right;">Amount (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        // Har gaadi ke saare items lagatar aayenge
+        vData.items.forEach(it => {
+          html += `
+            <tr>
+              <td>${it.displayDate || it.date}</td>
+              <td><b>${it.item}</b></td>
+              <td style="text-align:right;">${it.qty}</td>
+              <td style="text-align:right;">₹${it.rate.toLocaleString('en-IN')}</td>
+              <td style="text-align:right; font-weight:600;">₹${it.amount.toLocaleString('en-IN')}</td>
+            </tr>
+          `;
+        });
+
+        // Vehicle Subtotal Row
+        html += `
+            <tr class="vehicle-subtotal-row">
+              <td colspan="4" style="text-align:right;">Vehicle ${veh} Total:</td>
+              <td style="text-align:right; font-weight:bold; color:#0056b3;">₹${vData.totalAmount.toLocaleString('en-IN')}</td>
+            </tr>
+          </tbody>
+        </table>
+        `;
+      }
+
+      // Company Total Banner
+      html += `
+        <div class="company-total-banner">
+          Total Consumption for ${comp}: <span style="color:#d9534f; font-size:14px;">₹${compGrandTotal.toLocaleString('en-IN')}</span>
+        </div>
+      `;
+    }
+
+    // Part B: Final Summary Table (Yellow Highlight Screenshot style at the end)
+    html += `
+      <div class="summary-heading">📌 Month Closing Summary (Company & Vehicle Wise)</div>
+      <table class="custom-table" style="margin-top:10px;">
+        <thead>
+          <tr>
+            <th>Company / Vehicle</th>
+            <th style="text-align:right;">Total Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (const comp in summaryData) {
+      // Company row (Yellow highlighted)
+      html += `
+        <tr class="company-summary-row">
+          <td>${comp}</td>
+          <td style="text-align:right;">₹${summaryData[comp].total.toLocaleString('en-IN')}</td>
+        </tr>
+      `;
+      // Under Company: Each Vehicle
+      for (const veh in summaryData[comp].vehicles) {
+        html += `
+          <tr class="vehicle-summary-row">
             <td>${veh}</td>
-            <td>₹${groups[comp].vehicles[veh].toLocaleString('en-IN')}</td>
-          </tr>`;
+            <td style="text-align:right;">₹${summaryData[comp].vehicles[veh].toLocaleString('en-IN')}</td>
+          </tr>
+        `;
       }
     }
-    html += `</tbody></table>`;
+
+    // Grand Total Row
+    html += `
+        <tr style="background:#343a40; color:#fff; font-weight:bold;">
+          <td>GRAND TOTAL CONSUMPTION:</td>
+          <td style="text-align:right; color:#28a745; font-size:13px;">₹${grandOverallTotal.toLocaleString('en-IN')}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>`;
+
     container.innerHTML = html;
   }
 
