@@ -4,11 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fleet & Inventory Pro</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
     body { background: #eef2f5; margin: 0; padding: 12px; }
     .container { max-width: 600px; margin: auto; background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     
+    .config-box { background: #f8f9fa; border: 1px dashed #007bff; border-radius: 8px; padding: 10px; margin-bottom: 12px; }
+    .config-box summary { font-size: 13px; font-weight: bold; color: #007bff; cursor: pointer; }
+    .config-box input { margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
     .tab-header { display: flex; margin-bottom: 14px; border-radius: 8px; overflow: hidden; border: 2px solid #007bff; }
     .tab-btn { flex: 1; padding: 9px 2px; text-align: center; border: none; background: #fff; color: #007bff; font-weight: bold; font-size: 11px; cursor: pointer; }
     .tab-btn.active { background: #007bff; color: #fff; }
@@ -25,7 +30,7 @@
     #reader { width: 100%; }
     .btn-close-scan { margin-top: 6px; background: #dc3545; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; }
 
-    .btn-submit { width: 100%; padding: 12px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+    .btn-submit { width: 100%; padding: 12px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 8px; transition: background 0.3s; }
     .btn-submit:disabled { background: #6c757d; cursor: not-allowed; opacity: 0.7; }
     .hidden { display: none; }
     #msg { margin-top: 10px; text-align: center; font-weight: bold; font-size: 13px; }
@@ -52,7 +57,7 @@
     @media print {
       body { background: #fff; padding: 0; }
       .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
-      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, .refresh-btn {
+      .config-box, .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, .refresh-btn {
         display: none !important;
       }
       .view-box { display: block !important; }
@@ -66,7 +71,16 @@
 <body>
 
 <div class="container">
-  <!-- Navigation Tabs -->
+  <!-- Settings URL -->
+  <details class="config-box" id="configDropdown">
+    <summary>⚙️ Apps Script Web App URL Setting</summary>
+    <div>
+      <input type="text" id="scriptUrlInput" placeholder="Apps Script Web App URL paste karein">
+      <button type="button" onclick="saveScriptUrl()" style="margin-top: 6px; width: 100%; background: #007bff; color: white; border: none; padding: 7px; border-radius: 4px; font-weight: bold; cursor: pointer;">Save URL</button>
+    </div>
+  </details>
+
+  <!-- 4 Navigation Tabs -->
   <div class="tab-header">
     <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">Stock In</button>
     <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">Stock Out</button>
@@ -87,6 +101,7 @@
       <input type="text" id="dateTimeDisplay" readonly style="background:#e9ecef;">
     </div>
 
+    <!-- Instant Barcode Input -->
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
@@ -177,7 +192,7 @@
     <div id="summaryContent" style="margin-top:10px;">Loading stock summary...</div>
   </div>
 
-  <!-- Detailed Month Closing Report View -->
+  <!-- Detailed Month Closing Report View with Final Summary -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h3 style="margin:0; font-size:15px;">Monthly Vehicle Consumption Report</h3>
@@ -274,26 +289,20 @@
   </div>
 </div>
 
-<!-- Non-blocking Camera Library Script -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
-
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
-
+  let SCRIPT_URL = localStorage.getItem("sheet_script_url") || "";
   let currentTab = "IN";
-  let productList = [];
-  try {
-    productList = JSON.parse(localStorage.getItem("cached_products") || "[]");
-  } catch(e) { productList = []; }
-
+  let productList = JSON.parse(localStorage.getItem("cached_products") || "[]");
   let barcodeMap = new Map();
   let closingRawData = [];
   let html5QrCode = null;
   let activeScanTarget = "MAIN";
 
+  // PASSWORD LOCK SETTING:
   const CLOSING_PASSWORD = "425151"; 
   let isClosingUnlocked = false;
 
+  // DUPLICATE GUARD STATE (Frontend 10-Second Cooldown)
   let isSubmitting = false;
   let lastSubmissionPayload = null;
   let lastSubmissionTime = 0;
@@ -311,4 +320,579 @@
   function onVehicleChange(vNo) {
     const cleanNo = vNo.trim().toUpperCase();
     const compSel = document.getElementById("companyInput");
-    if (!cleanNo) { compSel.value = ""; return
+    if (!cleanNo) { compSel.value = ""; return; }
+    compSel.value = comraoVehicles.includes(cleanNo) ? "COMRAO PVT. LTD" : "GOKULESHWAR RD PVT. LTD";
+  }
+
+  function saveScriptUrl() {
+    const val = document.getElementById("scriptUrlInput").value.trim();
+    if (!val) return;
+    localStorage.setItem("sheet_script_url", val);
+    SCRIPT_URL = val;
+    alert("Script URL Saved!");
+    document.getElementById("configDropdown").removeAttribute("open");
+    fetchMasterData();
+  }
+
+  if (SCRIPT_URL) {
+    document.getElementById("scriptUrlInput").value = SCRIPT_URL;
+  } else {
+    document.getElementById("configDropdown").setAttribute("open", true);
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById("dateTimeDisplay").value = now.toLocaleString('en-GB');
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function switchTab(type) {
+    if (type === "CLOSING" && !isClosingUnlocked) {
+      document.getElementById("authErrMsg").innerText = "";
+      document.getElementById("closingPasswordInput").value = "";
+      document.getElementById("authModal").style.display = "flex";
+      return;
+    }
+
+    currentTab = type;
+    document.getElementById("tabInBtn").classList.toggle("active", type === "IN");
+    document.getElementById("tabOutBtn").classList.toggle("active", type === "OUT");
+    document.getElementById("tabSummaryBtn").classList.toggle("active", type === "SUMMARY");
+    document.getElementById("tabClosingBtn").classList.toggle("active", type === "CLOSING");
+
+    const form = document.getElementById("stockForm");
+    const summaryView = document.getElementById("summaryView");
+    const closingView = document.getElementById("closingView");
+    const partyGroup = document.getElementById("partyGroup");
+    const vehicleGroup = document.getElementById("vehicleGroup");
+    const companyGroup = document.getElementById("companyGroup");
+    const driverGroup = document.getElementById("driverGroup");
+    document.getElementById("msg").innerText = "";
+
+    if (type === "SUMMARY") {
+      form.style.display = "none";
+      closingView.style.display = "none";
+      summaryView.style.display = "block";
+      loadSummary();
+    } else if (type === "CLOSING") {
+      form.style.display = "none";
+      summaryView.style.display = "none";
+      closingView.style.display = "block";
+      loadClosingData();
+    } else {
+      form.style.display = "block";
+      summaryView.style.display = "none";
+      closingView.style.display = "none";
+
+      if (type === "OUT") {
+        partyGroup.classList.add("hidden");
+        vehicleGroup.classList.remove("hidden");
+        companyGroup.classList.remove("hidden");
+        driverGroup.classList.remove("hidden");
+      } else {
+        partyGroup.classList.remove("hidden");
+        vehicleGroup.classList.add("hidden");
+        companyGroup.classList.add("hidden");
+        driverGroup.classList.add("hidden");
+      }
+    }
+  }
+
+  function verifyPassword() {
+    const inputPass = document.getElementById("closingPasswordInput").value;
+    if (inputPass === CLOSING_PASSWORD) {
+      isClosingUnlocked = true;
+      document.getElementById("authModal").style.display = "none";
+      switchTab("CLOSING");
+    } else {
+      document.getElementById("authErrMsg").innerText = "❌ Galat Password! Access Denied.";
+      document.getElementById("closingPasswordInput").value = "";
+    }
+  }
+
+  document.getElementById("closingPasswordInput").addEventListener("keyup", function(e) {
+    if (e.key === "Enter") verifyPassword();
+  });
+
+  function cancelPassword() {
+    document.getElementById("authModal").style.display = "none";
+  }
+
+  async function fetchMasterData() {
+    if (!SCRIPT_URL) return;
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getInitialData`);
+      const data = await res.json();
+      if (data.status === "success") {
+        productList = data.products;
+        localStorage.setItem("cached_products", JSON.stringify(productList));
+        buildBarcodeMap();
+
+        const sel = document.getElementById("productSelect");
+        sel.innerHTML = '<option value="">-- Select Product --</option>';
+        productList.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.name;
+          opt.innerText = p.name;
+          sel.appendChild(opt);
+        });
+
+        const vSel = document.getElementById("vehicleInput");
+        vSel.innerHTML = '<option value="">-- Select Vehicle --</option>';
+        data.vehicles.forEach(v => {
+          const opt = document.createElement("option");
+          opt.value = v;
+          opt.innerText = v;
+          vSel.appendChild(opt);
+        });
+      }
+    } catch (e) { console.log(e); }
+  }
+
+  document.getElementById("barcodeInput").addEventListener("input", function() {
+    const val = this.value.trim().toLowerCase();
+    if (!val) return;
+    if (barcodeMap.has(val)) {
+      const p = barcodeMap.get(val);
+      document.getElementById("productSelect").value = p.name;
+      document.getElementById("hsnInput").value = p.hsn;
+      document.getElementById("rateInput").value = p.rate;
+      calculateTotal();
+    }
+  });
+
+  function onProductSelect(val) {
+    const p = productList.find(x => x.name === val);
+    if (p) {
+      document.getElementById("barcodeInput").value = p.barcode;
+      document.getElementById("hsnInput").value = p.hsn;
+      document.getElementById("rateInput").value = p.rate;
+      calculateTotal();
+    }
+  }
+
+  function calculateTotal() {
+    const qty = parseFloat(document.getElementById("qtyInput").value) || 0;
+    const rate = parseFloat(document.getElementById("rateInput").value) || 0;
+    document.getElementById("totalAmountInput").value = (qty * rate).toFixed(2);
+  }
+
+  async function loadClosingData() {
+    const container = document.getElementById("closingContent");
+    if (!SCRIPT_URL) { container.innerHTML = "Save URL first!"; return; }
+    container.innerHTML = "Fetching closing records...";
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData`);
+      const resData = await res.json();
+      if (resData.status === "success") {
+        closingRawData = resData.data;
+        renderClosingReport();
+      }
+    } catch (e) { container.innerHTML = "Error loading closing data."; }
+  }
+
+  function normalizeToISODate(val) {
+    if (!val) return "";
+    let str = String(val).trim();
+
+    let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m1) return `${m1[1]}-${String(m1[2]).padStart(2, '0')}-${String(m1[3]).padStart(2, '0')}`;
+
+    let m2 = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (m2) return `${m2[3]}-${String(m2[2]).padStart(2, '0')}-${String(m2[1]).padStart(2, '0')}`;
+
+    let parsedD = new Date(str);
+    if (!isNaN(parsedD.getTime())) {
+      let y = parsedD.getFullYear();
+      let m = String(parsedD.getMonth() + 1).padStart(2, '0');
+      let d = String(parsedD.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    return str;
+  }
+
+  function formatToDisplayDate(val) {
+    if (!val) return "-";
+    let str = String(val).trim();
+
+    let m2 = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (m2) return `${String(m2[1]).padStart(2, '0')}/${String(m2[2]).padStart(2, '0')}/${m2[3]}`;
+
+    let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m1) return `${String(m1[3]).padStart(2, '0')}/${String(m1[2]).padStart(2, '0')}/${m1[1]}`;
+
+    let parsedD = new Date(str);
+    if (!isNaN(parsedD.getTime())) {
+      let d = String(parsedD.getDate()).padStart(2, '0');
+      let m = String(parsedD.getMonth() + 1).padStart(2, '0');
+      let y = parsedD.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+    return str;
+  }
+
+  function renderClosingReport() {
+    const container = document.getElementById("closingContent");
+    const sDate = document.getElementById("closingStartDate").value;
+    const eDate = document.getElementById("closingEndDate").value;
+
+    if (!closingRawData || closingRawData.length === 0) {
+      container.innerHTML = "<p style='color:#666;'>Sheet me abhi koi Stock Out entry nahi mili.</p>";
+      return;
+    }
+
+    let filtered = closingRawData.filter(r => {
+      let rowDate = normalizeToISODate(r.date);
+      if (sDate && rowDate < sDate) return false;
+      if (eDate && rowDate > eDate) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:15px; color:#666;">
+          <p>⚠️ Is date range me koi data nahi mila.</p>
+          <button type="button" onclick="clearDateFilters()" style="padding:6px 14px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">Saara Data Dekhein</button>
+        </div>`;
+      return;
+    }
+
+    const tree = {};
+    const summaryData = {};
+    let grandOverallTotal = 0;
+
+    filtered.forEach(r => {
+      const comp = String(r.company || "OTHER").trim().toUpperCase();
+      const veh = String(r.vehicle || "UNKNOWN").trim().toUpperCase();
+      const amt = Number(r.amount) || 0;
+
+      if (!tree[comp]) tree[comp] = {};
+      if (!tree[comp][veh]) tree[comp][veh] = { items: [], totalAmount: 0 };
+
+      tree[comp][veh].items.push(r);
+      tree[comp][veh].totalAmount += amt;
+
+      if (!summaryData[comp]) summaryData[comp] = { total: 0, vehicles: {} };
+      summaryData[comp].total += amt;
+      summaryData[comp].vehicles[veh] = (summaryData[comp].vehicles[veh] || 0) + amt;
+      grandOverallTotal += amt;
+    });
+
+    let html = `<div>`;
+
+    for (const comp in tree) {
+      let compGrandTotal = 0;
+      html += `<div class="company-title-banner">🏢 ${comp}</div>`;
+
+      for (const veh in tree[comp]) {
+        const vData = tree[comp][veh];
+        compGrandTotal += vData.totalAmount;
+
+        html += `
+          <div class="vehicle-header-bar">🚛 Vehicle: ${veh}</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width:22%;">Date</th>
+                <th>Item / Spare Part Name</th>
+                <th style="width:12%; text-align:right;">Qty</th>
+                <th style="width:18%; text-align:right;">Rate (₹)</th>
+                <th style="width:20%; text-align:right;">Amount (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        vData.items.forEach(it => {
+          let dateToShow = formatToDisplayDate(it.displayDate || it.date);
+          html += `
+            <tr>
+              <td>${dateToShow}</td>
+              <td><b>${it.item}</b></td>
+              <td style="text-align:right;">${it.qty}</td>
+              <td style="text-align:right;">₹${it.rate.toLocaleString('en-IN')}</td>
+              <td style="text-align:right; font-weight:600;">₹${it.amount.toLocaleString('en-IN')}</td>
+            </tr>
+          `;
+        });
+
+        html += `
+            <tr class="vehicle-subtotal-row">
+              <td colspan="4" style="text-align:right;">Vehicle ${veh} Total:</td>
+              <td style="text-align:right; font-weight:bold; color:#0056b3;">₹${vData.totalAmount.toLocaleString('en-IN')}</td>
+            </tr>
+          </tbody>
+        </table>
+        `;
+      }
+
+      html += `
+        <div class="company-total-banner">
+          Total Consumption for ${comp}: <span style="color:#d9534f; font-size:14px;">₹${compGrandTotal.toLocaleString('en-IN')}</span>
+        </div>
+      `;
+    }
+
+    // Final Summary Table
+    html += `
+      <div class="summary-heading">📌 Month Closing Summary (Company & Vehicle Wise)</div>
+      <table class="custom-table" style="margin-top:10px;">
+        <thead>
+          <tr>
+            <th>Company / Vehicle</th>
+            <th style="text-align:right;">Total Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (const comp in summaryData) {
+      html += `
+        <tr class="company-summary-row">
+          <td>${comp}</td>
+          <td style="text-align:right;">₹${summaryData[comp].total.toLocaleString('en-IN')}</td>
+        </tr>
+      `;
+      for (const veh in summaryData[comp].vehicles) {
+        html += `
+          <tr class="vehicle-summary-row">
+            <td>${veh}</td>
+            <td style="text-align:right;">₹${summaryData[comp].vehicles[veh].toLocaleString('en-IN')}</td>
+          </tr>
+        `;
+      }
+    }
+
+    html += `
+        <tr style="background:#343a40; color:#fff; font-weight:bold;">
+          <td>GRAND TOTAL CONSUMPTION:</td>
+          <td style="text-align:right; color:#28a745; font-size:13px;">₹${grandOverallTotal.toLocaleString('en-IN')}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>`;
+
+    container.innerHTML = html;
+  }
+
+  function clearDateFilters() {
+    document.getElementById("closingStartDate").value = "";
+    document.getElementById("closingEndDate").value = "";
+    renderClosingReport();
+  }
+
+  async function loadSummary() {
+    const container = document.getElementById("summaryContent");
+    if (!SCRIPT_URL) return;
+    container.innerHTML = "Loading...";
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getSummary`);
+      const resData = await res.json();
+      if (resData.status === "success") {
+        let grandTotal = 0;
+        let html = `<table class="custom-table">
+          <thead><tr><th>Item</th><th>In</th><th>Out</th><th>Bal</th><th>Value (₹)</th></tr></thead><tbody>`;
+        resData.data.forEach(r => {
+          grandTotal += r.totalValue;
+          html += `<tr><td><b>${r.item}</b></td><td>${r.totalIn}</td><td>${r.totalOut}</td><td style="color:green;font-weight:bold;">${r.balance}</td><td>₹${r.totalValue.toLocaleString('en-IN')}</td></tr>`;
+        });
+        html += `<tr style="background:#eef2f5;font-weight:bold;"><td colspan="4" style="text-align:right;">Grand Total:</td><td style="color:#d9534f;">₹${grandTotal.toLocaleString('en-IN')}</td></tr></tbody></table>`;
+        container.innerHTML = html;
+      }
+    } catch(e) { container.innerHTML = "Error loading summary"; }
+  }
+
+  if (SCRIPT_URL) fetchMasterData();
+
+  function startScanner(target) {
+    activeScanTarget = target;
+    const elemId = (target === "MODAL") ? "modal-reader" : "reader";
+    const containerId = (target === "MODAL") ? "modal-reader-container" : "reader-container";
+    const container = document.getElementById(containerId);
+    container.style.display = "block";
+    html5QrCode = new Html5Qrcode(elemId);
+    html5QrCode.start(
+      { facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
+      (decoded) => {
+        if (activeScanTarget === "MODAL") {
+          document.getElementById("newProdBarcode").value = decoded;
+        } else {
+          document.getElementById("barcodeInput").value = decoded;
+          document.getElementById("barcodeInput").dispatchEvent(new Event("input"));
+        }
+        stopScanner();
+      }, () => {}
+    );
+  }
+
+  function stopScanner() {
+    if (html5QrCode) html5QrCode.stop();
+    document.getElementById("reader-container").style.display = "none";
+    document.getElementById("modal-reader-container").style.display = "none";
+  }
+
+  function openAddProductModal() { document.getElementById("addProductModal").style.display = "flex"; }
+  function closeAddProductModal() { stopScanner(); document.getElementById("addProductModal").style.display = "none"; }
+  function openAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "flex"; }
+  function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
+  function openAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "flex"; }
+  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
+
+  async function saveNewProduct() {
+    const btn = document.getElementById("saveProdBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const newProd = {
+      type: "ADD_PRODUCT",
+      barcode: document.getElementById("newProdBarcode").value.trim(),
+      itemName: document.getElementById("newProdName").value.trim(),
+      hsn: document.getElementById("newProdHsn").value.trim(),
+      rate: Number(document.getElementById("newProdRate").value || 0)
+    };
+
+    productList.push(newProd);
+    buildBarcodeMap();
+    const sel = document.getElementById("productSelect");
+    const opt = document.createElement("option");
+    opt.value = newProd.itemName;
+    opt.innerText = newProd.itemName;
+    sel.appendChild(opt);
+
+    closeAddProductModal();
+    btn.disabled = false;
+    btn.innerText = "Save";
+
+    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(newProd) });
+  }
+
+  async function saveNewVehicle() {
+    const btn = document.getElementById("saveVehBtn");
+    const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
+    if (!vNo) return;
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const vSel = document.getElementById("vehicleInput");
+    const opt = document.createElement("option");
+    opt.value = vNo;
+    opt.innerText = vNo;
+    vSel.appendChild(opt);
+
+    closeAddVehicleModal();
+    btn.disabled = false;
+    btn.innerText = "Save";
+
+    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ type: "ADD_VEHICLE", vehicleNo: vNo }) });
+  }
+
+  function saveNewCompany() {
+    const comp = document.getElementById("newCompanyName").value.trim().toUpperCase();
+    if (!comp) return;
+    const opt = document.createElement("option"); opt.value = comp; opt.innerText = comp;
+    document.getElementById("companyInput").appendChild(opt);
+    document.getElementById("companyInput").value = comp;
+    closeAddCompanyModal();
+  }
+
+  // Double-Click & Cooldown Guard Function
+  function startCooldownTimer(seconds) {
+    const btn = document.getElementById("submitBtn");
+    let remaining = seconds;
+    btn.disabled = true;
+
+    const timer = setInterval(() => {
+      btn.innerText = `⏳ Please wait ${remaining}s...`;
+      remaining--;
+      if (remaining < 0) {
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.innerText = "Save Entry";
+        isSubmitting = false;
+      }
+    }, 1000);
+  }
+
+  // FORM SUBMISSION WITH DUPLICATE GUARDS
+  document.getElementById("stockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) return; // Prevent double click instantly
+
+    const btn = document.getElementById("submitBtn");
+    const msg = document.getElementById("msg");
+    const nowMs = Date.now();
+
+    const payload = {
+      type: currentTab,
+      barcode: document.getElementById("barcodeInput").value,
+      itemName: document.getElementById("productSelect").value,
+      hsn: document.getElementById("hsnInput").value,
+      qty: document.getElementById("qtyInput").value,
+      rate: document.getElementById("rateInput").value,
+      totalAmount: document.getElementById("totalAmountInput").value,
+      partyName: document.getElementById("partyInput").value,
+      companyName: document.getElementById("companyInput").value,
+      vehicleNo: document.getElementById("vehicleInput").value,
+      driverName: document.getElementById("driverInput").value,
+      remarks: document.getElementById("remarksInput").value
+    };
+
+    // Client-side 20-second identical payload check
+    if (lastSubmissionPayload && (nowMs - lastSubmissionTime) < 20000) {
+      const isIdentical = (
+        lastSubmissionPayload.type === payload.type &&
+        lastSubmissionPayload.itemName === payload.itemName &&
+        lastSubmissionPayload.qty === payload.qty &&
+        lastSubmissionPayload.vehicleNo === payload.vehicleNo &&
+        lastSubmissionPayload.partyName === payload.partyName
+      );
+
+      if (isIdentical) {
+        const confirmSave = confirm("⚠️ Warning: Same item aur quantity abhi 20 second pehle save hui thi. Kya aap sach me dobara save karna chahte hain?");
+        if (!confirmSave) {
+          msg.innerText = "Entry cancelled (Duplicate roki gayi).";
+          msg.style.color = "#6c757d";
+          return;
+        }
+      }
+    }
+
+    isSubmitting = true;
+    btn.disabled = true;
+    btn.innerText = "Saving to Sheet...";
+    msg.innerText = "⏳ Saving...";
+    msg.style.color = "#007bff";
+
+    try {
+      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        msg.innerText = "✅ " + data.message;
+        msg.style.color = "green";
+        lastSubmissionPayload = payload;
+        lastSubmissionTime = Date.now();
+        document.getElementById("stockForm").reset();
+        updateClock();
+        // 5 Second Cooldown taaki galti se turant click na ho
+        startCooldownTimer(5);
+      } else {
+        msg.innerText = "❌ " + data.message;
+        msg.style.color = "red";
+        btn.disabled = false;
+        btn.innerText = "Save Entry";
+        isSubmitting = false;
+      }
+    } catch(err) {
+      msg.innerText = "❌ Request Error: " + err.message;
+      msg.style.color = "red";
+      btn.disabled = false;
+      btn.innerText = "Save Entry";
+      isSubmitting = false;
+    }
+  });
+</script>
+</body>
+</html>
