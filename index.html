@@ -30,8 +30,8 @@
     #reader { width: 100%; }
     .btn-close-scan { margin-top: 6px; background: #dc3545; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; }
 
-    .btn-submit { width: 100%; padding: 12px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 8px; }
-    .btn-submit:disabled { background: #94d3a2; cursor: not-allowed; }
+    .btn-submit { width: 100%; padding: 12px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 8px; transition: background 0.3s; }
+    .btn-submit:disabled { background: #6c757d; cursor: not-allowed; opacity: 0.7; }
     .hidden { display: none; }
     #msg { margin-top: 10px; text-align: center; font-weight: bold; font-size: 13px; }
 
@@ -94,7 +94,7 @@
     <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
   </div>
 
-  <!-- Entry Form (IN & OUT) -->
+  <!-- Entry Form -->
   <form id="stockForm">
     <div class="form-group">
       <label>Date & Time</label>
@@ -302,6 +302,11 @@
   const CLOSING_PASSWORD = "425151"; 
   let isClosingUnlocked = false;
 
+  // DUPLICATE GUARD STATE (Frontend 10-Second Cooldown)
+  let isSubmitting = false;
+  let lastSubmissionPayload = null;
+  let lastSubmissionTime = 0;
+
   const comraoVehicles = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
 
   function buildBarcodeMap() {
@@ -487,7 +492,6 @@
     } catch (e) { container.innerHTML = "Error loading closing data."; }
   }
 
-  // Robust Date Parser (YYYY-MM-DD)
   function normalizeToISODate(val) {
     if (!val) return "";
     let str = String(val).trim();
@@ -508,7 +512,6 @@
     return str;
   }
 
-  // Display Date Parser (DD/MM/YYYY)
   function formatToDisplayDate(val) {
     if (!val) return "-";
     let str = String(val).trim();
@@ -529,7 +532,6 @@
     return str;
   }
 
-  // DETAILED VEHICLE CONSUMPTION REPORT & FINAL SUMMARY
   function renderClosingReport() {
     const container = document.getElementById("closingContent");
     const sDate = document.getElementById("closingStartDate").value;
@@ -794,13 +796,33 @@
     closeAddCompanyModal();
   }
 
+  // Double-Click & Cooldown Guard Function
+  function startCooldownTimer(seconds) {
+    const btn = document.getElementById("submitBtn");
+    let remaining = seconds;
+    btn.disabled = true;
+
+    const timer = setInterval(() => {
+      btn.innerText = `⏳ Please wait ${remaining}s...`;
+      remaining--;
+      if (remaining < 0) {
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.innerText = "Save Entry";
+        isSubmitting = false;
+      }
+    }, 1000);
+  }
+
+  // FORM SUBMISSION WITH DUPLICATE GUARDS
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return; // Prevent double click instantly
+
     const btn = document.getElementById("submitBtn");
     const msg = document.getElementById("msg");
-    btn.disabled = true;
-    btn.innerText = "Saving...";
-    msg.innerText = "";
+    const nowMs = Date.now();
 
     const payload = {
       type: currentTab,
@@ -817,19 +839,58 @@
       remarks: document.getElementById("remarksInput").value
     };
 
+    // Client-side 20-second identical payload check
+    if (lastSubmissionPayload && (nowMs - lastSubmissionTime) < 20000) {
+      const isIdentical = (
+        lastSubmissionPayload.type === payload.type &&
+        lastSubmissionPayload.itemName === payload.itemName &&
+        lastSubmissionPayload.qty === payload.qty &&
+        lastSubmissionPayload.vehicleNo === payload.vehicleNo &&
+        lastSubmissionPayload.partyName === payload.partyName
+      );
+
+      if (isIdentical) {
+        const confirmSave = confirm("⚠️ Warning: Same item aur quantity abhi 20 second pehle save hui thi. Kya aap sach me dobara save karna chahte hain?");
+        if (!confirmSave) {
+          msg.innerText = "Entry cancelled (Duplicate roki gayi).";
+          msg.style.color = "#6c757d";
+          return;
+        }
+      }
+    }
+
+    isSubmitting = true;
+    btn.disabled = true;
+    btn.innerText = "Saving to Sheet...";
+    msg.innerText = "⏳ Saving...";
+    msg.style.color = "#007bff";
+
     try {
       const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
       const data = await res.json();
-      msg.innerText = "✅ " + data.message;
-      msg.style.color = "green";
-      document.getElementById("stockForm").reset();
-      updateClock();
+
+      if (data.status === "success") {
+        msg.innerText = "✅ " + data.message;
+        msg.style.color = "green";
+        lastSubmissionPayload = payload;
+        lastSubmissionTime = Date.now();
+        document.getElementById("stockForm").reset();
+        updateClock();
+        // 5 Second Cooldown taaki galti se turant click na ho
+        startCooldownTimer(5);
+      } else {
+        msg.innerText = "❌ " + data.message;
+        msg.style.color = "red";
+        btn.disabled = false;
+        btn.innerText = "Save Entry";
+        isSubmitting = false;
+      }
     } catch(err) {
-      msg.innerText = "❌ Error: " + err.message;
+      msg.innerText = "❌ Request Error: " + err.message;
       msg.style.color = "red";
-    } finally {
       btn.disabled = false;
       btn.innerText = "Save Entry";
+      isSubmitting = false;
     }
   });
 </script>
