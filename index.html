@@ -7,23 +7,49 @@
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
     body { background: #f0f4f8; margin: 0; padding: 12px; color: #2d3748; }
-    .container { max-width: 660px; margin: auto; background: #ffffff; border-radius: 14px; padding: 18px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2); }
+    .container { max-width: 680px; margin: auto; background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
     
-    /* Header Tabs */
-    .tab-header { display: flex; margin-bottom: 16px; border-radius: 10px; overflow: hidden; border: 2px solid #2b6cb0; background: #ebf8ff; }
-    .tab-btn { flex: 1; padding: 10px 2px; text-align: center; border: none; background: transparent; color: #2b6cb0; font-weight: 700; font-size: 10.5px; cursor: pointer; transition: 0.2s all; }
-    .tab-btn.active { background: #2b6cb0; color: #ffffff; }
+    /* Modern Pill Segmented Tabs */
+    .tab-header { 
+      display: flex; 
+      gap: 5px; 
+      margin-bottom: 16px; 
+      background: #edf2f7; 
+      padding: 5px; 
+      border-radius: 12px; 
+      overflow-x: auto;
+    }
+    .tab-btn { 
+      flex: 1; 
+      min-width: 82px;
+      padding: 9px 4px; 
+      text-align: center; 
+      border: none; 
+      background: transparent; 
+      color: #4a5568; 
+      font-weight: 700; 
+      font-size: 11px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      transition: all 0.25s ease; 
+      white-space: nowrap;
+    }
+    .tab-btn.active { 
+      background: #2b6cb0; 
+      color: #ffffff; 
+      box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); 
+    }
 
     /* Form Styles */
     .form-group { margin-bottom: 12px; position: relative; }
     label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 12px; color: #4a5568; }
-    input, select { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 7px; font-size: 13.5px; background: #fff; transition: border-color 0.2s; }
+    input, select { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13.5px; background: #fff; transition: border-color 0.2s; }
     input:focus, select:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15); }
 
     .barcode-row { display: flex; gap: 8px; }
-    .btn-scan { background: #319795; color: white; border: none; padding: 0 16px; border-radius: 7px; font-weight: bold; cursor: pointer; }
+    .btn-scan { background: #319795; color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    /* Floating Autocomplete Dropdown */
+    /* Autocomplete Dropdown */
     .autocomplete-items {
       position: absolute;
       border: 1.5px solid #cbd5e0;
@@ -51,16 +77,16 @@
     .autocomplete-item:hover { background-color: #ebf8ff; color: #2b6cb0; }
     .item-subtext { font-size: 11px; color: #718096; }
 
-    /* Live Available Stock Badge */
+    /* Badges */
     .stock-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-left: 6px; }
     .stock-in-hand { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
     .stock-low { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
 
-    /* Quantity Stepper Row */
+    /* Quantity Stepper */
     .qty-stepper-row { display: flex; gap: 6px; }
-    .stepper-btn { width: 44px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 7px; font-weight: bold; font-size: 16px; cursor: pointer; }
+    .stepper-btn { width: 44px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-    /* Payment Split Grid for Stock In */
+    /* Payment Split Grid */
     .payment-grid { display: flex; gap: 8px; }
     .payment-grid > div { flex: 1; }
 
@@ -97,7 +123,7 @@
     .party-title-banner { background: #2c5282; color: #fff; padding: 9px 12px; font-size: 13.5px; font-weight: bold; border-radius: 6px; margin-top: 15px; display: flex; justify-content: space-between; }
     .vehicle-header-bar { background: #edf2f7; color: #2d3748; font-weight: bold; padding: 6px 10px; font-size: 12.5px; border-left: 4px solid #3182ce; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
     .subtotal-row { background: #f7fafc; font-weight: bold; color: #2b6cb0; }
-    .company-total-banner { background: #e2e8f0; font-weight: bold; color: #1a202c; padding: 7px 10px; text-align: right; border-radius: 4px; margin-top: 4px; font-size: 12.5px; }
+    .company-total-banner { background: #e2e3e5; font-weight: bold; color: #1a202c; padding: 7px 10px; text-align: right; border-radius: 4px; margin-top: 4px; font-size: 12.5px; }
     
     .summary-heading { margin-top: 25px; font-size: 14px; font-weight: 800; color: #2d3748; text-transform: uppercase; border-bottom: 2px solid #4a5568; padding-bottom: 4px; }
     .company-summary-row { background: #ffff00; font-weight: bold; color: #000; }
@@ -112,6 +138,7 @@
     .recent-item { font-size: 12px; padding: 4px 0; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; }
     .recent-item:last-child { border-bottom: none; }
 
+    /* Modals */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 20px; border-radius: 12px; width: 92%; max-width: 440px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
     .btn-add-mini { background: none; border: none; color: #3182ce; font-weight: bold; cursor: pointer; font-size: 12px; }
@@ -119,7 +146,7 @@
     @media print {
       body { background: #fff; padding: 0; }
       .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
-      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .veh-history-link {
+      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .veh-history-link, #btnOpenPayModal {
         display: none !important;
       }
       .view-box { display: block !important; }
@@ -133,13 +160,13 @@
 <body>
 
 <div class="container">
-  <!-- 5 Navigation Tabs -->
+  <!-- Modern Segmented Pill Tabs -->
   <div class="tab-header">
-    <button class="tab-btn active" id="tabInBtn" type="button" onclick="switchTab('IN')">Stock In</button>
-    <button class="tab-btn" id="tabOutBtn" type="button" onclick="switchTab('OUT')">Stock Out</button>
-    <button class="tab-btn" id="tabSummaryBtn" type="button" onclick="switchTab('SUMMARY')">📊 Stock Summary</button>
-    <button class="tab-btn" id="tabLedgerBtn" type="button" onclick="switchTab('LEDGER')">📑 Party Ledger</button>
-    <button class="tab-btn" id="tabClosingBtn" type="button" onclick="switchTab('CLOSING')">🔒 Month Closing</button>
+    <button class="tab-btn active" id="tabInBtn" type="button" onclick="switchTab('IN')">📥 Stock In</button>
+    <button class="tab-btn" id="tabOutBtn" type="button" onclick="switchTab('OUT')">📤 Stock Out</button>
+    <button class="tab-btn" id="tabSummaryBtn" type="button" onclick="switchTab('SUMMARY')">📊 Stock</button>
+    <button class="tab-btn" id="tabLedgerBtn" type="button" onclick="switchTab('LEDGER')">📑 Ledger</button>
+    <button class="tab-btn" id="tabClosingBtn" type="button" onclick="switchTab('CLOSING')">🔒 Closing</button>
   </div>
 
   <!-- Camera Container -->
@@ -201,9 +228,9 @@
       <input type="number" id="totalAmountInput" readonly style="background:#edf2f7;">
     </div>
 
-    <!-- Payment Tracking Fields (For Stock In / Supplier Purchase) -->
+    <!-- Payment Tracking (Stock In) -->
     <div id="paymentGroup" class="form-group">
-      <label>Payment Details (Khata / Ledger)</label>
+      <label>Payment on Purchase (Khata / Ledger)</label>
       <div class="payment-grid">
         <div>
           <input type="number" id="paidAmountInput" step="0.01" placeholder="Paid Amount (₹)" oninput="calculateDue()">
@@ -218,10 +245,11 @@
 
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
-      <input type="text" id="partyInput" placeholder="e.g. Patna Auto Spares, Mahavir Diesels">
+      <input type="text" id="partyInput" placeholder="e.g. Patna Auto Spares, Mahavir Diesels" list="partyDataList">
+      <datalist id="partyDataList"></datalist>
     </div>
 
-    <!-- Vehicle Input with Auto Company Link -->
+    <!-- Vehicle Select Dropdown with Auto Company Fetch -->
     <div class="form-group hidden" id="vehicleGroup">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -230,16 +258,21 @@
         </div>
         <button type="button" class="btn-add-mini" onclick="openAddVehicleModal()">➕ Add New</button>
       </div>
-      <input type="text" id="vehicleSearchInput" placeholder="Type vehicle no (e.g. BR01...)" autocomplete="off" style="text-transform:uppercase;" oninput="showVehicleSuggestions(this.value)">
-      <div id="vehicleSuggestions" class="autocomplete-items hidden"></div>
+      <select id="vehicleSelect" onchange="onVehicleDropdownChange(this.value)">
+        <option value="">-- Select Vehicle --</option>
+      </select>
     </div>
 
+    <!-- Company Select Dropdown with Add Company Option -->
     <div class="form-group hidden" id="companyGroup">
-      <label>Company Name (Auto Linked)</label>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>Company Name (Auto Selected)</label>
+        <button type="button" class="btn-add-mini" onclick="openAddCompanyModal()">➕ Add New</button>
+      </div>
       <select id="companyInput">
         <option value="">-- Select Company --</option>
-        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
         <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
+        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
       </select>
     </div>
 
@@ -305,28 +338,28 @@
     <div id="summaryContent" style="margin-top:6px;">Loading live stock summary...</div>
   </div>
 
-  <!-- Party Ledger Report View (Stock In Purchases & Outstanding Khata) -->
+  <!-- Accounting Party Ledger (Dr / Cr & Outstanding) -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="margin:0; font-size:15px; color:#1a202c;">Supplier Purchases & Outstanding Ledger</h3>
+      <h3 style="margin:0; font-size:15px; color:#1a202c;">Supplier Accounting Ledger (Dr / Cr)</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" class="btn-csv" onclick="exportLedgerToCSV()" style="padding:5px 10px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
-        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 10px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print / PDF</button>
+        <button type="button" id="btnOpenPayModal" onclick="openSupplierPaymentModal()" style="padding:5px 9px; font-size:11px; background:#28a745; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">➕ Pay Supplier</button>
+        <button type="button" class="btn-csv" onclick="exportLedgerToCSV()" style="padding:5px 9px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
+        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print</button>
       </div>
     </div>
 
-    <!-- Ledger KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-title">Total Purchase</div>
+        <div class="kpi-title">Total Bill (Dr)</div>
         <div class="kpi-val" id="kpiLedgerTotal">₹0</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Total Paid</div>
+        <div class="kpi-title">Total Paid (Cr)</div>
         <div class="kpi-val" id="kpiLedgerPaid" style="color:#2f855a;">₹0</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Total Due (Baki)</div>
+        <div class="kpi-title">Net Due (Baki)</div>
         <div class="kpi-val" id="kpiLedgerDue" style="color:#c53030;">₹0</div>
       </div>
     </div>
@@ -340,16 +373,16 @@
         <label>End Date</label>
         <input type="date" id="ledgerEndDate" onchange="renderPartyLedger()">
       </div>
-      <div style="flex:1;">
-        <label>Filter Party</label>
+      <div style="flex:1.2;">
+        <label>View Mode</label>
         <select id="ledgerPartyFilter" onchange="renderPartyLedger()">
-          <option value="">-- All Parties --</option>
+          <option value="">-- All Parties Summary --</option>
         </select>
       </div>
-      <button type="button" onclick="clearLedgerFilters()" style="padding:9px 12px; background:#718096; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">All</button>
+      <button type="button" onclick="clearLedgerFilters()" style="padding:9px 12px; background:#718096; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Reset</button>
     </div>
 
-    <div id="ledgerContent">Loading supplier ledger data...</div>
+    <div id="ledgerContent">Loading supplier ledger...</div>
   </div>
 
   <!-- Month Closing Report View -->
@@ -391,6 +424,37 @@
       <button type="button" onclick="cancelPassword()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
     <div id="authErrMsg" style="color:#e53e3e; font-size:12px; margin-top:8px;"></div>
+  </div>
+</div>
+
+<!-- Modal: Record Supplier Payment (Cr Voucher) -->
+<div class="modal" id="supplierPaymentModal">
+  <div class="modal-content">
+    <h3 style="margin-top:0; color:#2d3748;">➕ Record Supplier Payment (Cr)</h3>
+    <div class="form-group">
+      <label>Supplier / Party Name</label>
+      <input type="text" id="payPartyInput" placeholder="Party Name" list="partyDataList" required>
+    </div>
+    <div class="form-group">
+      <label>Amount Paid (₹)</label>
+      <input type="number" id="payAmountInput" step="0.01" placeholder="Amount (₹)" required>
+    </div>
+    <div class="form-group">
+      <label>Payment Mode</label>
+      <select id="payModeInput">
+        <option value="Online / Bank Transfer">Online / Bank Transfer (NEFT/RTGS/UPI)</option>
+        <option value="Cash">Cash</option>
+        <option value="Cheque">Cheque</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Ref / Voucher No / Remarks</label>
+      <input type="text" id="payRefInput" placeholder="UTR / Cheque No / Notes">
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" id="savePayBtn" onclick="saveSupplierPayment()" style="flex:1; background:#38a169; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Save Payment</button>
+      <button type="button" onclick="closeSupplierPaymentModal()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -454,6 +518,21 @@
   </div>
 </div>
 
+<!-- Modal: Add New Company -->
+<div class="modal" id="addCompanyModal">
+  <div class="modal-content">
+    <h3 style="margin-top:0; color:#2d3748;">Add New Company</h3>
+    <div class="form-group">
+      <label>Company Name</label>
+      <input type="text" id="newCompanyNameInput" placeholder="e.g. BALAJI TRANSPORT" style="text-transform:uppercase;">
+    </div>
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button type="button" onclick="saveNewCompany()" style="flex:1; background:#38a169; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Add Company</button>
+      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- Safe Barcode Scanner Lib -->
 <script src="https://unpkg.com/html5-qrcode" defer></script>
 
@@ -463,6 +542,7 @@
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
+  let customCompanies = ["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"];
   let summaryRawData = [];
   let closingRawData = [];
   let ledgerRawData = [];
@@ -470,10 +550,16 @@
   let recentEntries = [];
   let filterLowStockOnly = false;
 
+  // Auto-refresh timer state (detecting typing inactivity)
+  let lastUserActivityTime = Date.now();
+  let isUserTyping = false;
+
   try {
     productList = JSON.parse(localStorage.getItem("cached_products") || "[]");
     let cachedVehicles = JSON.parse(localStorage.getItem("cached_vehicles_obj") || "[]");
     cachedVehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+    let cachedComps = JSON.parse(localStorage.getItem("cached_companies") || "[]");
+    cachedComps.forEach(c => { if (!customCompanies.includes(c)) customCompanies.push(c); });
   } catch(e) {}
 
   ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"].forEach(v => {
@@ -523,19 +609,59 @@
   }
   buildBarcodeMap();
 
-  function onVehicleSelectValue(vNo) {
-    const cleanNo = (vNo || "").trim().toUpperCase();
-    document.getElementById("vehicleSearchInput").value = cleanNo;
+  function renderCompanyDropdowns() {
     const compSel = document.getElementById("companyInput");
-    
+    const newVehCompSel = document.getElementById("newVehicleCompany");
+    const curVal = compSel.value;
+
+    compSel.innerHTML = '<option value="">-- Select Company --</option>';
+    newVehCompSel.innerHTML = '';
+
+    customCompanies.forEach(c => {
+      let opt = document.createElement("option"); opt.value = c; opt.innerText = c;
+      compSel.appendChild(opt);
+
+      let opt2 = document.createElement("option"); opt2.value = c; opt2.innerText = c;
+      newVehCompSel.appendChild(opt2);
+    });
+
+    if (curVal) compSel.value = curVal;
+  }
+
+  function renderVehicleDropdown() {
+    const vSel = document.getElementById("vehicleSelect");
+    const curVal = vSel.value;
+    vSel.innerHTML = '<option value="">-- Select Vehicle --</option>';
+
+    Array.from(vehicleMap.keys()).sort().forEach(v => {
+      let opt = document.createElement("option");
+      opt.value = v;
+      let comp = vehicleMap.get(v) || "";
+      opt.innerText = comp ? `${v} (${comp})` : v;
+      vSel.appendChild(opt);
+    });
+
+    if (curVal) vSel.value = curVal;
+  }
+
+  function onVehicleDropdownChange(vNo) {
+    const cleanNo = (vNo || "").trim().toUpperCase();
+    const compSel = document.getElementById("companyInput");
+    const histBtn = document.getElementById("vehHistoryBtn");
+
+    if (!cleanNo) {
+      compSel.value = "";
+      histBtn.classList.add("hidden");
+      return;
+    }
+
     if (vehicleMap.has(cleanNo)) {
       compSel.value = vehicleMap.get(cleanNo);
     } else {
       compSel.value = "GOKULESHWAR RD PVT. LTD";
     }
 
-    document.getElementById("vehicleSuggestions").classList.add("hidden");
-    document.getElementById("vehHistoryBtn").classList.remove("hidden");
+    histBtn.classList.remove("hidden");
   }
 
   function updateClock() {
@@ -618,6 +744,7 @@
         companyGroup.classList.remove("hidden");
         kmGroup.classList.remove("hidden");
         driverGroup.classList.remove("hidden");
+        renderVehicleDropdown();
       } else {
         paymentGroup.classList.remove("hidden");
         partyGroup.classList.remove("hidden");
@@ -660,14 +787,22 @@
 
         if (data.vehicles && Array.isArray(data.vehicles)) {
           data.vehicles.forEach(v => {
-            if (v.vehicleNo) vehicleMap.set(v.vehicleNo, v.company);
+            if (v.vehicleNo) {
+              vehicleMap.set(v.vehicleNo, v.company);
+              if (v.company && !customCompanies.includes(v.company)) {
+                customCompanies.push(v.company);
+              }
+            }
           });
           let arr = [];
           vehicleMap.forEach((comp, vNo) => arr.push({ vehicleNo: vNo, company: comp }));
           localStorage.setItem("cached_vehicles_obj", JSON.stringify(arr));
+          localStorage.setItem("cached_companies", JSON.stringify(customCompanies));
         }
 
         buildBarcodeMap();
+        renderCompanyDropdowns();
+        renderVehicleDropdown();
       }
     } catch (e) { console.log(e); }
   }
@@ -713,38 +848,9 @@
     calculateTotal();
   }
 
-  function showVehicleSuggestions(val) {
-    const container = document.getElementById("vehicleSuggestions");
-    const query = val.trim().toUpperCase();
-    if (!query) { container.classList.add("hidden"); return; }
-
-    const allVehs = Array.from(vehicleMap.keys());
-    const matches = allVehs.filter(v => v.includes(query)).slice(0, 6);
-    if (matches.length === 0) {
-      container.innerHTML = `<div class="autocomplete-item" style="color:#a0aec0;">Nayi gaadi hai toh ➕ Add New karein</div>`;
-      container.classList.remove("hidden");
-      return;
-    }
-
-    let html = "";
-    matches.forEach(v => {
-      const comp = vehicleMap.get(v) || "";
-      html += `
-        <div class="autocomplete-item" onclick="onVehicleSelectValue('${v}')">
-          <b>🚛 ${v}</b>
-          <span class="item-subtext">${comp}</span>
-        </div>`;
-    });
-    container.innerHTML = html;
-    container.classList.remove("hidden");
-  }
-
   document.addEventListener("click", function(e) {
     if (!e.target.closest("#productSearchInput")) {
       document.getElementById("productSuggestions").classList.add("hidden");
-    }
-    if (!e.target.closest("#vehicleSearchInput")) {
-      document.getElementById("vehicleSuggestions").classList.add("hidden");
     }
   });
 
@@ -793,8 +899,25 @@
     document.getElementById("dueAmountInput").value = (due >= 0 ? due : 0).toFixed(2);
   }
 
+  // Activity detection for Inactivity Auto-Refresh
+  document.addEventListener("keydown", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
+  document.addEventListener("input", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
+  setInterval(() => {
+    if (Date.now() - lastUserActivityTime > 4000) isUserTyping = false;
+  }, 1000);
+
+  // 8-Second Safe Background Auto-Refresh
+  setInterval(() => {
+    if (!isUserTyping && !isSubmitting) {
+      if (currentTab === "SUMMARY") loadSummary(false);
+      else if (currentTab === "LEDGER") loadLedgerData(false);
+      else if (currentTab === "CLOSING") loadClosingData();
+    }
+  }, 8000);
+
+  // --- VEHICLE HISTORY MODAL ---
   async function openVehicleHistoryModal() {
-    const vNo = document.getElementById("vehicleSearchInput").value.trim().toUpperCase();
+    const vNo = document.getElementById("vehicleSelect").value.trim().toUpperCase();
     if (!vNo) return;
 
     document.getElementById("vehHistTitle").innerText = `Past History: ${vNo}`;
@@ -835,10 +958,10 @@
     document.getElementById("vehicleHistoryModal").style.display = "none";
   }
 
-  // --- PARTY LEDGER DATA FETCH & RENDER ---
-  async function loadLedgerData() {
+  // --- ACCOUNTING PARTY LEDGER (DR / CR & OUTSTANDING) ---
+  async function loadLedgerData(showSpinner = true) {
     const container = document.getElementById("ledgerContent");
-    container.innerHTML = "Fetching supplier purchases & outstanding khata...";
+    if (showSpinner) container.innerHTML = "Fetching supplier accounting ledger...";
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger`);
       const resData = await res.json();
@@ -848,21 +971,25 @@
         renderPartyLedger();
       }
     } catch (e) {
-      container.innerHTML = "Error loading ledger data.";
+      if (showSpinner) container.innerHTML = "Error loading ledger data.";
     }
   }
 
   function populatePartyFilterOptions() {
     const pSel = document.getElementById("ledgerPartyFilter");
+    const dList = document.getElementById("partyDataList");
     const currentVal = pSel.value;
     const parties = [...new Set(ledgerRawData.map(r => r.party).filter(Boolean))].sort();
     
-    pSel.innerHTML = '<option value="">-- All Parties --</option>';
+    pSel.innerHTML = '<option value="">-- All Parties Summary --</option>';
+    dList.innerHTML = '';
+
     parties.forEach(p => {
-      const opt = document.createElement("option");
-      opt.value = p;
-      opt.innerText = p;
+      let opt = document.createElement("option"); opt.value = p; opt.innerText = p;
       pSel.appendChild(opt);
+
+      let dOpt = document.createElement("option"); dOpt.value = p;
+      dList.appendChild(dOpt);
     });
     if (currentVal) pSel.value = currentVal;
   }
@@ -874,7 +1001,7 @@
     const selectedParty = document.getElementById("ledgerPartyFilter").value;
 
     if (!ledgerRawData || ledgerRawData.length === 0) {
-      container.innerHTML = "<p style='color:#718096;'>Sheet me abhi koi Stock In / Purchase record nahi mila.</p>";
+      container.innerHTML = "<p style='color:#718096;'>Sheet me abhi koi ledger record nahi mila.</p>";
       return;
     }
 
@@ -894,89 +1021,131 @@
       return;
     }
 
-    // Party-wise Grouping: Party -> Purchases + Totals
-    const groups = {};
-    let overallBill = 0, overallPaid = 0, overallDue = 0;
+    // VIEW MODE 1: ALL PARTIES SUMMARY TABLE
+    if (!selectedParty) {
+      const partySummary = {};
+      let totalDr = 0, totalCr = 0;
 
-    filtered.forEach(r => {
-      const p = r.party || "OTHER";
-      if (!groups[p]) groups[p] = { items: [], totalBill: 0, totalPaid: 0, totalDue: 0 };
+      filtered.forEach(r => {
+        const p = r.party || "OTHER";
+        if (!partySummary[p]) partySummary[p] = { dr: 0, cr: 0 };
+        partySummary[p].dr += (r.dr || 0);
+        partySummary[p].cr += (r.cr || 0);
+        totalDr += (r.dr || 0);
+        totalCr += (r.cr || 0);
+      });
 
-      groups[p].items.push(r);
-      groups[p].totalBill += r.totalAmount;
-      groups[p].totalPaid += r.paidAmount;
-      groups[p].totalDue += r.dueAmount;
+      document.getElementById("kpiLedgerTotal").innerText = "₹" + totalDr.toLocaleString('en-IN');
+      document.getElementById("kpiLedgerPaid").innerText = "₹" + totalCr.toLocaleString('en-IN');
+      document.getElementById("kpiLedgerDue").innerText = "₹" + (totalDr - totalCr).toLocaleString('en-IN');
 
-      overallBill += r.totalAmount;
-      overallPaid += r.paidAmount;
-      overallDue += r.dueAmount;
-    });
-
-    // Update Ledger KPI
-    document.getElementById("kpiLedgerTotal").innerText = "₹" + overallBill.toLocaleString('en-IN');
-    document.getElementById("kpiLedgerPaid").innerText = "₹" + overallPaid.toLocaleString('en-IN');
-    document.getElementById("kpiLedgerDue").innerText = "₹" + overallDue.toLocaleString('en-IN');
-
-    let html = `<div>`;
-    for (const p in groups) {
-      const g = groups[p];
-      html += `
-        <div class="party-title-banner">
-          <span>🏪 Party: ${p}</span>
-          <span>Due (Baki): ₹${g.totalDue.toLocaleString('en-IN')}</span>
-        </div>
+      let html = `
+        <div style="font-weight:bold; margin-bottom:6px; font-size:13px; color:#2c5282;">📋 All Parties Summary (Click party to view full statement):</div>
         <table class="custom-table">
           <thead>
             <tr>
-              <th style="width:16%;">Date</th>
-              <th>Item Purchased</th>
-              <th style="width:8%; text-align:right;">Qty</th>
-              <th style="width:13%; text-align:right;">Rate</th>
-              <th style="width:15%; text-align:right;">Total Bill</th>
-              <th style="width:15%; text-align:right;">Paid</th>
-              <th style="width:15%; text-align:right;">Due (Baki)</th>
+              <th>Supplier / Party Name</th>
+              <th style="text-align:right;">Total Bill (Dr)</th>
+              <th style="text-align:right;">Total Paid (Cr)</th>
+              <th style="text-align:right;">Balance Due</th>
             </tr>
           </thead>
           <tbody>
       `;
 
-      g.items.forEach(it => {
-        let dateToShow = formatToDisplayDate(it.displayDate || it.date);
+      for (const p in partySummary) {
+        let dr = partySummary[p].dr;
+        let cr = partySummary[p].cr;
+        let bal = dr - cr;
         html += `
-          <tr>
-            <td>${dateToShow}</td>
-            <td><b>${it.item}</b> <span style="font-size:10px; color:#718096;">${it.remarks ? '(' + it.remarks + ')' : ''}</span></td>
-            <td style="text-align:right;">${it.qty}</td>
-            <td style="text-align:right;">₹${it.rate.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; font-weight:600;">₹${it.totalAmount.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#2f855a;">₹${it.paidAmount.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#c53030; font-weight:bold;">₹${it.dueAmount.toLocaleString('en-IN')}</td>
+          <tr style="cursor:pointer;" onclick="selectPartyInFilter('${p}')">
+            <td><b style="color:#2b6cb0;">🏪 ${p}</b></td>
+            <td style="text-align:right;">₹${dr.toLocaleString('en-IN')}</td>
+            <td style="text-align:right; color:#2f855a;">₹${cr.toLocaleString('en-IN')}</td>
+            <td style="text-align:right; font-weight:bold; color:${bal > 0 ? '#c53030' : '#2f855a'};">
+              ₹${bal.toLocaleString('en-IN')} ${bal > 0 ? '(Dr)' : '(Nil)'}
+            </td>
           </tr>
         `;
-      });
+      }
 
-      // Party Subtotal Row
       html += `
           <tr class="subtotal-row">
-            <td colspan="4" style="text-align:right;">${p} Total:</td>
-            <td style="text-align:right;">₹${g.totalBill.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#2f855a;">₹${g.totalPaid.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#c53030;">₹${g.totalDue.toLocaleString('en-IN')}</td>
+            <td>GRAND TOTAL:</td>
+            <td style="text-align:right;">₹${totalDr.toLocaleString('en-IN')}</td>
+            <td style="text-align:right; color:#2f855a;">₹${totalCr.toLocaleString('en-IN')}</td>
+            <td style="text-align:right; color:#c53030;">₹${(totalDr - totalCr).toLocaleString('en-IN')}</td>
           </tr>
         </tbody>
       </table>`;
+
+      container.innerHTML = html;
+      return;
     }
 
-    // Grand Summary Footer
-    html += `
-      <div class="company-total-banner" style="margin-top:14px; font-size:13px;">
-        OVERALL BALANCE: Total Bill: <b>₹${overallBill.toLocaleString('en-IN')}</b> | 
-        Paid: <span style="color:#2f855a;"><b>₹${overallPaid.toLocaleString('en-IN')}</b></span> | 
-        Net Due: <span style="color:#c53030;"><b>₹${overallDue.toLocaleString('en-IN')}</b></span>
+    // VIEW MODE 2: INDIVIDUAL PARTY RUNNING LEDGER (DR / CR / BALANCE)
+    let runningBalance = 0;
+    let pTotalDr = 0, pTotalCr = 0;
+
+    let html = `
+      <div class="party-title-banner">
+        <span>🏪 Statement for: ${selectedParty}</span>
+        <button type="button" onclick="clearLedgerFilters()" style="background:#fff; color:#2c5282; border:none; padding:2px 8px; border-radius:4px; font-size:11px; cursor:pointer;">Back to Summary</button>
       </div>
-    </div>`;
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th style="width:16%;">Date</th>
+            <th>Particulars / Details</th>
+            <th style="width:14%; text-align:right;">Debit (Dr)</th>
+            <th style="width:14%; text-align:right;">Credit (Cr)</th>
+            <th style="width:16%; text-align:right;">Balance Due</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    filtered.forEach(it => {
+      let dr = Number(it.dr || 0);
+      let cr = Number(it.cr || 0);
+      pTotalDr += dr;
+      pTotalCr += cr;
+      runningBalance += (dr - cr);
+
+      let dateToShow = formatToDisplayDate(it.displayDate || it.date);
+      html += `
+        <tr>
+          <td>${dateToShow}</td>
+          <td><b>${it.particulars}</b> <span style="font-size:10px; color:#718096;">${it.refNo ? '[' + it.refNo + ']' : ''}</span></td>
+          <td style="text-align:right; color:#c53030;">${dr > 0 ? '₹' + dr.toLocaleString('en-IN') : '-'}</td>
+          <td style="text-align:right; color:#2f855a; font-weight:600;">${cr > 0 ? '₹' + cr.toLocaleString('en-IN') : '-'}</td>
+          <td style="text-align:right; font-weight:bold; color:${runningBalance > 0 ? '#c53030' : '#2f855a'};">
+            ₹${runningBalance.toLocaleString('en-IN')}
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+        <tr class="subtotal-row">
+          <td colspan="2" style="text-align:right;">Total for ${selectedParty}:</td>
+          <td style="text-align:right; color:#c53030;">₹${pTotalDr.toLocaleString('en-IN')}</td>
+          <td style="text-align:right; color:#2f855a;">₹${pTotalCr.toLocaleString('en-IN')}</td>
+          <td style="text-align:right; color:#c53030; font-size:13px;">₹${(pTotalDr - pTotalCr).toLocaleString('en-IN')} (Due)</td>
+        </tr>
+      </tbody>
+    </table>`;
+
+    document.getElementById("kpiLedgerTotal").innerText = "₹" + pTotalDr.toLocaleString('en-IN');
+    document.getElementById("kpiLedgerPaid").innerText = "₹" + pTotalCr.toLocaleString('en-IN');
+    document.getElementById("kpiLedgerDue").innerText = "₹" + (pTotalDr - pTotalCr).toLocaleString('en-IN');
 
     container.innerHTML = html;
+  }
+
+  function selectPartyInFilter(partyName) {
+    document.getElementById("ledgerPartyFilter").value = partyName;
+    renderPartyLedger();
   }
 
   function clearLedgerFilters() {
@@ -988,11 +1157,64 @@
 
   function exportLedgerToCSV() {
     if (!ledgerRawData || ledgerRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let csv = "Date,Party,Item,Qty,Rate,Total Bill,Paid Amount,Due Amount,Remarks\n";
+    let csv = "Date,Party,Particulars,VoucherType,RefNo,Debit (Dr),Credit (Cr)\n";
     ledgerRawData.forEach(r => {
-      csv += `"${r.displayDate || r.date}","${r.party}","${r.item}",${r.qty},${r.rate},${r.totalAmount},${r.paidAmount},${r.dueAmount},"${r.remarks || ''}"\n`;
+      csv += `"${r.displayDate || r.date}","${r.party}","${r.particulars}","${r.voucherType}","${r.refNo || ''}",${r.dr},${r.cr}\n`;
     });
-    downloadCSVFile(csv, "Supplier_Party_Ledger.csv");
+    downloadCSVFile(csv, "Supplier_Accounting_Ledger.csv");
+  }
+
+  // --- RECORD DIRECT SUPPLIER PAYMENT (CR ENTRY) ---
+  function openSupplierPaymentModal() {
+    document.getElementById("payPartyInput").value = document.getElementById("ledgerPartyFilter").value || "";
+    document.getElementById("payAmountInput").value = "";
+    document.getElementById("payRefInput").value = "";
+    document.getElementById("supplierPaymentModal").style.display = "flex";
+  }
+
+  function closeSupplierPaymentModal() {
+    document.getElementById("supplierPaymentModal").style.display = "none";
+  }
+
+  async function saveSupplierPayment() {
+    const party = document.getElementById("payPartyInput").value.trim().toUpperCase();
+    const amt = parseFloat(document.getElementById("payAmountInput").value) || 0;
+    const mode = document.getElementById("payModeInput").value;
+    const ref = document.getElementById("payRefInput").value.trim();
+
+    if (!party) return alert("Supplier Party Name daalein!");
+    if (amt <= 0) return alert("Valid payment amount daalein!");
+
+    const btn = document.getElementById("savePayBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving Payment...";
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          type: "SUPPLIER_PAYMENT",
+          partyName: party,
+          amount: amt,
+          mode: mode,
+          refNo: ref
+        })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        playPosBeep("success");
+        closeSupplierPaymentModal();
+        loadLedgerData();
+        alert("Payment Recorded! Supplier ka balance kam ho gaya.");
+      } else {
+        alert("Error: " + data.message);
+      }
+    } catch(e) {
+      alert("Request error: " + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Save Payment";
+    }
   }
 
   // --- MONTH CLOSING REPORT ---
@@ -1245,7 +1467,7 @@
 
         filterSummaryTable();
       }
-    } catch(e) { container.innerHTML = "Error loading summary"; }
+    } catch(e) { if (isManualRefresh) container.innerHTML = "Error loading summary"; }
   }
 
   function toggleLowStockFilter() {
@@ -1323,6 +1545,8 @@
   function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
   function openAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "flex"; }
   function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
+  function openAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "flex"; }
+  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
 
   async function saveNewProduct() {
     const btn = document.getElementById("saveProdBtn");
@@ -1334,211 +1558,4 @@
       barcode: document.getElementById("newProdBarcode").value.trim(),
       itemName: document.getElementById("newProdName").value.trim(),
       hsn: document.getElementById("newProdHsn").value.trim(),
-      rate: Number(document.getElementById("newProdRate").value || 0)
-    };
-
-    productList.push(newProd);
-    localStorage.setItem("cached_products", JSON.stringify(productList));
-    buildBarcodeMap();
-
-    document.getElementById("productSearchInput").value = newProd.itemName;
-    document.getElementById("hsnInput").value = newProd.hsn;
-    document.getElementById("rateInput").value = newProd.rate;
-    calculateTotal();
-
-    closeAddProductModal();
-    btn.disabled = false;
-    btn.innerText = "Save";
-
-    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(newProd) });
-    loadSummary();
-  }
-
-  async function saveNewVehicle() {
-    const btn = document.getElementById("saveVehBtn");
-    const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
-    const vComp = document.getElementById("newVehicleCompany").value;
-    if (!vNo) return alert("Vehicle Number daalein!");
-
-    btn.disabled = true;
-    btn.innerText = "Saving...";
-
-    vehicleMap.set(vNo, vComp);
-    let arr = [];
-    vehicleMap.forEach((comp, no) => arr.push({ vehicleNo: no, company: comp }));
-    localStorage.setItem("cached_vehicles_obj", JSON.stringify(arr));
-
-    onVehicleSelectValue(vNo);
-
-    closeAddVehicleModal();
-    btn.disabled = false;
-    btn.innerText = "Save Vehicle";
-
-    await fetch(SCRIPT_URL, { 
-      method: "POST", 
-      body: JSON.stringify({ type: "ADD_VEHICLE", vehicleNo: vNo, companyName: vComp }) 
-    });
-  }
-
-  function startCooldownTimer(seconds) {
-    const btn = document.getElementById("submitBtn");
-    let remaining = seconds;
-    btn.disabled = true;
-
-    const timer = setInterval(() => {
-      btn.innerText = `⏳ Ready in ${remaining}s...`;
-      remaining--;
-      if (remaining < 0) {
-        clearInterval(timer);
-        btn.disabled = false;
-        btn.innerText = "Save Entry";
-        isSubmitting = false;
-      }
-    }, 1000);
-  }
-
-  function renderRecentActivity(entry) {
-    recentEntries.unshift(entry);
-    if (recentEntries.length > 5) recentEntries.pop();
-
-    const container = document.getElementById("recentList");
-    let html = "";
-    recentEntries.forEach(r => {
-      const tag = r.type === "IN" ? "<span style='color:#2f855a;font-weight:bold;'>[IN]</span>" : "<span style='color:#c53030;font-weight:bold;'>[OUT]</span>";
-      html += `
-        <div class="recent-item">
-          <div>${tag} <b>${r.itemName}</b> (${r.qty} pcs)</div>
-          <div style="color:#718096;">₹${r.totalAmount} | ${r.dest}</div>
-        </div>`;
-    });
-    container.innerHTML = html;
-  }
-
-  // SUBMIT HANDLER
-  document.getElementById("stockForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (isSubmitting) return;
-
-    const btn = document.getElementById("submitBtn");
-    const msg = document.getElementById("msg");
-    const nowMs = Date.now();
-
-    const payload = {
-      type: currentTab,
-      barcode: document.getElementById("barcodeInput").value,
-      itemName: document.getElementById("productSearchInput").value.trim(),
-      hsn: document.getElementById("hsnInput").value,
-      qty: document.getElementById("qtyInput").value,
-      rate: document.getElementById("rateInput").value,
-      totalAmount: document.getElementById("totalAmountInput").value,
-      paidAmount: document.getElementById("paidAmountInput").value || 0,
-      dueAmount: document.getElementById("dueAmountInput").value || 0,
-      partyName: document.getElementById("partyInput").value.trim().toUpperCase(),
-      companyName: document.getElementById("companyInput").value,
-      vehicleNo: document.getElementById("vehicleSearchInput").value.trim().toUpperCase(),
-      kmReading: document.getElementById("kmInput").value.trim(),
-      driverName: document.getElementById("driverInput").value,
-      remarks: document.getElementById("remarksInput").value
-    };
-
-    if (!payload.itemName) {
-      alert("Kripya Product Name select ya type karein!");
-      return;
-    }
-
-    if (currentTab === "OUT" && !payload.vehicleNo) {
-      alert("Kripya Vehicle Number daalein!");
-      return;
-    }
-
-    if (currentTab === "IN" && !payload.partyName) {
-      alert("Kripya Supplier / Party Name daalein!");
-      return;
-    }
-
-    if (lastSubmissionPayload && (nowMs - lastSubmissionTime) < 20000) {
-      const isIdentical = (
-        lastSubmissionPayload.type === payload.type &&
-        lastSubmissionPayload.itemName === payload.itemName &&
-        lastSubmissionPayload.qty === payload.qty &&
-        lastSubmissionPayload.vehicleNo === payload.vehicleNo &&
-        lastSubmissionPayload.partyName === payload.partyName
-      );
-
-      if (isIdentical) {
-        const confirmSave = confirm("⚠️ Warning: Same entry abhi 20 second pehle save hui thi. Dobara save karein?");
-        if (!confirmSave) {
-          msg.innerText = "Entry cancelled.";
-          msg.style.color = "#718096";
-          return;
-        }
-      }
-    }
-
-    isSubmitting = true;
-    btn.disabled = true;
-    btn.innerText = "Saving to Sheet...";
-    msg.innerText = "⏳ Saving...";
-    msg.style.color = "#3182ce";
-
-    try {
-      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-      const data = await res.json();
-
-      if (data.status === "success") {
-        playPosBeep("success");
-        msg.innerText = "✅ " + data.message;
-        msg.style.color = "#2f855a";
-
-        if (navigator.vibrate) navigator.vibrate(80);
-
-        renderRecentActivity({
-          type: payload.type,
-          itemName: payload.itemName,
-          qty: payload.qty,
-          totalAmount: payload.totalAmount,
-          dest: payload.type === "OUT" ? payload.vehicleNo : payload.partyName
-        });
-
-        lastSubmissionPayload = payload;
-        lastSubmissionTime = Date.now();
-
-        document.getElementById("stockForm").reset();
-        document.getElementById("qtyInput").value = "1";
-        document.getElementById("stockInHandBadge").classList.add("hidden");
-        document.getElementById("vehHistoryBtn").classList.add("hidden");
-        updateClock();
-        document.getElementById("barcodeInput").focus();
-
-        // Background automatic sync
-        loadSummary();
-        loadClosingData();
-        loadLedgerData();
-
-        startCooldownTimer(3);
-      } else {
-        msg.innerText = "❌ " + data.message;
-        msg.style.color = "#e53e3e";
-        btn.disabled = false;
-        btn.innerText = "Save Entry";
-        isSubmitting = false;
-      }
-    } catch(err) {
-      msg.innerText = "❌ Request Error: " + err.message;
-      msg.style.color = "#e53e3e";
-      btn.disabled = false;
-      btn.innerText = "Save Entry";
-      isSubmitting = false;
-    }
-  });
-
-  window.addEventListener("DOMContentLoaded", () => {
-    updateClock();
-    fetchMasterData();
-    loadSummary();
-    loadLedgerData();
-  });
-</script>
-</body>
-</html>
+      rate: Number(document.getElementById("newProd
