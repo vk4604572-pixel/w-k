@@ -49,33 +49,15 @@
     .barcode-row { display: flex; gap: 8px; }
     .btn-scan { background: #319795; color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    /* Autocomplete Dropdown */
-    .autocomplete-items {
-      position: absolute;
-      border: 1.5px solid #cbd5e0;
-      border-top: none;
-      z-index: 999;
-      top: 100%;
-      left: 0;
-      right: 0;
-      max-height: 200px;
-      overflow-y: auto;
-      background-color: #fff;
-      border-radius: 0 0 8px 8px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    /* Search Box inside Product Section */
+    .search-filter-input {
+      padding: 7px 10px;
+      font-size: 12px;
+      margin-bottom: 5px;
+      border: 1px dashed #3182ce;
+      background: #f7fafc;
+      border-radius: 6px;
     }
-    .autocomplete-item {
-      padding: 9px 12px;
-      cursor: pointer;
-      font-size: 13px;
-      border-bottom: 1px solid #edf2f7;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover { background-color: #ebf8ff; color: #2b6cb0; }
-    .item-subtext { font-size: 11px; color: #718096; }
 
     /* Badges */
     .stock-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-left: 6px; }
@@ -146,7 +128,7 @@
     @media print {
       body { background: #fff; padding: 0; }
       .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
-      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .veh-history-link, #btnOpenPayModal {
+      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .veh-history-link, #btnOpenPayModal, .search-filter-input {
         display: none !important;
       }
       .view-box { display: block !important; }
@@ -190,7 +172,7 @@
       </div>
     </div>
 
-    <!-- Product Input with Autocomplete -->
+    <!-- Product Select Dropdown WITH Quick Search Filter -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -199,8 +181,10 @@
         </div>
         <button type="button" class="btn-add-mini" onclick="openAddProductModal()">➕ Add New</button>
       </div>
-      <input type="text" id="productSearchInput" placeholder="Start typing part name..." autocomplete="off" oninput="showProductSuggestions(this.value)">
-      <div id="productSuggestions" class="autocomplete-items hidden"></div>
+      <input type="text" id="productFilterBox" class="search-filter-input" placeholder="🔍 Type to filter dropdown..." oninput="filterProductDropdown(this.value)">
+      <select id="productSelect" onchange="onProductSelect(this.value)">
+        <option value="">-- Select Product --</option>
+      </select>
     </div>
 
     <div class="form-group">
@@ -550,7 +534,6 @@
   let recentEntries = [];
   let filterLowStockOnly = false;
 
-  // Auto-refresh timer state (detecting typing inactivity)
   let lastUserActivityTime = Date.now();
   let isUserTyping = false;
 
@@ -608,6 +591,47 @@
     });
   }
   buildBarcodeMap();
+
+  function renderProductDropdown(filteredItems = null) {
+    const pSel = document.getElementById("productSelect");
+    const curVal = pSel.value;
+    pSel.innerHTML = '<option value="">-- Select Product --</option>';
+
+    const itemsToRender = filteredItems || productList;
+    itemsToRender.forEach(p => {
+      let opt = document.createElement("option");
+      opt.value = p.name;
+      opt.innerText = p.name;
+      pSel.appendChild(opt);
+    });
+
+    if (curVal && !filteredItems) pSel.value = curVal;
+  }
+
+  function filterProductDropdown(searchQuery) {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      renderProductDropdown();
+      return;
+    }
+    const filtered = productList.filter(p => p.name.toLowerCase().includes(query));
+    renderProductDropdown(filtered);
+    if (filtered.length > 0) {
+      document.getElementById("productSelect").value = filtered[0].name;
+      onProductSelect(filtered[0].name);
+    }
+  }
+
+  function onProductSelect(val) {
+    const p = productList.find(x => x.name === val);
+    if (p) {
+      document.getElementById("barcodeInput").value = p.barcode || "";
+      document.getElementById("hsnInput").value = p.hsn || "";
+      document.getElementById("rateInput").value = p.rate || "";
+    }
+    updateStockBadge(val);
+    calculateTotal();
+  }
 
   function renderCompanyDropdowns() {
     const compSel = document.getElementById("companyInput");
@@ -801,58 +825,12 @@
         }
 
         buildBarcodeMap();
+        renderProductDropdown();
         renderCompanyDropdowns();
         renderVehicleDropdown();
       }
     } catch (e) { console.log(e); }
   }
-
-  function showProductSuggestions(val) {
-    const container = document.getElementById("productSuggestions");
-    const query = val.trim().toLowerCase();
-    if (!query) { container.classList.add("hidden"); return; }
-
-    const matches = productList.filter(p => p.name.toLowerCase().includes(query)).slice(0, 8);
-    if (matches.length === 0) {
-      container.innerHTML = `<div class="autocomplete-item" style="color:#a0aec0;">Koi item nahi mila (➕ Add New karein)</div>`;
-      container.classList.remove("hidden");
-      return;
-    }
-
-    let html = "";
-    matches.forEach(p => {
-      const stock = stockBalanceMap.get(p.name) || 0;
-      html += `
-        <div class="autocomplete-item" onclick="selectProductItem('${encodeURIComponent(JSON.stringify(p))}')">
-          <div>
-            <b>${p.name}</b>
-            <div class="item-subtext">HSN: ${p.hsn || '-'} | Rate: ₹${p.rate}</div>
-          </div>
-          <span style="font-size:11px; font-weight:bold; color:${stock <= 2 ? '#e53e3e':'#2f855a'};">
-            ${currentTab === 'OUT' ? 'Stock: ' + stock : ''}
-          </span>
-        </div>`;
-    });
-    container.innerHTML = html;
-    container.classList.remove("hidden");
-  }
-
-  function selectProductItem(encodedItem) {
-    const p = JSON.parse(decodeURIComponent(encodedItem));
-    document.getElementById("productSearchInput").value = p.name;
-    document.getElementById("barcodeInput").value = p.barcode || "";
-    document.getElementById("hsnInput").value = p.hsn || "";
-    document.getElementById("rateInput").value = p.rate || "";
-    document.getElementById("productSuggestions").classList.add("hidden");
-    updateStockBadge(p.name);
-    calculateTotal();
-  }
-
-  document.addEventListener("click", function(e) {
-    if (!e.target.closest("#productSearchInput")) {
-      document.getElementById("productSuggestions").classList.add("hidden");
-    }
-  });
 
   document.getElementById("barcodeInput").addEventListener("input", function() {
     const val = this.value.trim().toLowerCase();
@@ -860,7 +838,7 @@
     if (barcodeMap.has(val)) {
       playPosBeep("beep");
       const p = barcodeMap.get(val);
-      document.getElementById("productSearchInput").value = p.name;
+      document.getElementById("productSelect").value = p.name;
       document.getElementById("hsnInput").value = p.hsn;
       document.getElementById("rateInput").value = p.rate;
       updateStockBadge(p.name);
@@ -899,14 +877,12 @@
     document.getElementById("dueAmountInput").value = (due >= 0 ? due : 0).toFixed(2);
   }
 
-  // Activity detection for Inactivity Auto-Refresh
   document.addEventListener("keydown", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
   document.addEventListener("input", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
   setInterval(() => {
     if (Date.now() - lastUserActivityTime > 4000) isUserTyping = false;
   }, 1000);
 
-  // 8-Second Safe Background Auto-Refresh
   setInterval(() => {
     if (!isUserTyping && !isSubmitting) {
       if (currentTab === "SUMMARY") loadSummary(false);
@@ -915,7 +891,6 @@
     }
   }, 8000);
 
-  // --- VEHICLE HISTORY MODAL ---
   async function openVehicleHistoryModal() {
     const vNo = document.getElementById("vehicleSelect").value.trim().toUpperCase();
     if (!vNo) return;
@@ -958,7 +933,6 @@
     document.getElementById("vehicleHistoryModal").style.display = "none";
   }
 
-  // --- ACCOUNTING PARTY LEDGER (DR / CR & OUTSTANDING) ---
   async function loadLedgerData(showSpinner = true) {
     const container = document.getElementById("ledgerContent");
     if (showSpinner) container.innerHTML = "Fetching supplier accounting ledger...";
@@ -1021,7 +995,6 @@
       return;
     }
 
-    // VIEW MODE 1: ALL PARTIES SUMMARY TABLE
     if (!selectedParty) {
       const partySummary = {};
       let totalDr = 0, totalCr = 0;
@@ -1063,7 +1036,7 @@
             <td style="text-align:right;">₹${dr.toLocaleString('en-IN')}</td>
             <td style="text-align:right; color:#2f855a;">₹${cr.toLocaleString('en-IN')}</td>
             <td style="text-align:right; font-weight:bold; color:${bal > 0 ? '#c53030' : '#2f855a'};">
-              ₹${bal.toLocaleString('en-IN')} ${bal > 0 ? '(Dr)' : '(Nil)'}
+              ₹${bal.toLocaleString('en-IN')} ${bal > 0 ? '(Due)' : '(Nil)'}
             </td>
           </tr>
         `;
@@ -1083,7 +1056,6 @@
       return;
     }
 
-    // VIEW MODE 2: INDIVIDUAL PARTY RUNNING LEDGER (DR / CR / BALANCE)
     let runningBalance = 0;
     let pTotalDr = 0, pTotalCr = 0;
 
@@ -1164,7 +1136,6 @@
     downloadCSVFile(csv, "Supplier_Accounting_Ledger.csv");
   }
 
-  // --- RECORD DIRECT SUPPLIER PAYMENT (CR ENTRY) ---
   function openSupplierPaymentModal() {
     document.getElementById("payPartyInput").value = document.getElementById("ledgerPartyFilter").value || "";
     document.getElementById("payAmountInput").value = "";
@@ -1205,7 +1176,7 @@
         playPosBeep("success");
         closeSupplierPaymentModal();
         loadLedgerData();
-        alert("Payment Recorded! Supplier ka balance kam ho gaya.");
+        alert("Payment Recorded! Supplier ka balance update ho gaya.");
       } else {
         alert("Error: " + data.message);
       }
@@ -1217,7 +1188,6 @@
     }
   }
 
-  // --- MONTH CLOSING REPORT ---
   async function loadClosingData() {
     const container = document.getElementById("closingContent");
     try {
@@ -1558,4 +1528,233 @@
       barcode: document.getElementById("newProdBarcode").value.trim(),
       itemName: document.getElementById("newProdName").value.trim(),
       hsn: document.getElementById("newProdHsn").value.trim(),
-      rate: Number(document.getElementById("newProd
+      rate: Number(document.getElementById("newProdRate").value || 0)
+    };
+
+    productList.push(newProd);
+    localStorage.setItem("cached_products", JSON.stringify(productList));
+    buildBarcodeMap();
+    renderProductDropdown();
+
+    document.getElementById("productSelect").value = newProd.itemName;
+    document.getElementById("hsnInput").value = newProd.hsn;
+    document.getElementById("rateInput").value = newProd.rate;
+    calculateTotal();
+
+    closeAddProductModal();
+    btn.disabled = false;
+    btn.innerText = "Save";
+
+    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(newProd) });
+    loadSummary();
+  }
+
+  async function saveNewVehicle() {
+    const btn = document.getElementById("saveVehBtn");
+    const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
+    const vComp = document.getElementById("newVehicleCompany").value;
+    if (!vNo) return alert("Vehicle Number daalein!");
+
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    vehicleMap.set(vNo, vComp);
+    let arr = [];
+    vehicleMap.forEach((comp, no) => arr.push({ vehicleNo: no, company: comp }));
+    localStorage.setItem("cached_vehicles_obj", JSON.stringify(arr));
+
+    renderVehicleDropdown();
+    document.getElementById("vehicleSelect").value = vNo;
+    onVehicleDropdownChange(vNo);
+
+    closeAddVehicleModal();
+    btn.disabled = false;
+    btn.innerText = "Save Vehicle";
+
+    await fetch(SCRIPT_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ type: "ADD_VEHICLE", vehicleNo: vNo, companyName: vComp }) 
+    });
+  }
+
+  function saveNewCompany() {
+    const cName = document.getElementById("newCompanyNameInput").value.trim().toUpperCase();
+    if (!cName) return alert("Company Name daalein!");
+
+    if (!customCompanies.includes(cName)) {
+      customCompanies.push(cName);
+      localStorage.setItem("cached_companies", JSON.stringify(customCompanies));
+      renderCompanyDropdowns();
+      document.getElementById("companyInput").value = cName;
+      alert(`Company "${cName}" add ho gayi!`);
+    }
+
+    document.getElementById("newCompanyNameInput").value = "";
+    closeAddCompanyModal();
+  }
+
+  function startCooldownTimer(seconds) {
+    const btn = document.getElementById("submitBtn");
+    let remaining = seconds;
+    btn.disabled = true;
+
+    const timer = setInterval(() => {
+      btn.innerText = `⏳ Ready in ${remaining}s...`;
+      remaining--;
+      if (remaining < 0) {
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.innerText = "Save Entry";
+        isSubmitting = false;
+      }
+    }, 1000);
+  }
+
+  function renderRecentActivity(entry) {
+    recentEntries.unshift(entry);
+    if (recentEntries.length > 5) recentEntries.pop();
+
+    const container = document.getElementById("recentList");
+    let html = "";
+    recentEntries.forEach(r => {
+      const tag = r.type === "IN" ? "<span style='color:#2f855a;font-weight:bold;'>[IN]</span>" : "<span style='color:#c53030;font-weight:bold;'>[OUT]</span>";
+      html += `
+        <div class="recent-item">
+          <div>${tag} <b>${r.itemName}</b> (${r.qty} pcs)</div>
+          <div style="color:#718096;">₹${r.totalAmount} | ${r.dest}</div>
+        </div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  document.getElementById("stockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+
+    const btn = document.getElementById("submitBtn");
+    const msg = document.getElementById("msg");
+    const nowMs = Date.now();
+
+    const payload = {
+      type: currentTab,
+      barcode: document.getElementById("barcodeInput").value,
+      itemName: document.getElementById("productSelect").value.trim(),
+      hsn: document.getElementById("hsnInput").value,
+      qty: document.getElementById("qtyInput").value,
+      rate: document.getElementById("rateInput").value,
+      totalAmount: document.getElementById("totalAmountInput").value,
+      paidAmount: document.getElementById("paidAmountInput").value || 0,
+      dueAmount: document.getElementById("dueAmountInput").value || 0,
+      partyName: document.getElementById("partyInput").value.trim().toUpperCase(),
+      companyName: document.getElementById("companyInput").value,
+      vehicleNo: document.getElementById("vehicleSelect").value.trim().toUpperCase(),
+      kmReading: document.getElementById("kmInput").value.trim(),
+      driverName: document.getElementById("driverInput").value,
+      remarks: document.getElementById("remarksInput").value
+    };
+
+    if (!payload.itemName) {
+      alert("Kripya Product Name dropdown se chunein!");
+      return;
+    }
+
+    if (currentTab === "OUT" && !payload.vehicleNo) {
+      alert("Kripya Vehicle Number dropdown se chunein!");
+      return;
+    }
+
+    if (currentTab === "IN" && !payload.partyName) {
+      alert("Kripya Supplier / Party Name daalein!");
+      return;
+    }
+
+    if (lastSubmissionPayload && (nowMs - lastSubmissionTime) < 20000) {
+      const isIdentical = (
+        lastSubmissionPayload.type === payload.type &&
+        lastSubmissionPayload.itemName === payload.itemName &&
+        lastSubmissionPayload.qty === payload.qty &&
+        lastSubmissionPayload.vehicleNo === payload.vehicleNo &&
+        lastSubmissionPayload.partyName === payload.partyName
+      );
+
+      if (isIdentical) {
+        const confirmSave = confirm("⚠️ Warning: Same entry abhi 20 second pehle save hui thi. Dobara save karein?");
+        if (!confirmSave) {
+          msg.innerText = "Entry cancelled.";
+          msg.style.color = "#718096";
+          return;
+        }
+      }
+    }
+
+    isSubmitting = true;
+    btn.disabled = true;
+    btn.innerText = "Saving to Sheet...";
+    msg.innerText = "⏳ Saving...";
+    msg.style.color = "#3182ce";
+
+    try {
+      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        playPosBeep("success");
+        msg.innerText = "✅ " + data.message;
+        msg.style.color = "#2f855a";
+
+        if (navigator.vibrate) navigator.vibrate(80);
+
+        renderRecentActivity({
+          type: payload.type,
+          itemName: payload.itemName,
+          qty: payload.qty,
+          totalAmount: payload.totalAmount,
+          dest: payload.type === "OUT" ? payload.vehicleNo : payload.partyName
+        });
+
+        lastSubmissionPayload = payload;
+        lastSubmissionTime = Date.now();
+
+        document.getElementById("stockForm").reset();
+        document.getElementById("qtyInput").value = "1";
+        document.getElementById("stockInHandBadge").classList.add("hidden");
+        document.getElementById("vehHistoryBtn").classList.add("hidden");
+        document.getElementById("productFilterBox").value = "";
+        renderProductDropdown();
+        updateClock();
+        document.getElementById("barcodeInput").focus();
+
+        loadSummary(false);
+        loadClosingData();
+        loadLedgerData(false);
+
+        startCooldownTimer(3);
+      } else {
+        msg.innerText = "❌ " + data.message;
+        msg.style.color = "#e53e3e";
+        btn.disabled = false;
+        btn.innerText = "Save Entry";
+        isSubmitting = false;
+      }
+    } catch(err) {
+      msg.innerText = "❌ Request Error: " + err.message;
+      msg.style.color = "#e53e3e";
+      btn.disabled = false;
+      btn.innerText = "Save Entry";
+      isSubmitting = false;
+    }
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    updateClock();
+    renderCompanyDropdowns();
+    renderVehicleDropdown();
+    renderProductDropdown();
+    fetchMasterData();
+    loadSummary();
+    loadLedgerData();
+  });
+</script>
+</body>
+</html>
