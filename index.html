@@ -114,10 +114,10 @@
 
     .veh-history-link { font-size: 11px; color: #3182ce; font-weight: bold; cursor: pointer; text-decoration: underline; margin-left: 6px; }
 
-    /* Recent Live Ticker */
-    .recent-box { margin-top: 20px; background: #f8fafc; border: 1px dashed #cbd5e0; border-radius: 8px; padding: 10px; }
-    .recent-header { font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase; margin-bottom: 6px; }
-    .recent-item { font-size: 12px; padding: 4px 0; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; }
+    /* Permanent Live Recent Ticker */
+    .recent-box { margin-top: 22px; background: #f8fafc; border: 1.5px dashed #cbd5e0; border-radius: 10px; padding: 12px; }
+    .recent-header { font-size: 11.5px; font-weight: 700; color: #4a5568; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .recent-item { font-size: 12px; padding: 6px 0; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; }
     .recent-item:last-child { border-bottom: none; }
 
     /* Modals */
@@ -128,7 +128,7 @@
     @media print {
       body { background: #fff; padding: 0; }
       .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
-      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .veh-history-link, #btnOpenPayModal, .search-filter-input {
+      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .btn-excel, .veh-history-link, #btnOpenPayModal, .search-filter-input {
         display: none !important;
       }
       .view-box { display: block !important; }
@@ -279,10 +279,13 @@
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
-  <!-- Live Mini Activity Ticker -->
+  <!-- Live Mini Activity Ticker (Permanent & Saved in Storage) -->
   <div class="recent-box" id="recentBox">
-    <div class="recent-header">📌 Recent Entries in this session</div>
-    <div id="recentList"><span style="font-size:12px; color:#a0aec0;">Abhi koi entry nahi hui hai.</span></div>
+    <div class="recent-header">
+      <span>📌 Recent Live Transactions</span>
+      <span style="font-size:10px; color:#718096; font-weight:normal;">Last 5 Entries</span>
+    </div>
+    <div id="recentList"><span style="font-size:12px; color:#a0aec0;">Loading recent entries...</span></div>
   </div>
 
   <!-- Stock Summary View -->
@@ -290,6 +293,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
       <h3 style="margin:0; font-size:15px; color:#1a202c;">Inventory Dashboard</h3>
       <div style="display:flex; gap:6px;">
+        <button type="button" class="btn-excel" onclick="exportSummaryToExcel()" style="padding:5px 9px; font-size:11px; background:#107c41; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">📊 Excel</button>
         <button type="button" class="btn-csv" onclick="exportSummaryToCSV()" style="padding:5px 9px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
         <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
         <button type="button" class="refresh-btn" onclick="loadSummary(true)" style="padding:5px 9px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
@@ -328,8 +332,9 @@
       <h3 style="margin:0; font-size:15px; color:#1a202c;">Supplier Accounting Ledger (Dr / Cr)</h3>
       <div style="display:flex; gap:6px;">
         <button type="button" id="btnOpenPayModal" onclick="openSupplierPaymentModal()" style="padding:5px 9px; font-size:11px; background:#28a745; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">➕ Pay Supplier</button>
+        <button type="button" class="btn-excel" onclick="exportLedgerToExcel()" style="padding:5px 9px; font-size:11px; background:#107c41; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">📊 Excel</button>
         <button type="button" class="btn-csv" onclick="exportLedgerToCSV()" style="padding:5px 9px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
-        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print</button>
+        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
       </div>
     </div>
 
@@ -374,6 +379,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h3 style="margin:0; font-size:15px; color:#1a202c;">Monthly Vehicle Consumption Report</h3>
       <div style="display:flex; gap:6px;">
+        <button type="button" class="btn-excel" onclick="exportClosingToExcel()" style="padding:5px 10px; font-size:11px; background:#107c41; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">📊 Excel</button>
         <button type="button" class="btn-csv" onclick="exportClosingToCSV()" style="padding:5px 10px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
         <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 10px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print / PDF</button>
       </div>
@@ -539,13 +545,15 @@
 
   try {
     productList = JSON.parse(localStorage.getItem("cached_products") || "[]");
+    recentEntries = JSON.parse(localStorage.getItem("cached_recent_entries") || "[]");
     let cachedVehicles = JSON.parse(localStorage.getItem("cached_vehicles_obj") || "[]");
     cachedVehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
     let cachedComps = JSON.parse(localStorage.getItem("cached_companies") || "[]");
     cachedComps.forEach(c => { if (!customCompanies.includes(c)) customCompanies.push(c); });
   } catch(e) {}
 
-  ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"].forEach(v => {
+  const defaultComrao = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
+  defaultComrao.forEach(v => {
     if (!vehicleMap.has(v)) vehicleMap.set(v, "COMRAO PVT. LTD");
   });
 
@@ -652,7 +660,6 @@
     if (curVal) compSel.value = curVal;
   }
 
-  // ONLY VEHICLE NUMBER (NO COMPANY BRACKETS)
   function renderVehicleDropdown() {
     const vSel = document.getElementById("vehicleSelect");
     const curVal = vSel.value;
@@ -661,14 +668,13 @@
     Array.from(vehicleMap.keys()).sort().forEach(v => {
       let opt = document.createElement("option");
       opt.value = v;
-      opt.innerText = v; // Only Vehicle Number shown
+      opt.innerText = v;
       vSel.appendChild(opt);
     });
 
     if (curVal) vSel.value = curVal;
   }
 
-  // AUTO SWITCH COMPANY ON VEHICLE CHANGE
   function onVehicleDropdownChange(vNo) {
     const cleanNo = (vNo || "").trim().toUpperCase();
     const compSel = document.getElementById("companyInput");
@@ -676,17 +682,18 @@
 
     if (!cleanNo) {
       compSel.value = "";
-      histBtn.classList.add("hidden");
+      if (histBtn) histBtn.classList.add("hidden");
       return;
     }
 
-    if (vehicleMap.has(cleanNo)) {
-      compSel.value = vehicleMap.get(cleanNo);
-    } else {
-      compSel.value = "GOKULESHWAR RD PVT. LTD";
+    let assignedCompany = vehicleMap.get(cleanNo);
+    if (!assignedCompany) {
+      assignedCompany = defaultComrao.includes(cleanNo) ? "COMRAO PVT. LTD" : "GOKULESHWAR RD PVT. LTD";
+      vehicleMap.set(cleanNo, assignedCompany);
     }
 
-    histBtn.classList.remove("hidden");
+    compSel.value = assignedCompany;
+    if (histBtn) histBtn.classList.remove("hidden");
   }
 
   function updateClock() {
@@ -810,15 +817,23 @@
         productList = data.products || [];
         localStorage.setItem("cached_products", JSON.stringify(productList));
 
+        defaultComrao.forEach(v => vehicleMap.set(v, "COMRAO PVT. LTD"));
+
         if (data.vehicles && Array.isArray(data.vehicles)) {
           data.vehicles.forEach(v => {
             if (v.vehicleNo) {
-              vehicleMap.set(v.vehicleNo, v.company);
-              if (v.company && !customCompanies.includes(v.company)) {
-                customCompanies.push(v.company);
+              let cleanNo = String(v.vehicleNo).trim().toUpperCase();
+              let comp = String(v.company || "").trim().toUpperCase();
+              if (!comp) {
+                comp = defaultComrao.includes(cleanNo) ? "COMRAO PVT. LTD" : "GOKULESHWAR RD PVT. LTD";
+              }
+              vehicleMap.set(cleanNo, comp);
+              if (comp && !customCompanies.includes(comp)) {
+                customCompanies.push(comp);
               }
             }
           });
+
           let arr = [];
           vehicleMap.forEach((comp, vNo) => arr.push({ vehicleNo: vNo, company: comp }));
           localStorage.setItem("cached_vehicles_obj", JSON.stringify(arr));
@@ -878,6 +893,43 @@
     document.getElementById("dueAmountInput").value = (due >= 0 ? due : 0).toFixed(2);
   }
 
+  // --- RECENT ENTRIES ENGINE (LIVE + PERSISTENT) ---
+  function renderRecentActivity(entry = null) {
+    if (entry) {
+      recentEntries.unshift(entry);
+      if (recentEntries.length > 5) recentEntries.pop();
+      localStorage.setItem("cached_recent_entries", JSON.stringify(recentEntries));
+    }
+
+    const container = document.getElementById("recentList");
+    if (!recentEntries || recentEntries.length === 0) {
+      container.innerHTML = `<span style="font-size:12px; color:#a0aec0;">Abhi tak koi entry save nahi hui hai.</span>`;
+      return;
+    }
+
+    let html = "";
+    recentEntries.forEach(r => {
+      const isIN = r.type === "IN";
+      const tag = isIN 
+        ? `<span style='background:#c6f6d5; color:#22543d; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;'>IN</span>` 
+        : `<span style='background:#fed7d7; color:#742a2a; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;'>OUT</span>`;
+      
+      html += `
+        <div class="recent-item">
+          <div>
+            ${tag} <b style="color:#2d3748; margin-left:4px;">${r.itemName}</b> 
+            <span style="color:#718096; font-size:11.5px;">(${r.qty} pcs)</span>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:700; color:#2b6cb0;">₹${Number(r.totalAmount || 0).toLocaleString('en-IN')}</div>
+            <div style="font-size:10.5px; color:#718096;">${r.dest || '-'}</div>
+          </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  // Automatic Inactivity Sync
   document.addEventListener("keydown", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
   document.addEventListener("input", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
   setInterval(() => {
@@ -1128,6 +1180,81 @@
     renderPartyLedger();
   }
 
+  // --- EXCEL & CSV UTILITIES ---
+  function downloadExcelTable(tableHtml, filename) {
+    const template = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+            xmlns:x="urn:schemas-microsoft-com:office:excel" 
+            xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <!--[if gte mso 9]>
+        <xml>
+          <x:ExcelWorkbook>
+            <x:ExcelWorksheets>
+              <x:ExcelWorksheet>
+                <x:Name>Sheet1</x:Name>
+                <x:WorksheetOptions>
+                  <x:DisplayGridlines/>
+                </x:WorksheetOptions>
+              </x:ExcelWorksheet>
+            </x:ExcelWorksheets>
+          </x:ExcelWorkbook>
+        </xml>
+        <![endif]-->
+        <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
+        <style>
+          th { background-color: #2b6cb0; color: #ffffff; font-weight: bold; border: 1px solid #999; }
+          td { border: 1px solid #ccc; }
+        </style>
+      </head>
+      <body>
+        ${tableHtml}
+      </body>
+      </html>`;
+    const blob = new Blob([template], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+  }
+
+  function downloadCSVFile(csvContent, fileName) {
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+  }
+
+  function exportSummaryToExcel() {
+    if (!summaryRawData || summaryRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
+    let html = `<table><tr><th>Item Name</th><th>Total In</th><th>Total Out</th><th>Current Balance</th><th>Rate</th><th>Total Value</th></tr>`;
+    summaryRawData.forEach(r => {
+      html += `<tr><td>${r.item}</td><td>${r.totalIn}</td><td>${r.totalOut}</td><td>${r.balance}</td><td>${r.rate}</td><td>${r.totalValue}</td></tr>`;
+    });
+    html += `</table>`;
+    downloadExcelTable(html, "Stock_Summary.xls");
+  }
+
+  function exportSummaryToCSV() {
+    if (!summaryRawData || summaryRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
+    let csv = "Item,Total In,Total Out,Balance,Rate,Total Value\n";
+    summaryRawData.forEach(r => {
+      csv += `"${r.item}",${r.totalIn},${r.totalOut},${r.balance},${r.rate},${r.totalValue}\n`;
+    });
+    downloadCSVFile(csv, "Stock_Summary.csv");
+  }
+
+  function exportLedgerToExcel() {
+    if (!ledgerRawData || ledgerRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
+    let html = `<table><tr><th>Date</th><th>Party Name</th><th>Particulars</th><th>Voucher Type</th><th>Ref No</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr>`;
+    ledgerRawData.forEach(r => {
+      html += `<tr><td>${r.displayDate || r.date}</td><td>${r.party}</td><td>${r.particulars}</td><td>${r.voucherType}</td><td>${r.refNo || ''}</td><td>${r.dr}</td><td>${r.cr}</td></tr>`;
+    });
+    html += `</table>`;
+    downloadExcelTable(html, "Supplier_Ledger.xls");
+  }
+
   function exportLedgerToCSV() {
     if (!ledgerRawData || ledgerRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
     let csv = "Date,Party,Particulars,VoucherType,RefNo,Debit (Dr),Credit (Cr)\n";
@@ -1135,6 +1262,25 @@
       csv += `"${r.displayDate || r.date}","${r.party}","${r.particulars}","${r.voucherType}","${r.refNo || ''}",${r.dr},${r.cr}\n`;
     });
     downloadCSVFile(csv, "Supplier_Accounting_Ledger.csv");
+  }
+
+  function exportClosingToExcel() {
+    if (!closingRawData || closingRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
+    let html = `<table><tr><th>Date</th><th>Company</th><th>Vehicle No</th><th>Spare Part Name</th><th>HSN</th><th>Qty</th><th>KM/Hours</th><th>Rate</th><th>Total Amount</th><th>Driver Name</th></tr>`;
+    closingRawData.forEach(r => {
+      html += `<tr><td>${r.displayDate || r.date}</td><td>${r.company}</td><td>${r.vehicle}</td><td>${r.item}</td><td>${r.hsn || ''}</td><td>${r.qty}</td><td>${r.km || ''}</td><td>${r.rate}</td><td>${r.amount}</td><td>${r.driver || ''}</td></tr>`;
+    });
+    html += `</table>`;
+    downloadExcelTable(html, "Month_Closing_Report.xls");
+  }
+
+  function exportClosingToCSV() {
+    if (!closingRawData || closingRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
+    let csv = "Date,Company,Vehicle,Item,Qty,Rate,Amount,KM Reading\n";
+    closingRawData.forEach(r => {
+      csv += `"${r.displayDate || r.date}","${r.company}","${r.vehicle}","${r.item}",${r.qty},${r.rate},${r.amount},"${r.km || ''}"\n`;
+    });
+    downloadCSVFile(csv, "Month_Closing_Report.csv");
   }
 
   function openSupplierPaymentModal() {
@@ -1197,6 +1343,21 @@
       if (resData.status === "success") {
         closingRawData = resData.data;
         renderClosingReport();
+
+        // Agar recent entries phone memory me na ho toh sheet se seedhe load karlo
+        if (recentEntries.length === 0 && closingRawData.length > 0) {
+          const latestOuts = closingRawData.slice(-5).reverse();
+          latestOuts.forEach(o => {
+            recentEntries.push({
+              type: "OUT",
+              itemName: o.item,
+              qty: o.qty,
+              totalAmount: o.amount,
+              dest: o.vehicle
+            });
+          });
+          renderRecentActivity();
+        }
       }
     } catch (e) { container.innerHTML = "Error loading closing data."; }
   }
@@ -1386,32 +1547,6 @@
     document.getElementById("closingStartDate").value = "";
     document.getElementById("closingEndDate").value = "";
     renderClosingReport();
-  }
-
-  function exportSummaryToCSV() {
-    if (!summaryRawData || summaryRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let csv = "Item,Total In,Total Out,Balance,Rate,Total Value\n";
-    summaryRawData.forEach(r => {
-      csv += `"${r.item}",${r.totalIn},${r.totalOut},${r.balance},${r.rate},${r.totalValue}\n`;
-    });
-    downloadCSVFile(csv, "Stock_Summary.csv");
-  }
-
-  function exportClosingToCSV() {
-    if (!closingRawData || closingRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let csv = "Date,Company,Vehicle,Item,Qty,Rate,Amount,KM Reading\n";
-    closingRawData.forEach(r => {
-      csv += `"${r.displayDate || r.date}","${r.company}","${r.vehicle}","${r.item}",${r.qty},${r.rate},${r.amount},"${r.km || ''}"\n`;
-    });
-    downloadCSVFile(csv, "Month_Closing_Report.csv");
-  }
-
-  function downloadCSVFile(csvContent, fileName) {
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    link.click();
   }
 
   async function loadSummary(isManualRefresh = false) {
@@ -1611,23 +1746,6 @@
     }, 1000);
   }
 
-  function renderRecentActivity(entry) {
-    recentEntries.unshift(entry);
-    if (recentEntries.length > 5) recentEntries.pop();
-
-    const container = document.getElementById("recentList");
-    let html = "";
-    recentEntries.forEach(r => {
-      const tag = r.type === "IN" ? "<span style='color:#2f855a;font-weight:bold;'>[IN]</span>" : "<span style='color:#c53030;font-weight:bold;'>[OUT]</span>";
-      html += `
-        <div class="recent-item">
-          <div>${tag} <b>${r.itemName}</b> (${r.qty} pcs)</div>
-          <div style="color:#718096;">₹${r.totalAmount} | ${r.dest}</div>
-        </div>`;
-    });
-    container.innerHTML = html;
-  }
-
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -1706,6 +1824,7 @@
 
         if (navigator.vibrate) navigator.vibrate(80);
 
+        // Instant Update to Activity Ticker
         renderRecentActivity({
           type: payload.type,
           itemName: payload.itemName,
@@ -1752,9 +1871,11 @@
     renderCompanyDropdowns();
     renderVehicleDropdown();
     renderProductDropdown();
+    renderRecentActivity(); // Render immediate stored transactions
     fetchMasterData();
     loadSummary();
     loadLedgerData();
+    loadClosingData();
   });
 </script>
 </body>
