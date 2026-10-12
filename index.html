@@ -233,7 +233,7 @@
       <datalist id="partyDataList"></datalist>
     </div>
 
-    <!-- Vehicle Select Dropdown with Auto Company Fetch -->
+    <!-- Vehicle Select Dropdown (ONLY VEHICLE NUMBER SHOWN) -->
     <div class="form-group hidden" id="vehicleGroup">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -247,7 +247,7 @@
       </select>
     </div>
 
-    <!-- Company Select Dropdown with Add Company Option -->
+    <!-- Company Select Dropdown (SEPARATE FIELD) -->
     <div class="form-group hidden" id="companyGroup">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <label>Company Name (Auto Selected)</label>
@@ -652,6 +652,7 @@
     if (curVal) compSel.value = curVal;
   }
 
+  // ONLY VEHICLE NUMBER (NO COMPANY BRACKETS)
   function renderVehicleDropdown() {
     const vSel = document.getElementById("vehicleSelect");
     const curVal = vSel.value;
@@ -660,14 +661,14 @@
     Array.from(vehicleMap.keys()).sort().forEach(v => {
       let opt = document.createElement("option");
       opt.value = v;
-      let comp = vehicleMap.get(v) || "";
-      opt.innerText = comp ? `${v} (${comp})` : v;
+      opt.innerText = v; // Only Vehicle Number shown
       vSel.appendChild(opt);
     });
 
     if (curVal) vSel.value = curVal;
   }
 
+  // AUTO SWITCH COMPANY ON VEHICLE CHANGE
   function onVehicleDropdownChange(vNo) {
     const cleanNo = (vNo || "").trim().toUpperCase();
     const compSel = document.getElementById("companyInput");
