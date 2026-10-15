@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
     body { background: #f0f4f8; margin: 0; padding: 12px; color: #2d3748; }
-    .container { max-width: 680px; margin: auto; background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    .container { max-width: 700px; margin: auto; background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
     
     /* Modern Pill Segmented Tabs */
     .tab-header { 
@@ -47,7 +47,7 @@
     input:focus, select:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15); }
 
     .barcode-row { display: flex; gap: 8px; }
-    .btn-scan { background: #319795; color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn-scan { background: #319795; color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap; }
 
     /* Search Box inside Product Section */
     .search-filter-input {
@@ -102,10 +102,23 @@
     .custom-table th { background: #2b6cb0; color: white; font-weight: 600; }
     
     .company-title-banner { background: #1a365d; color: #fff; padding: 9px 12px; font-size: 13.5px; font-weight: bold; border-radius: 6px; margin-top: 15px; }
-    .party-title-banner { background: #2c5282; color: #fff; padding: 9px 12px; font-size: 13.5px; font-weight: bold; border-radius: 6px; margin-top: 15px; display: flex; justify-content: space-between; }
     .vehicle-header-bar { background: #edf2f7; color: #2d3748; font-weight: bold; padding: 6px 10px; font-size: 12.5px; border-left: 4px solid #3182ce; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
     .subtotal-row { background: #f7fafc; font-weight: bold; color: #2b6cb0; }
     .company-total-banner { background: #e2e3e5; font-weight: bold; color: #1a202c; padding: 7px 10px; text-align: right; border-radius: 4px; margin-top: 4px; font-size: 12.5px; }
+
+    /* Tally Style Ledger Account Banner */
+    .tally-account-header {
+      background: #1a365d;
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 8px 8px 0 0;
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tally-title { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; }
+    .tally-period { font-size: 11px; color: #bee3f8; }
     
     .summary-heading { margin-top: 25px; font-size: 14px; font-weight: 800; color: #2d3748; text-transform: uppercase; border-bottom: 2px solid #4a5568; padding-bottom: 4px; }
     .company-summary-row { background: #ffff00; font-weight: bold; color: #000; }
@@ -128,13 +141,13 @@
     @media print {
       body { background: #fff; padding: 0; }
       .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
-      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .btn-excel, .veh-history-link, #btnOpenPayModal, .search-filter-input {
+      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .btn-excel, .veh-history-link, #btnOpenPayModal, .search-filter-input, .btn-back-summary {
         display: none !important;
       }
       .view-box { display: block !important; }
       .custom-table { width: 100%; border: 1px solid #000; font-size: 11px; }
       .custom-table th, .custom-table td { border: 1px solid #000; padding: 4px 6px; color: #000; }
-      .company-title-banner, .party-title-banner { background: #ddd !important; color: #000 !important; border: 1px solid #000; -webkit-print-color-adjust: exact; }
+      .company-title-banner, .tally-account-header { background: #ddd !important; color: #000 !important; border: 1px solid #000; -webkit-print-color-adjust: exact; }
       .company-summary-row { background: #ffff00 !important; -webkit-print-color-adjust: exact; }
     }
   </style>
@@ -326,10 +339,10 @@
     <div id="summaryContent" style="margin-top:6px;">Loading live stock summary...</div>
   </div>
 
-  <!-- Accounting Party Ledger (Dr / Cr & Outstanding) -->
+  <!-- TALLY STYLE ACCOUNTING PARTY LEDGER -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="margin:0; font-size:15px; color:#1a202c;">Supplier Accounting Ledger (Dr / Cr)</h3>
+      <h3 style="margin:0; font-size:15px; color:#1a202c;">Tally Supplier Ledger (Dr / Cr)</h3>
       <div style="display:flex; gap:6px;">
         <button type="button" id="btnOpenPayModal" onclick="openSupplierPaymentModal()" style="padding:5px 9px; font-size:11px; background:#28a745; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">➕ Pay Supplier</button>
         <button type="button" class="btn-excel" onclick="exportLedgerToExcel()" style="padding:5px 9px; font-size:11px; background:#107c41; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">📊 Excel</button>
@@ -338,40 +351,42 @@
       </div>
     </div>
 
+    <!-- Tally Dynamic KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-title">Total Bill (Dr)</div>
+        <div class="kpi-title" id="kpiDrLabel">Total Purchases (Dr)</div>
         <div class="kpi-val" id="kpiLedgerTotal">₹0</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Total Paid (Cr)</div>
+        <div class="kpi-title" id="kpiCrLabel">Total Payments (Cr)</div>
         <div class="kpi-val" id="kpiLedgerPaid" style="color:#2f855a;">₹0</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Net Due (Baki)</div>
+        <div class="kpi-title">Closing Balance (Due)</div>
         <div class="kpi-val" id="kpiLedgerDue" style="color:#c53030;">₹0</div>
       </div>
     </div>
 
+    <!-- Tally Account Filter Bar -->
     <div id="ledgerDateFilters" style="display:flex; gap:6px; align-items:flex-end; margin-bottom:12px;">
       <div style="flex:1;">
-        <label>Start Date</label>
+        <label>From Date</label>
         <input type="date" id="ledgerStartDate" onchange="renderPartyLedger()">
       </div>
       <div style="flex:1;">
-        <label>End Date</label>
+        <label>To Date</label>
         <input type="date" id="ledgerEndDate" onchange="renderPartyLedger()">
       </div>
-      <div style="flex:1.2;">
-        <label>View Mode</label>
+      <div style="flex:1.3;">
+        <label>Select Ledger Account</label>
         <select id="ledgerPartyFilter" onchange="renderPartyLedger()">
           <option value="">-- All Parties Summary --</option>
         </select>
       </div>
-      <button type="button" onclick="clearLedgerFilters()" style="padding:9px 12px; background:#718096; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Reset</button>
+      <button type="button" onclick="clearLedgerFilters()" style="padding:9px 12px; background:#718096; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">All</button>
     </div>
 
-    <div id="ledgerContent">Loading supplier ledger...</div>
+    <div id="ledgerContent">Loading Tally ledger account...</div>
   </div>
 
   <!-- Month Closing Report View -->
@@ -420,27 +435,38 @@
 <!-- Modal: Record Supplier Payment (Cr Voucher) -->
 <div class="modal" id="supplierPaymentModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; color:#2d3748;">➕ Record Supplier Payment (Cr)</h3>
+    <h3 style="margin-top:0; color:#2d3748;">➕ Record Supplier Payment (Cr Voucher)</h3>
+    
     <div class="form-group">
-      <label>Supplier / Party Name</label>
-      <input type="text" id="payPartyInput" placeholder="Party Name" list="partyDataList" required>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>Select Supplier / Party</label>
+        <span id="paySupplierDueBadge" style="font-size:11px; font-weight:bold; color:#c53030;"></span>
+      </div>
+      <select id="payPartySelect" onchange="onPaySupplierSelect(this.value)">
+        <option value="">-- Select Supplier --</option>
+      </select>
+      <input type="text" id="payPartyCustomInput" class="hidden" placeholder="Type new supplier name..." style="margin-top:6px; text-transform:uppercase;">
     </div>
+
     <div class="form-group">
       <label>Amount Paid (₹)</label>
       <input type="number" id="payAmountInput" step="0.01" placeholder="Amount (₹)" required>
     </div>
+    
     <div class="form-group">
-      <label>Payment Mode</label>
+      <label>Payment Mode / Account</label>
       <select id="payModeInput">
         <option value="Online / Bank Transfer">Online / Bank Transfer (NEFT/RTGS/UPI)</option>
         <option value="Cash">Cash</option>
         <option value="Cheque">Cheque</option>
       </select>
     </div>
+    
     <div class="form-group">
       <label>Ref / Voucher No / Remarks</label>
       <input type="text" id="payRefInput" placeholder="UTR / Cheque No / Notes">
     </div>
+    
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" id="savePayBtn" onclick="saveSupplierPayment()" style="flex:1; background:#38a169; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Save Payment</button>
       <button type="button" onclick="closeSupplierPaymentModal()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
@@ -459,17 +485,20 @@
   </div>
 </div>
 
-<!-- Modal: Add Product (WITH DUPLICATE & TIMER FIX) -->
+<!-- Modal: Add Product (WITH BARCODE SCANNER & DUPLICATE PROTECTION) -->
 <div class="modal" id="addProductModal">
   <div class="modal-content">
     <h3 style="margin-top:0; color:#2d3748;">Add New Product</h3>
     <div class="form-group">
       <label>Barcode</label>
-      <input type="text" id="newProdBarcode" placeholder="Barcode">
+      <div class="barcode-row">
+        <input type="text" id="newProdBarcode" placeholder="Type or scan barcode...">
+        <button type="button" class="btn-scan" onclick="startScanner('MODAL')">📷 Scan</button>
+      </div>
     </div>
     <div class="form-group">
       <label>Product Name</label>
-      <input type="text" id="newProdName" required placeholder="e.g. Mobile Oil 15W40">
+      <input type="text" id="newProdName" required placeholder="e.g. Mobil Oil 15W40">
     </div>
     <div class="form-group">
       <label>HSN Code</label>
@@ -543,7 +572,6 @@
   let lastUserActivityTime = Date.now();
   let isUserTyping = false;
 
-  // Modal protection flags
   let isSavingProduct = false;
   let isSavingVehicle = false;
 
@@ -1002,6 +1030,7 @@
       if (resData.status === "success") {
         ledgerRawData = resData.data;
         populatePartyFilterOptions();
+        populateSupplierPaymentDropdown();
         renderPartyLedger();
       }
     } catch (e) {
@@ -1028,6 +1057,60 @@
     if (currentVal) pSel.value = currentVal;
   }
 
+  function populateSupplierPaymentDropdown() {
+    const paySel = document.getElementById("payPartySelect");
+    const curVal = paySel.value;
+    const parties = [...new Set(ledgerRawData.map(r => r.party).filter(Boolean))].sort();
+
+    paySel.innerHTML = '<option value="">-- Select Supplier --</option>';
+    parties.forEach(p => {
+      let opt = document.createElement("option");
+      opt.value = p;
+      opt.innerText = p;
+      paySel.appendChild(opt);
+    });
+
+    let customOpt = document.createElement("option");
+    customOpt.value = "__NEW_SUPPLIER__";
+    customOpt.innerText = "➕ Type New Supplier...";
+    paySel.appendChild(customOpt);
+
+    if (curVal && curVal !== "__NEW_SUPPLIER__") {
+      paySel.value = curVal;
+      onPaySupplierSelect(curVal);
+    }
+  }
+
+  function onPaySupplierSelect(val) {
+    const customInput = document.getElementById("payPartyCustomInput");
+    const dueBadge = document.getElementById("paySupplierDueBadge");
+
+    if (val === "__NEW_SUPPLIER__") {
+      customInput.classList.remove("hidden");
+      customInput.focus();
+      dueBadge.innerText = "";
+      return;
+    }
+
+    customInput.classList.add("hidden");
+    customInput.value = "";
+
+    if (!val) {
+      dueBadge.innerText = "";
+      return;
+    }
+
+    let due = 0;
+    ledgerRawData.filter(r => r.party === val).forEach(it => {
+      due += (Number(it.dr || 0) - Number(it.cr || 0));
+    });
+
+    dueBadge.innerText = `Due: ₹${due.toLocaleString('en-IN')}`;
+    if (due <= 0) dueBadge.style.color = "#2f855a";
+    else dueBadge.style.color = "#c53030";
+  }
+
+  // --- TALLY STYLE DETAILED LEDGER ACCOUNT RENDERER ---
   function renderPartyLedger() {
     const container = document.getElementById("ledgerContent");
     const sDate = document.getElementById("ledgerStartDate").value;
@@ -1039,6 +1122,7 @@
       return;
     }
 
+    // Filter by Date Range and Party
     let filtered = ledgerRawData.filter(r => {
       let rowDate = normalizeToISODate(r.date);
       if (sDate && rowDate < sDate) return false;
@@ -1049,21 +1133,26 @@
 
     if (filtered.length === 0) {
       container.innerHTML = `<div style="text-align:center; padding:15px; color:#718096;">
-        <p>⚠️ Selected filter ke liye koi record nahi mila.</p>
-        <button type="button" onclick="clearLedgerFilters()" style="padding:6px 14px; background:#3182ce; color:white; border:none; border-radius:4px; cursor:pointer;">Saara Ledger Dekhein</button>
+        <p>⚠️ Selected date range / party ke liye koi entry nahi mili.</p>
+        <button type="button" onclick="clearLedgerFilters()" style="padding:6px 14px; background:#3182ce; color:white; border:none; border-radius:4px; cursor:pointer;">Show All Ledger</button>
       </div>`;
       return;
     }
 
+    // MODE 1: ALL PARTIES CONSOLIDATED SUMMARY (Tally Group Summary)
     if (!selectedParty) {
+      document.getElementById("kpiDrLabel").innerText = "Total Purchases (Dr)";
+      document.getElementById("kpiCrLabel").innerText = "Total Payments (Cr)";
+
       const partySummary = {};
       let totalDr = 0, totalCr = 0;
 
       filtered.forEach(r => {
         const p = r.party || "OTHER";
-        if (!partySummary[p]) partySummary[p] = { dr: 0, cr: 0 };
+        if (!partySummary[p]) partySummary[p] = { dr: 0, cr: 0, txnCount: 0 };
         partySummary[p].dr += (r.dr || 0);
         partySummary[p].cr += (r.cr || 0);
+        partySummary[p].txnCount += 1;
         totalDr += (r.dr || 0);
         totalCr += (r.cr || 0);
       });
@@ -1073,14 +1162,16 @@
       document.getElementById("kpiLedgerDue").innerText = "₹" + (totalDr - totalCr).toLocaleString('en-IN');
 
       let html = `
-        <div style="font-weight:bold; margin-bottom:6px; font-size:13px; color:#2c5282;">📋 All Parties Summary (Click party to view full statement):</div>
+        <div style="font-weight:bold; margin-bottom:6px; font-size:13px; color:#2c5282;">
+          📋 All Supplier Ledger Accounts (Click party name to view detailed Tally Ledger):
+        </div>
         <table class="custom-table">
           <thead>
             <tr>
               <th>Supplier / Party Name</th>
-              <th style="text-align:right;">Total Bill (Dr)</th>
-              <th style="text-align:right;">Total Paid (Cr)</th>
-              <th style="text-align:right;">Balance Due</th>
+              <th style="text-align:right;">Debit / Purchases (₹)</th>
+              <th style="text-align:right;">Credit / Payments (₹)</th>
+              <th style="text-align:right;">Closing Balance (₹)</th>
             </tr>
           </thead>
           <tbody>
@@ -1092,11 +1183,14 @@
         let bal = dr - cr;
         html += `
           <tr style="cursor:pointer;" onclick="selectPartyInFilter('${p}')">
-            <td><b style="color:#2b6cb0;">🏪 ${p}</b></td>
+            <td>
+              <b style="color:#2b6cb0;">🏪 ${p}</b> 
+              <span style="font-size:10px; color:#718096;">(${partySummary[p].txnCount} entries)</span>
+            </td>
             <td style="text-align:right;">₹${dr.toLocaleString('en-IN')}</td>
             <td style="text-align:right; color:#2f855a;">₹${cr.toLocaleString('en-IN')}</td>
             <td style="text-align:right; font-weight:bold; color:${bal > 0 ? '#c53030' : '#2f855a'};">
-              ₹${bal.toLocaleString('en-IN')} ${bal > 0 ? '(Due)' : '(Nil)'}
+              ₹${bal.toLocaleString('en-IN')} ${bal > 0 ? 'Dr' : 'Nil'}
             </td>
           </tr>
         `;
@@ -1107,7 +1201,7 @@
             <td>GRAND TOTAL:</td>
             <td style="text-align:right;">₹${totalDr.toLocaleString('en-IN')}</td>
             <td style="text-align:right; color:#2f855a;">₹${totalCr.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#c53030;">₹${(totalDr - totalCr).toLocaleString('en-IN')}</td>
+            <td style="text-align:right; color:#c53030;">₹${(totalDr - totalCr).toLocaleString('en-IN')} Dr</td>
           </tr>
         </tbody>
       </table>`;
@@ -1116,22 +1210,32 @@
       return;
     }
 
+    // MODE 2: TALLY STYLE DETAILED STATEMENT FOR INDIVIDUAL PARTY
+    document.getElementById("kpiDrLabel").innerText = `Total Purchases (${selectedParty})`;
+    document.getElementById("kpiCrLabel").innerText = `Total Paid (${selectedParty})`;
+
     let runningBalance = 0;
     let pTotalDr = 0, pTotalCr = 0;
 
+    let periodText = (sDate && eDate) ? `${formatToDisplayDate(sDate)} to ${formatToDisplayDate(eDate)}` : "All Time Transactions";
+
     let html = `
-      <div class="party-title-banner">
-        <span>🏪 Statement for: ${selectedParty}</span>
-        <button type="button" onclick="clearLedgerFilters()" style="background:#fff; color:#2c5282; border:none; padding:2px 8px; border-radius:4px; font-size:11px; cursor:pointer;">Back to Summary</button>
+      <div class="tally-account-header">
+        <div>
+          <div class="tally-title">Ledger Account: <b>${selectedParty}</b></div>
+          <div class="tally-period">Period: ${periodText}</div>
+        </div>
+        <button type="button" class="btn-back-summary" onclick="clearLedgerFilters()" style="background:#fff; color:#1a365d; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">⬅ Back to All Parties</button>
       </div>
-      <table class="custom-table">
+      <table class="custom-table" style="margin-top:0; border-top:none;">
         <thead>
           <tr>
-            <th style="width:16%;">Date</th>
-            <th>Particulars / Details</th>
-            <th style="width:14%; text-align:right;">Debit (Dr)</th>
-            <th style="width:14%; text-align:right;">Credit (Cr)</th>
-            <th style="width:16%; text-align:right;">Balance Due</th>
+            <th style="width:15%;">Date</th>
+            <th>Particulars (Item / Voucher)</th>
+            <th style="width:13%;">Vch Type</th>
+            <th style="width:15%; text-align:right;">Debit / Bill (₹)</th>
+            <th style="width:15%; text-align:right;">Credit / Paid (₹)</th>
+            <th style="width:18%; text-align:right;">Balance Due (₹)</th>
           </tr>
         </thead>
         <tbody>
@@ -1145,25 +1249,38 @@
       runningBalance += (dr - cr);
 
       let dateToShow = formatToDisplayDate(it.displayDate || it.date);
+      let isPayment = (it.voucherType === "PAYMENT" || cr > 0);
+      let vchBadge = isPayment
+        ? `<span style="background:#c6f6d5; color:#22543d; font-size:9.5px; font-weight:700; padding:1px 5px; border-radius:3px;">PAYMENT</span>`
+        : `<span style="background:#bee3f8; color:#2b6cb0; font-size:9.5px; font-weight:700; padding:1px 5px; border-radius:3px;">PURCHASE</span>`;
+
       html += `
         <tr>
           <td>${dateToShow}</td>
-          <td><b>${it.particulars}</b> <span style="font-size:10px; color:#718096;">${it.refNo ? '[' + it.refNo + ']' : ''}</span></td>
-          <td style="text-align:right; color:#c53030;">${dr > 0 ? '₹' + dr.toLocaleString('en-IN') : '-'}</td>
-          <td style="text-align:right; color:#2f855a; font-weight:600;">${cr > 0 ? '₹' + cr.toLocaleString('en-IN') : '-'}</td>
-          <td style="text-align:right; font-weight:bold; color:${runningBalance > 0 ? '#c53030' : '#2f855a'};">
-            ₹${runningBalance.toLocaleString('en-IN')}
+          <td>
+            <b>${it.particulars}</b> 
+            ${it.refNo ? `<span style="font-size:10px; color:#718096; display:block;">Ref: ${it.refNo}</span>` : ''}
+          </td>
+          <td>${vchBadge}</td>
+          <td style="text-align:right; font-weight:600; color:${dr > 0 ? '#2d3748' : '#a0aec0'};">
+            ${dr > 0 ? '₹' + dr.toLocaleString('en-IN') : '-'}
+          </td>
+          <td style="text-align:right; font-weight:700; color:${cr > 0 ? '#2f855a' : '#a0aec0'};">
+            ${cr > 0 ? '₹' + cr.toLocaleString('en-IN') : '-'}
+          </td>
+          <td style="text-align:right; font-weight:800; color:${runningBalance > 0 ? '#c53030' : '#2f855a'};">
+            ₹${runningBalance.toLocaleString('en-IN')} ${runningBalance > 0 ? 'Dr' : 'Nil'}
           </td>
         </tr>
       `;
     });
 
     html += `
-        <tr class="subtotal-row">
-          <td colspan="2" style="text-align:right;">Total for ${selectedParty}:</td>
-          <td style="text-align:right; color:#c53030;">₹${pTotalDr.toLocaleString('en-IN')}</td>
-          <td style="text-align:right; color:#2f855a;">₹${pTotalCr.toLocaleString('en-IN')}</td>
-          <td style="text-align:right; color:#c53030; font-size:13px;">₹${(pTotalDr - pTotalCr).toLocaleString('en-IN')} (Due)</td>
+        <tr class="subtotal-row" style="background:#edf2f7; font-size:12.5px;">
+          <td colspan="3" style="text-align:right;">Total (${selectedParty}):</td>
+          <td style="text-align:right; color:#2d3748; font-weight:bold;">₹${pTotalDr.toLocaleString('en-IN')}</td>
+          <td style="text-align:right; color:#2f855a; font-weight:bold;">₹${pTotalCr.toLocaleString('en-IN')}</td>
+          <td style="text-align:right; color:#c53030; font-weight:bold;">₹${(pTotalDr - pTotalCr).toLocaleString('en-IN')} Dr</td>
         </tr>
       </tbody>
     </table>`;
@@ -1187,6 +1304,7 @@
     renderPartyLedger();
   }
 
+  // --- EXCEL & CSV UTILITIES ---
   function downloadExcelTable(tableHtml, filename) {
     const template = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" 
@@ -1253,21 +1371,27 @@
 
   function exportLedgerToExcel() {
     if (!ledgerRawData || ledgerRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let html = `<table><tr><th>Date</th><th>Party Name</th><th>Particulars</th><th>Voucher Type</th><th>Ref No</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr>`;
-    ledgerRawData.forEach(r => {
+    const selectedParty = document.getElementById("ledgerPartyFilter").value;
+    let dataToExport = selectedParty ? ledgerRawData.filter(r => r.party === selectedParty) : ledgerRawData;
+
+    let html = `<table><tr><th>Date</th><th>Party Name</th><th>Particulars</th><th>Voucher Type</th><th>Ref No</th><th>Debit / Purchases (Dr)</th><th>Credit / Payments (Cr)</th></tr>`;
+    dataToExport.forEach(r => {
       html += `<tr><td>${r.displayDate || r.date}</td><td>${r.party}</td><td>${r.particulars}</td><td>${r.voucherType}</td><td>${r.refNo || ''}</td><td>${r.dr}</td><td>${r.cr}</td></tr>`;
     });
     html += `</table>`;
-    downloadExcelTable(html, "Supplier_Ledger.xls");
+    downloadExcelTable(html, `${selectedParty ? selectedParty + '_Ledger' : 'All_Suppliers_Ledger'}.xls`);
   }
 
   function exportLedgerToCSV() {
     if (!ledgerRawData || ledgerRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
+    const selectedParty = document.getElementById("ledgerPartyFilter").value;
+    let dataToExport = selectedParty ? ledgerRawData.filter(r => r.party === selectedParty) : ledgerRawData;
+
     let csv = "Date,Party,Particulars,VoucherType,RefNo,Debit (Dr),Credit (Cr)\n";
-    ledgerRawData.forEach(r => {
+    dataToExport.forEach(r => {
       csv += `"${r.displayDate || r.date}","${r.party}","${r.particulars}","${r.voucherType}","${r.refNo || ''}",${r.dr},${r.cr}\n`;
     });
-    downloadCSVFile(csv, "Supplier_Accounting_Ledger.csv");
+    downloadCSVFile(csv, `${selectedParty ? selectedParty + '_Ledger' : 'All_Suppliers_Ledger'}.csv`);
   }
 
   function exportClosingToExcel() {
@@ -1290,7 +1414,16 @@
   }
 
   function openSupplierPaymentModal() {
-    document.getElementById("payPartyInput").value = document.getElementById("ledgerPartyFilter").value || "";
+    populateSupplierPaymentDropdown();
+    const currentPartyFilter = document.getElementById("ledgerPartyFilter").value;
+    if (currentPartyFilter) {
+      document.getElementById("payPartySelect").value = currentPartyFilter;
+      onPaySupplierSelect(currentPartyFilter);
+    } else {
+      document.getElementById("payPartySelect").value = "";
+      onPaySupplierSelect("");
+    }
+
     document.getElementById("payAmountInput").value = "";
     document.getElementById("payRefInput").value = "";
     document.getElementById("supplierPaymentModal").style.display = "flex";
@@ -1301,12 +1434,20 @@
   }
 
   async function saveSupplierPayment() {
-    const party = document.getElementById("payPartyInput").value.trim().toUpperCase();
+    const selParty = document.getElementById("payPartySelect").value;
+    let party = "";
+
+    if (selParty === "__NEW_SUPPLIER__") {
+      party = document.getElementById("payPartyCustomInput").value.trim().toUpperCase();
+    } else {
+      party = selParty.trim().toUpperCase();
+    }
+
     const amt = parseFloat(document.getElementById("payAmountInput").value) || 0;
     const mode = document.getElementById("payModeInput").value;
     const ref = document.getElementById("payRefInput").value.trim();
 
-    if (!party) return alert("Supplier Party Name daalein!");
+    if (!party) return alert("Kripya Supplier Party chunein ya likhein!");
     if (amt <= 0) return alert("Valid payment amount daalein!");
 
     const btn = document.getElementById("savePayBtn");
@@ -1626,6 +1767,7 @@
     container.innerHTML = html;
   }
 
+  // MULTI-TARGET CAMERA SCANNER
   function startScanner(target) {
     if (typeof Html5Qrcode === "undefined") {
       alert("Scanner module load ho raha hai, thoda intezaar karein.");
@@ -1633,13 +1775,19 @@
     }
     const container = document.getElementById("reader-container");
     container.style.display = "block";
+    container.scrollIntoView({ behavior: 'smooth' });
+
     html5QrCode = new Html5Qrcode("reader");
     html5QrCode.start(
       { facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
       (decoded) => {
         playPosBeep("beep");
-        document.getElementById("barcodeInput").value = decoded;
-        document.getElementById("barcodeInput").dispatchEvent(new Event("input"));
+        if (target === "MODAL") {
+          document.getElementById("newProdBarcode").value = decoded;
+        } else {
+          document.getElementById("barcodeInput").value = decoded;
+          document.getElementById("barcodeInput").dispatchEvent(new Event("input"));
+        }
         stopScanner();
       }, () => {}
     );
@@ -1671,7 +1819,6 @@
   }
   function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
 
-  // 100% BULLETPROOF ADD PRODUCT WITH TIMER & INSTANT REFRESH
   async function saveNewProduct() {
     if (isSavingProduct) return;
 
@@ -1683,7 +1830,6 @@
 
     if (!pName) return alert("Product Name likhna zaroori hai!");
 
-    // Local Duplicate Protection Check
     const alreadyExists = productList.some(p => p.name.toLowerCase() === pName.toLowerCase());
     if (alreadyExists) {
       alert(`⚠️ "${pName}" pehle se product list mein majood hai!`);
@@ -1709,14 +1855,12 @@
       if (data.status === "success") {
         playPosBeep("success");
 
-        // Local cache instant update
         productList.push({ barcode: barcode, name: pName, hsn: hsn, rate: rate });
         localStorage.setItem("cached_products", JSON.stringify(productList));
         buildBarcodeMap();
 
         closeAddProductModal();
 
-        // 3-Second Cooldown Timer on Save Button
         let remaining = 3;
         const timer = setInterval(() => {
           btn.innerText = `⏳ Ready in ${remaining}s...`;
@@ -1729,7 +1873,6 @@
           }
         }, 1000);
 
-        // Instant Live Backend Re-sync & Auto-select
         await fetchMasterData(pName);
         loadSummary(false);
 
@@ -1747,7 +1890,6 @@
     }
   }
 
-  // 100% BULLETPROOF ADD VEHICLE WITH TIMER
   async function saveNewVehicle() {
     if (isSavingVehicle) return;
 
