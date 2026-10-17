@@ -3,69 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fleet & Excavator Maintenance Pro</title>
+  <title>Fleet & Inventory Pro</title>
+  <!-- Barcode Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
     body { background: #f0f4f8; margin: 0; padding: 12px; color: #2d3748; }
-    .container { max-width: 760px; margin: auto; background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    .container { max-width: 760px; margin: auto; background: #ffffff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
     
-    .tab-header { display: flex; gap: 5px; margin-bottom: 16px; background: #edf2f7; padding: 5px; border-radius: 12px; overflow-x: auto; }
-    .tab-btn { flex: 1; min-width: 75px; padding: 9px 3px; text-align: center; border: none; background: transparent; color: #4a5568; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; transition: 0.2s all; white-space: nowrap; }
+    .tab-header { display: flex; gap: 5px; margin-bottom: 14px; background: #edf2f7; padding: 5px; border-radius: 12px; overflow-x: auto; }
+    .tab-btn { flex: 1; min-width: 72px; padding: 8px 3px; text-align: center; border: none; background: transparent; color: #4a5568; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; transition: 0.2s all; white-space: nowrap; }
     .tab-btn.active { background: #2b6cb0; color: #ffffff; box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); }
 
-    .form-group { margin-bottom: 12px; position: relative; }
-    label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 12px; color: #4a5568; }
-    input, select { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13.5px; background: #fff; }
+    .form-group { margin-bottom: 11px; position: relative; }
+    label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 11.5px; color: #4a5568; }
+    
+    /* Compact Single-line Inputs & Dropdowns */
+    input, select { 
+      width: 100%; 
+      padding: 8px 10px; 
+      border: 1.5px solid #cbd5e0; 
+      border-radius: 8px; 
+      font-size: 12px; 
+      background: #fff; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
+    select option { font-size: 11.5px; }
     input:focus, select:focus { outline: none; border-color: #3182ce; }
 
     .barcode-row { display: flex; gap: 8px; }
-    .btn-scan { background: #319795; color: white; border: none; padding: 0 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn-scan { background: #319795; color: white; border: none; padding: 0 12px; border-radius: 8px; font-weight: bold; font-size: 11.5px; cursor: pointer; }
 
     .qty-stepper-row { display: flex; gap: 6px; }
-    .stepper-btn { width: 44px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
-    .unit-select { width: 110px; flex-shrink: 0; font-weight: bold; background: #f7fafc; }
+    .stepper-btn { width: 40px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
+    .unit-select { width: 95px; flex-shrink: 0; font-weight: bold; background: #f7fafc; font-size: 11.5px; }
 
-    .stock-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-left: 6px; }
+    .stock-badge { display: inline-block; font-size: 10.5px; padding: 2px 7px; border-radius: 10px; font-weight: bold; margin-left: 6px; }
     .stock-in-hand { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
     .stock-low { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
 
-    .service-alert-banner { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 8px 10px; margin-bottom: 12px; font-size: 12px; color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; }
+    .service-alert-banner { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 7px 10px; margin-bottom: 10px; font-size: 11.5px; color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; }
 
-    .btn-submit { width: 100%; padding: 13px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    .btn-submit { width: 100%; padding: 12px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px; }
     .hidden { display: none !important; }
-    #msg { margin-top: 10px; text-align: center; font-weight: 700; font-size: 13px; }
+    #msg { margin-top: 8px; text-align: center; font-weight: 700; font-size: 12.5px; }
 
-    .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; background: #fff; }
-    .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 7px 9px; text-align: left; }
-    .custom-table th { background: #2b6cb0; color: white; font-weight: 600; }
+    /* Tables & Cards */
+    .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11.5px; background: #fff; }
+    .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 6px 8px; text-align: left; }
+    .custom-table th { background: #2b6cb0; color: white; font-weight: 600; font-size: 11px; }
     .view-box { display: none; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
-    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 8px; text-align: center; }
-    .kpi-title { font-size: 10px; font-weight: 700; color: #718096; text-transform: uppercase; }
-    .kpi-val { font-size: 14px; font-weight: 800; color: #2b6cb0; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 6px; text-align: center; }
+    .kpi-title { font-size: 9.5px; font-weight: 700; color: #718096; text-transform: uppercase; }
+    .kpi-val { font-size: 13.5px; font-weight: 800; color: #2b6cb0; }
+
+    .company-block { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .company-header { background: #2d3748; color: #fff; padding: 8px 10px; font-weight: bold; font-size: 12px; display: flex; justify-content: space-between; }
+    .vehicle-card { border-bottom: 1px solid #e2e8f0; padding: 8px 10px; }
+    .vehicle-card:last-child { border-bottom: none; }
+    .vehicle-head-row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .vehicle-title { font-weight: 800; color: #2b6cb0; font-size: 12px; }
+    .vehicle-cost { font-weight: 800; color: #2d3748; font-size: 12px; }
 
     /* Modals */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 94%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 12px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 18px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11.5px; }
 
-    /* Smart Filtered Print */
-    @media print {
-      body { background: #fff; padding: 0; }
-      .container { max-width: 100%; box-shadow: none; padding: 0; }
-      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-excel, .btn-csv, #msg, .search-row, .kpi-grid, #closingDateFilters, #ledgerDateFilters, .stepper-btn, .btn-action-no-print {
-        display: none !important;
-      }
-      .view-box { display: block !important; }
-      .custom-table { border: 1px solid #000; font-size: 11px; }
-      .custom-table th, .custom-table td { border: 1px solid #000; }
-    }
+    /* Scanner Modal Specific */
+    #scannerModalBox { max-width: 400px; text-align: center; }
+    #reader { width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="mainContainer">
   <div class="tab-header">
     <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">📥 Stock In</button>
     <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">📤 Stock Out</button>
@@ -86,7 +102,7 @@
       <label>Barcode / Scanner</label>
       <div class="barcode-row">
         <input type="text" id="barcodeInput" placeholder="Scan or type barcode...">
-        <button type="button" class="btn-scan" onclick="startScanner()">📷 Scan</button>
+        <button type="button" class="btn-scan" onclick="openScannerModal()">📷 Scan</button>
       </div>
     </div>
 
@@ -97,7 +113,6 @@
           <label style="display:inline-block;">Product / Service Hour Kit</label>
           <span id="stockInHandBadge" class="stock-badge hidden"></span>
         </div>
-        <button type="button" onclick="openAddProductModal()" style="border:none; background:none; color:#3182ce; font-weight:bold; cursor:pointer; font-size:12px;">➕ Add Product</button>
       </div>
       <select id="productSelect" onchange="onProductSelect(this.value)">
         <option value="">-- Select Item or Service --</option>
@@ -136,7 +151,7 @@
       <input type="number" id="totalAmountInput" readonly style="background:#edf2f7; font-weight:bold;">
     </div>
 
-    <!-- Stock In Fields -->
+    <!-- Stock In Specific -->
     <div id="paymentGroup" class="form-group">
       <label>Payment Tracking (Ledger)</label>
       <div style="display:flex; gap:8px;">
@@ -147,16 +162,14 @@
 
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
-      <input type="text" id="partyInput" placeholder="e.g. Mahavir Diesels" list="partyDataList">
-      <datalist id="partyDataList"></datalist>
+      <select id="partySelectInput">
+        <option value="">-- Select Supplier --</option>
+      </select>
     </div>
 
-    <!-- Stock Out Fields -->
+    <!-- Stock Out Specific -->
     <div class="form-group hidden" id="vehicleGroup">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>Vehicle / Machine Number</label>
-        <button type="button" onclick="openAddVehicleModal()" style="border:none; background:none; color:#3182ce; font-weight:bold; cursor:pointer; font-size:12px;">➕ Add Machine</button>
-      </div>
+      <label>Vehicle / Machine Number</label>
       <select id="vehicleSelect" onchange="onVehicleSelect(this.value)">
         <option value="">-- Select Machine --</option>
       </select>
@@ -194,62 +207,96 @@
   <!-- Stock Summary View -->
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:15px;">Live Inventory Stock</h3>
+      <h3 style="margin:0; font-size:14px;">Live Inventory Stock</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print View</button>
-        <button type="button" onclick="loadSummary()" style="padding:5px 9px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" id="refreshStockBtn" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
     <div class="kpi-grid">
       <div class="kpi-card"><div class="kpi-title">Items</div><div class="kpi-val" id="kpiItems">0</div></div>
       <div class="kpi-card"><div class="kpi-title">Total Units</div><div class="kpi-val" id="kpiStock">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Total Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
+      <div class="kpi-card"><div class="kpi-title">Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
     </div>
 
     <input type="text" id="summarySearch" placeholder="🔍 Search spare parts or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
-    <div id="summaryTableContent">Loading stock...</div>
+    <div id="summaryPrintTarget">
+      <div id="summaryTableContent">Loading stock...</div>
+    </div>
   </div>
 
   <!-- Tally Supplier Ledger -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:15px;">Supplier Ledger (Dr / Cr)</h3>
-      <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered Statement</button>
+      <h3 style="margin:0; font-size:14px;">Supplier Ledger (Dr / Cr)</h3>
+      <div style="display:flex; gap:6px;">
+        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" onclick="hardRefreshData('Ledger')" style="padding:4px 8px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+      </div>
     </div>
 
-    <div id="ledgerDateFilters" style="display:flex; gap:6px; margin-bottom:10px;">
-      <input type="date" id="ledgerSDate" onchange="renderPartyLedger()">
-      <input type="date" id="ledgerEDate" onchange="renderPartyLedger()">
-      <select id="ledgerPartyFilter" onchange="renderPartyLedger()">
+    <div id="ledgerDateFilters" style="display:flex; gap:6px; margin-bottom:8px;">
+      <input type="date" id="ledgerSDate" onchange="renderPartyLedger()" style="flex:1;">
+      <input type="date" id="ledgerEDate" onchange="renderPartyLedger()" style="flex:1;">
+      <select id="ledgerPartyFilter" onchange="renderPartyLedger()" style="flex:1.5;">
         <option value="">-- All Suppliers --</option>
       </select>
     </div>
-    <div id="ledgerContent">Loading ledger...</div>
+    
+    <div id="ledgerPrintTarget">
+      <div id="ledgerContent">Loading ledger...</div>
+    </div>
   </div>
 
-  <!-- Month Closing & Service History -->
+  <!-- Classic Month Closing & Machine Service View -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:15px;">Vehicle & Machine Consumption</h3>
-      <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered Report</button>
+      <h3 style="margin:0; font-size:14px;">🔒 Month Closing & Machine Report</h3>
+      <div style="display:flex; gap:6px;">
+        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+      </div>
     </div>
 
-    <div id="closingDateFilters" style="display:flex; gap:6px; margin-bottom:10px;">
+    <div id="closingFiltersRow" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
       <input type="date" id="closingSDate" onchange="renderClosingReport()">
       <input type="date" id="closingEDate" onchange="renderClosingReport()">
+      <select id="closingCompFilter" onchange="renderClosingReport()">
+        <option value="">-- All Companies --</option>
+        <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
+        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
+      </select>
       <select id="closingVehFilter" onchange="renderClosingReport()">
         <option value="">-- All Machines --</option>
       </select>
     </div>
-    <div id="closingContent">Loading closing data...</div>
+
+    <div style="margin-bottom:10px; display:flex; gap:8px;">
+      <label style="font-size:11.5px; font-weight:normal; display:flex; align-items:center; gap:4px;">
+        <input type="checkbox" id="serviceOnlyToggle" onchange="renderClosingReport()"> ⚙️ Show Only 500/1000 Hrs Service Records
+      </label>
+    </div>
+
+    <div id="closingSummaryBanner" class="kpi-grid" style="margin-bottom:10px;">
+      <div class="kpi-card"><div class="kpi-title">Machines</div><div class="kpi-val" id="closingTotalVehs">0</div></div>
+      <div class="kpi-card"><div class="kpi-title">Issued Items</div><div class="kpi-val" id="closingTotalItems">0</div></div>
+      <div class="kpi-card"><div class="kpi-title">Cost</div><div class="kpi-val" id="closingTotalCost">₹0</div></div>
+    </div>
+
+    <div id="closingPrintTarget">
+      <div id="closingContent">Loading closing data...</div>
+    </div>
   </div>
 
-  <!-- Purchase Order (Re-order) Tab -->
+  <!-- Purchase Order (PO) Tab -->
   <div class="view-box" id="orderView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:15px;">Purchase Order (PO) & Re-Order</h3>
-      <button type="button" onclick="openCreateOrderModal()" style="padding:6px 12px; background:#38a169; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">➕ New Order</button>
+      <h3 style="margin:0; font-size:14px;">Purchase Order (PO) & Re-Order</h3>
+      <div style="display:flex; gap:6px;">
+        <button type="button" onclick="openCreateOrderModal()" style="padding:5px 10px; background:#38a169; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">➕ New Order</button>
+        <button type="button" onclick="hardRefreshData('Orders')" style="padding:5px 9px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+      </div>
     </div>
     <div id="orderListContent">Loading orders...</div>
   </div>
@@ -257,67 +304,181 @@
   <div id="msg"></div>
 </div>
 
-<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) -->
-<div class="modal" id="serviceHoursModal">
-  <div class="modal-content">
-    <h3 style="margin-top:0; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
-    <p style="font-size:12px; color:#718096; margin-bottom:10px;">Neeche diye gaye parts godown se deduct honge:</p>
-    
-    <div id="serviceItemsList"></div>
+<!-- Modal: Barcode Camera Scanner -->
+<div class="modal" id="scannerModal">
+  <div class="modal-content" id="scannerModalBox">
+    <h4 style="margin: 0 0 10px 0;">📷 Scan Barcode / QR</h4>
+    <div id="reader"></div>
+    <button type="button" onclick="closeScannerModal()" style="background:#e53e3e; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">Stop Camera</button>
+  </div>
+</div>
 
-    <!-- Add Extra Item in same popup -->
-    <div style="margin-top:12px; padding:10px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
-      <label style="font-size:11px;">➕ Add Extra Part / Oil to this service:</label>
-      <div style="display:flex; gap:6px;">
-        <select id="extraPartSelect" style="flex:2; font-size:12px;">
-          <option value="">-- Choose Extra Item --</option>
-        </select>
-        <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:12px;">
-        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 10px; border-radius:6px; cursor:pointer; font-size:12px;">Add</button>
-      </div>
-    </div>
-
-    <div style="display:flex; gap:8px; margin-top:14px;">
-      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:11px; border-radius:6px; font-weight:bold; cursor:pointer;">Confirm & Issue All</button>
-      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:11px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
+<!-- Modal: Password / PIN Protection -->
+<div class="modal" id="pinModal">
+  <div class="modal-content" style="max-width:300px; text-align:center;">
+    <h3 style="margin-top:0; font-size:16px;">🔒 Security PIN</h3>
+    <p style="font-size:11.5px; color:#718096;">Is section ko access karne ke liye PIN daalein:</p>
+    <input type="password" id="pinInput" maxlength="6" placeholder="PIN (Default: 1234)" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;">
+    <div style="display:flex; gap:8px;">
+      <button type="button" onclick="verifyPin()" style="flex:1; background:#2b6cb0; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;">Unlock</button>
+      <button type="button" onclick="closePinModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Create Purchase Order -->
+<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) -->
+<div class="modal" id="serviceHoursModal">
+  <div class="modal-content">
+    <h3 style="margin-top:0; font-size:15px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
+    <p style="font-size:11.5px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
+    
+    <div id="serviceItemsList"></div>
+
+    <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
+      <label style="font-size:10.5px;">➕ Add Extra Part / Oil to this service:</label>
+      <div style="display:flex; gap:6px;">
+        <select id="extraPartSelect" style="flex:2; font-size:11.5px;"></select>
+        <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11.5px;">
+        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 10px; border-radius:6px; cursor:pointer; font-size:11.5px;">Add</button>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Confirm & Issue All</button>
+      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Create Purchase Order (PO) -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; color:#2d3748;">New Purchase Order (PO)</h3>
+    <h3 style="margin-top:0; font-size:15px; color:#2d3748;">New Purchase Order (PO)</h3>
     <div class="form-group">
-      <label>Supplier / Vendor</label>
-      <input type="text" id="poPartyInput" placeholder="Supplier name...">
+      <label>Select Supplier / Vendor</label>
+      <select id="poSupplierSelect" style="font-size:12px;">
+        <option value="">-- Choose Supplier --</option>
+      </select>
     </div>
-    <div style="font-weight:bold; font-size:12px; margin-bottom:6px;">Select Items to Re-order:</div>
-    <div id="poItemList" style="max-height:200px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px;"></div>
+    <div style="font-weight:bold; font-size:11.5px; margin-bottom:6px;">Select Items to Re-order:</div>
+    <div id="poItemList" style="max-height:180px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px;"></div>
 
-    <div style="display:flex; gap:8px; margin-top:14px;">
-      <button type="button" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Save & Create PO</button>
-      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Save & Create PO</button>
+      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Cancel</button>
     </div>
   </div>
 </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
+  const APP_PIN = "1234"; 
 
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
   let kitsMap = {};
+  let supplierSet = new Set();
   let summaryData = [];
   let closingData = [];
   let ledgerData = [];
   let poData = [];
 
+  let pendingTab = "";
+  let isAuthenticated = false;
+
   let activeServiceParts = [];
   let activeServiceName = "";
+  let html5QrScanner = null;
+  let lastPoSubmitTime = 0;
 
+  // 1. Isolated Pure-Filtered Print
+  function printTargetSection(targetId, title) {
+    const el = document.getElementById(targetId);
+    if (!el || !el.innerHTML.trim()) {
+      alert("Print karne ke liye koi data nahi hai!");
+      return;
+    }
+
+    const printWin = window.open('', '', 'width=850,height=700');
+    printWin.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
+            h2 { font-size: 16px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
+            .date-stamp { font-size: 11px; color: #718096; margin-bottom: 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
+            th, td { border: 1px solid #cbd5e0; padding: 6px 8px; text-align: left; }
+            th { background: #edf2f7; font-weight: bold; }
+            .company-block { border: 1px solid #a0aec0; margin-bottom: 14px; page-break-inside: avoid; }
+            .company-header { background: #edf2f7; font-weight: bold; padding: 6px 8px; border-bottom: 1px solid #a0aec0; }
+            .vehicle-card { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
+            .vehicle-title { font-weight: bold; color: #2b6cb0; }
+          </style>
+        </head>
+        <body>
+          <h2>${title}</h2>
+          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
+          ${el.innerHTML}
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
+  }
+
+  // 2. Barcode Camera Scanner (Fix)
+  function openScannerModal() {
+    document.getElementById("scannerModal").style.display = "flex";
+    html5QrScanner = new Html5Qrcode("reader");
+    html5QrScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 160 } },
+      (decodedText) => {
+        document.getElementById("barcodeInput").value = decodedText;
+        matchProductByBarcode(decodedText);
+        closeScannerModal();
+      },
+      (errorMessage) => {}
+    ).catch(err => {
+      alert("Camera error: " + err);
+      closeScannerModal();
+    });
+  }
+
+  function closeScannerModal() {
+    if (html5QrScanner) {
+      html5QrScanner.stop().then(() => {
+        html5QrScanner.clear();
+        document.getElementById("scannerModal").style.display = "none";
+      }).catch(() => {
+        document.getElementById("scannerModal").style.display = "none";
+      });
+    } else {
+      document.getElementById("scannerModal").style.display = "none";
+    }
+  }
+
+  function matchProductByBarcode(code) {
+    const prod = productList.find(p => p.barcode === code);
+    if (prod) {
+      document.getElementById("productSelect").value = prod.name;
+      onProductSelect(prod.name);
+    }
+  }
+
+  // 3. Tab Switching & PIN
   function switchTab(type) {
+    if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
+      pendingTab = type;
+      document.getElementById("pinModal").style.display = "flex";
+      document.getElementById("pinInput").focus();
+      return;
+    }
+
     currentTab = type;
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".view-box").forEach(v => v.style.display = "none");
@@ -351,6 +512,24 @@
     }
   }
 
+  function verifyPin() {
+    const p = document.getElementById("pinInput").value;
+    if (p === APP_PIN) {
+      isAuthenticated = true;
+      closePinModal();
+      switchTab(pendingTab);
+    } else {
+      alert("❌ Galat PIN!");
+      document.getElementById("pinInput").value = "";
+    }
+  }
+
+  function closePinModal() {
+    document.getElementById("pinModal").style.display = "none";
+    document.getElementById("pinInput").value = "";
+  }
+
+  // 4. Data Loading & Dropdowns
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData`);
@@ -372,31 +551,24 @@
     sel.innerHTML = '<option value="">-- Select Item or Service --</option>';
     extraSel.innerHTML = '<option value="">-- Choose Extra Item --</option>';
 
-    // Service Hours Group
     const kitNames = Object.keys(kitsMap);
     if (kitNames.length > 0) {
       let grp = document.createElement("optgroup");
       grp.label = "⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)";
       kitNames.forEach(k => {
-        let opt = document.createElement("option");
-        opt.value = k;
-        opt.innerText = k;
+        let opt = document.createElement("option"); opt.value = k; opt.innerText = k;
         grp.appendChild(opt);
       });
       sel.appendChild(grp);
     }
 
     let pGrp = document.createElement("optgroup");
-    pGrp.label = "📦 INDIVIDUAL PARTS & OILS";
+    pGrp.label = "📦 PARTS & OILS";
     productList.forEach(p => {
-      let opt = document.createElement("option");
-      opt.value = p.name;
-      opt.innerText = `${p.name} (${p.unit || 'Nos'})`;
+      let opt = document.createElement("option"); opt.value = p.name; opt.innerText = `${p.name} (${p.unit || 'Nos'})`;
       pGrp.appendChild(opt);
 
-      let opt2 = document.createElement("option");
-      opt2.value = p.name;
-      opt2.innerText = `${p.name} (${p.unit || 'Nos'})`;
+      let opt2 = document.createElement("option"); opt2.value = p.name; opt2.innerText = `${p.name} (${p.unit || 'Nos'})`;
       extraSel.appendChild(opt2);
     });
     sel.appendChild(pGrp);
@@ -417,12 +589,27 @@
     });
   }
 
+  function populateSupplierDropdowns() {
+    const pIn = document.getElementById("partySelectInput");
+    const poSup = document.getElementById("poSupplierSelect");
+    const ledSup = document.getElementById("ledgerPartyFilter");
+
+    pIn.innerHTML = '<option value="">-- Select Supplier --</option>';
+    poSup.innerHTML = '<option value="">-- Choose Supplier --</option>';
+    ledSup.innerHTML = '<option value="">-- All Suppliers --</option>';
+
+    Array.from(supplierSet).sort().forEach(s => {
+      let o1 = document.createElement("option"); o1.value = s; o1.innerText = s; pIn.appendChild(o1);
+      let o2 = document.createElement("option"); o2.value = s; o2.innerText = s; poSup.appendChild(o2);
+      let o3 = document.createElement("option"); o3.value = s; o3.innerText = s; ledSup.appendChild(o3);
+    });
+  }
+
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
     document.getElementById("companyInput").value = comp;
 
-    // Next Service Calculation
     const banner = document.getElementById("nextServiceBanner");
     const pastEntries = closingData.filter(c => c.vehicle === vNo && (c.km.includes("Hrs") || !isNaN(parseFloat(c.km))));
     if (pastEntries.length > 0) {
@@ -439,7 +626,6 @@
   function onProductSelect(val) {
     if (!val) return;
 
-    // Check if Service Hours Kit Selected
     if (kitsMap[val] && currentTab === "OUT") {
       activeServiceName = val;
       activeServiceParts = JSON.parse(JSON.stringify(kitsMap[val]));
@@ -454,7 +640,6 @@
       document.getElementById("rateInput").value = prod.rate || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
-      // Left Qty Stock Badge
       const itemStock = summaryData.find(s => s.item === val);
       const badge = document.getElementById("stockInHandBadge");
       if (itemStock && currentTab === "OUT") {
@@ -463,7 +648,7 @@
         badge.className = itemStock.balance <= 2 ? "stock-badge stock-low" : "stock-badge stock-in-hand";
 
         if (itemStock.balance <= 0) {
-          alert(`⚠️ Negative Stock Warning: ${val} godown mein khatam (0) hai!`);
+          alert(`⚠️ Warning: ${val} godown mein 0 bacha hai!`);
         }
       } else {
         badge.classList.add("hidden");
@@ -472,7 +657,7 @@
     calculateTotal();
   }
 
-  // Service Hours Modal Operations
+  // 5. Service Hours Modal
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     renderServiceItems();
@@ -492,7 +677,7 @@
           <div>
             <b>${p.itemName}</b>
             <div style="font-size:11px; color:${isLow ? '#c53030' : '#2f855a'};">
-              Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:50px; padding:2px; font-size:11px;">
+              Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:45px; padding:2px; font-size:11px;">
             </div>
           </div>
           <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
@@ -528,7 +713,7 @@
 
   async function confirmServiceOutward() {
     const vNo = document.getElementById("vehicleSelect").value;
-    if (!vNo) return alert("Pehle Vehicle Number select karein!");
+    if (!vNo) return alert("Pehle Machine select karein!");
 
     const payload = {
       type: "OUT",
@@ -544,7 +729,7 @@
     closeServiceModal();
     const btn = document.getElementById("submitBtn");
     btn.disabled = true;
-    btn.innerText = "Deducting Service Items...";
+    btn.innerText = "Deducting...";
 
     try {
       const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
@@ -560,109 +745,27 @@
     }
   }
 
-  // Purchase Order Operations
-  async function loadOrders() {
-    const container = document.getElementById("orderListContent");
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders`);
-      const data = await res.json();
-      if (data.status === "success") {
-        poData = data.data;
-        let html = `<table class="custom-table">
-          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
-        poData.forEach(o => {
-          html += `<tr>
-            <td>${o.orderNo}</td>
-            <td><b>${o.party}</b></td>
-            <td>${o.item}</td>
-            <td>${o.qty} ${o.unit}</td>
-            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
-            <td>${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">Receive Inward</button>` : '-'}</td>
-          </tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-      }
-    } catch(e) { container.innerHTML = "Error loading orders."; }
+  // 6. Hard Refresh Engine
+  async function hardRefreshData(section) {
+    const notify = document.getElementById("msg");
+    notify.innerText = `🔄 Reloading fresh ${section} data...`;
+    notify.style.color = "#3182ce";
+
+    await fetchMasterData();
+    if (section === 'Stock') await loadSummary();
+    if (section === 'Ledger') await loadLedger();
+    if (section === 'Closing') await loadClosing();
+    if (section === 'Orders') await loadOrders();
+
+    notify.innerText = `✅ ${section} Refreshed Live!`;
+    notify.style.color = "#2f855a";
+    setTimeout(() => { notify.innerText = ""; }, 2500);
   }
 
-  function openCreateOrderModal() {
-    const list = document.getElementById("poItemList");
-    let html = "";
-    summaryData.forEach(s => {
-      const isLow = s.balance <= 2;
-      html += `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:12px;">
-          <label><input type="checkbox" class="po-chk" data-item="${s.item}" data-rate="${s.rate}" ${isLow ? 'checked' : ''}> ${s.item} (${s.balance} left)</label>
-          <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:60px; padding:2px; font-size:11px;">
-        </div>`;
-    });
-    list.innerHTML = html;
-    document.getElementById("createOrderModal").style.display = "flex";
-  }
-
-  function closeCreateOrderModal() {
-    document.getElementById("createOrderModal").style.display = "none";
-  }
-
-  async function submitPurchaseOrder() {
-    const party = document.getElementById("poPartyInput").value.trim();
-    if (!party) return alert("Supplier Party ka naam likhein!");
-
-    const chks = document.querySelectorAll(".po-chk:checked");
-    const items = [];
-    chks.forEach(c => {
-      const itemRow = c.closest("div");
-      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
-      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
-    });
-
-    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        alert(data.message);
-        closeCreateOrderModal();
-        loadOrders();
-      }
-    } catch(e) { alert("Order failed: " + e.message); }
-  }
-
-  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
-    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          type: "IN",
-          itemName: item,
-          qty: qty,
-          unit: unit,
-          rate: rate,
-          totalAmount: qty * rate,
-          partyName: party,
-          orderNo: ordNo,
-          remarks: "Received from " + ordNo
-        })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        alert("Stock Inward Complete!");
-        loadOrders();
-      }
-    } catch(e) { alert(e.message); }
-  }
-
-  // Stock Summary & Ledgers
+  // 7. Data Loaders & Renderers
   async function loadSummary() {
     try {
-      const res = await fetch(`${SCRIPT_URL}?action=getSummary`);
+      const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success") {
         summaryData = data.data;
@@ -694,7 +797,7 @@
 
   async function loadClosing() {
     try {
-      const res = await fetch(`${SCRIPT_URL}?action=getClosingData`);
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success") {
         closingData = data.data;
@@ -706,44 +809,85 @@
   function renderClosingReport() {
     const sDate = document.getElementById("closingSDate").value;
     const eDate = document.getElementById("closingEDate").value;
-    const veh = document.getElementById("closingVehFilter").value;
+    const compFilter = document.getElementById("closingCompFilter").value;
+    const vehFilter = document.getElementById("closingVehFilter").value;
+    const serviceOnly = document.getElementById("serviceOnlyToggle").checked;
 
     const filtered = closingData.filter(c => {
       if (sDate && c.date < sDate) return false;
       if (eDate && c.date > eDate) return false;
-      if (veh && c.vehicle !== veh) return false;
+      if (compFilter && c.company !== compFilter) return false;
+      if (vehFilter && c.vehicle !== vehFilter) return false;
+      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
       return true;
     });
 
-    let html = `<table class="custom-table">
-      <thead><tr><th>Date</th><th>Machine</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Amount (₹)</th></tr></thead><tbody>`;
-    filtered.forEach(c => {
-      html += `<tr>
-        <td>${c.displayDate || c.date}</td>
-        <td><b>${c.vehicle}</b></td>
-        <td>${c.item}</td>
-        <td>${c.qty} ${c.unit}</td>
-        <td>${c.km || '-'}</td>
-        <td>₹${c.amount.toLocaleString('en-IN')}</td>
-      </tr>`;
+    const uniqueVehs = new Set(filtered.map(f => f.vehicle));
+    const totalCost = filtered.reduce((a,b) => a + (b.amount||0), 0);
+    document.getElementById("closingTotalVehs").innerText = uniqueVehs.size;
+    document.getElementById("closingTotalItems").innerText = filtered.length;
+    document.getElementById("closingTotalCost").innerText = "₹" + totalCost.toLocaleString('en-IN');
+
+    const grouped = {};
+    filtered.forEach(item => {
+      const comp = item.company || "OTHER";
+      const veh = item.vehicle || "UNKNOWN";
+      if (!grouped[comp]) grouped[comp] = {};
+      if (!grouped[comp][veh]) grouped[comp][veh] = [];
+      grouped[comp][veh].push(item);
     });
-    html += `</tbody></table>`;
-    document.getElementById("closingContent").innerHTML = html;
+
+    const container = document.getElementById("closingContent");
+    if (Object.keys(grouped).length === 0) {
+      container.innerHTML = "<p style='text-align:center; color:#718096;'>No records found.</p>";
+      return;
+    }
+
+    let html = "";
+    for (const [company, vehs] of Object.entries(grouped)) {
+      html += `<div class="company-block">
+        <div class="company-header">
+          <span>🏢 ${company}</span>
+          <span>Machines: ${Object.keys(vehs).length}</span>
+        </div>`;
+
+      for (const [vehicle, items] of Object.entries(vehs)) {
+        const vCost = items.reduce((a,b) => a + (b.amount||0), 0);
+        html += `
+          <div class="vehicle-card">
+            <div class="vehicle-head-row">
+              <span class="vehicle-title">🚜 ${vehicle}</span>
+              <span class="vehicle-cost">Total: ₹${vCost.toLocaleString('en-IN')}</span>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
+              </thead>
+              <tbody>`;
+        items.forEach(it => {
+          html += `<tr>
+            <td>${it.displayDate || it.date}</td>
+            <td>${it.item} ${it.remarks ? `<br><small style="color:#718096;">${it.remarks}</small>` : ''}</td>
+            <td>${it.qty} ${it.unit}</td>
+            <td>${it.km || '-'}</td>
+            <td>₹${it.amount.toLocaleString('en-IN')}</td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+      html += `</div>`;
+    }
+    container.innerHTML = html;
   }
 
   async function loadLedger() {
     try {
-      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger`);
+      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success") {
         ledgerData = data.data;
-        const pSel = document.getElementById("ledgerPartyFilter");
-        const parties = [...new Set(ledgerData.map(l => l.party))].sort();
-        pSel.innerHTML = '<option value="">-- All Suppliers --</option>';
-        parties.forEach(p => {
-          let opt = document.createElement("option"); opt.value = p; opt.innerText = p;
-          pSel.appendChild(opt);
-        });
+        ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
+        populateSupplierDropdowns();
         renderPartyLedger();
       }
     } catch(e){}
@@ -778,6 +922,122 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
+  // 8. Purchase Order (PO) & Duplicate Blocker
+  async function loadOrders() {
+    const container = document.getElementById("orderListContent");
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        poData = data.data;
+        let html = `<table class="custom-table">
+          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+        poData.forEach(o => {
+          html += `<tr>
+            <td>${o.orderNo}</td>
+            <td><b>${o.party}</b></td>
+            <td>${o.item}</td>
+            <td>${o.qty} ${o.unit}</td>
+            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
+            <td>${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; cursor:pointer;">Receive</button>` : '-'}</td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      }
+    } catch(e) { container.innerHTML = "Error loading orders."; }
+  }
+
+  function openCreateOrderModal() {
+    populateSupplierDropdowns();
+    const list = document.getElementById("poItemList");
+    let html = "";
+    summaryData.forEach(s => {
+      const isLow = s.balance <= 2;
+      html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px solid #edf2f7; font-size:11.5px;">
+          <label><input type="checkbox" class="po-chk" data-item="${s.item}" data-rate="${s.rate}" ${isLow ? 'checked' : ''}> ${s.item} (${s.balance} left)</label>
+          <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:55px; padding:2px; font-size:11px;">
+        </div>`;
+    });
+    list.innerHTML = html;
+    document.getElementById("createOrderModal").style.display = "flex";
+  }
+
+  function closeCreateOrderModal() {
+    document.getElementById("createOrderModal").style.display = "none";
+  }
+
+  async function submitPurchaseOrder() {
+    const party = document.getElementById("poSupplierSelect").value.trim();
+    if (!party) return alert("Kripya Supplier select karein!");
+
+    // Duplicate submission cooldown blocker
+    const now = Date.now();
+    if (now - lastPoSubmitTime < 10000) {
+      return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
+    }
+
+    const chks = document.querySelectorAll(".po-chk:checked");
+    const items = [];
+    chks.forEach(c => {
+      const itemRow = c.closest("div");
+      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
+      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
+    });
+
+    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
+
+    const btn = document.getElementById("poSubmitBtn");
+    btn.disabled = true;
+    btn.innerText = "Placing PO...";
+    lastPoSubmitTime = now;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        alert(data.message);
+        closeCreateOrderModal();
+        loadOrders();
+      }
+    } catch(e) { alert("Order error: " + e.message); }
+    finally {
+      btn.disabled = false;
+      btn.innerText = "Save & Create PO";
+    }
+  }
+
+  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
+    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          type: "IN",
+          itemName: item,
+          qty: qty,
+          unit: unit,
+          rate: rate,
+          totalAmount: qty * rate,
+          partyName: party,
+          orderNo: ordNo,
+          remarks: "Received from " + ordNo
+        })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        alert("Stock Inward Complete!");
+        loadOrders();
+      }
+    } catch(e) { alert(e.message); }
+  }
+
+  // 9. Form Calculations & Save
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -803,7 +1063,7 @@
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
     btn.disabled = true;
-    btn.innerText = "Saving Entry...";
+    btn.innerText = "Saving...";
 
     const payload = {
       type: currentTab,
@@ -816,7 +1076,7 @@
       totalAmount: document.getElementById("totalAmountInput").value,
       paidAmount: document.getElementById("paidAmountInput").value || 0,
       dueAmount: document.getElementById("dueAmountInput").value || 0,
-      partyName: document.getElementById("partyInput").value,
+      partyName: document.getElementById("partySelectInput").value,
       vehicleNo: document.getElementById("vehicleSelect").value,
       companyName: document.getElementById("companyInput").value,
       kmReading: document.getElementById("kmInput").value,
@@ -842,6 +1102,7 @@
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     fetchMasterData();
     loadSummary();
+    loadLedger();
   });
 </script>
 </body>
