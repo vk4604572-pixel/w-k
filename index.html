@@ -16,67 +16,66 @@
     .tab-btn.active { background: #2b6cb0; color: #ffffff; box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); }
 
     .form-group { margin-bottom: 11px; position: relative; }
-    label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 11.5px; color: #4a5568; }
+    label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 11px; color: #4a5568; }
     
-    /* Compact Single-line Inputs & Dropdowns */
+    /* Extra-Compact Single-line Inputs & Dropdowns */
     input, select { 
       width: 100%; 
-      padding: 8px 10px; 
+      padding: 7px 9px; 
       border: 1.5px solid #cbd5e0; 
-      border-radius: 8px; 
-      font-size: 12px; 
+      border-radius: 7px; 
+      font-size: 11px !important; 
       background: #fff; 
       white-space: nowrap; 
       overflow: hidden; 
       text-overflow: ellipsis; 
     }
-    select option { font-size: 11.5px; }
+    select option { font-size: 11px !important; }
     input:focus, select:focus { outline: none; border-color: #3182ce; }
 
     .barcode-row { display: flex; gap: 8px; }
-    .btn-scan { background: #319795; color: white; border: none; padding: 0 12px; border-radius: 8px; font-weight: bold; font-size: 11.5px; cursor: pointer; }
+    .btn-scan { background: #319795; color: white; border: none; padding: 0 12px; border-radius: 7px; font-weight: bold; font-size: 11px; cursor: pointer; }
 
     .qty-stepper-row { display: flex; gap: 6px; }
-    .stepper-btn { width: 40px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
-    .unit-select { width: 95px; flex-shrink: 0; font-weight: bold; background: #f7fafc; font-size: 11.5px; }
+    .stepper-btn { width: 38px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 7px; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .unit-select { width: 90px; flex-shrink: 0; font-weight: bold; background: #f7fafc; font-size: 11px !important; }
 
-    .stock-badge { display: inline-block; font-size: 10.5px; padding: 2px 7px; border-radius: 10px; font-weight: bold; margin-left: 6px; }
+    .stock-badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; margin-left: 6px; }
     .stock-in-hand { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
     .stock-low { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
 
-    .service-alert-banner { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 7px 10px; margin-bottom: 10px; font-size: 11.5px; color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; }
+    .service-alert-banner { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 7px 10px; margin-bottom: 10px; font-size: 11px; color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; }
 
-    .btn-submit { width: 100%; padding: 12px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+    .btn-submit { width: 100%; padding: 11px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 8px; }
     .hidden { display: none !important; }
-    #msg { margin-top: 8px; text-align: center; font-weight: 700; font-size: 12.5px; }
+    #msg { margin-top: 8px; text-align: center; font-weight: 700; font-size: 12px; }
 
     /* Tables & Cards */
-    .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11.5px; background: #fff; }
-    .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 6px 8px; text-align: left; }
-    .custom-table th { background: #2b6cb0; color: white; font-weight: 600; font-size: 11px; }
+    .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; background: #fff; }
+    .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 6px 7px; text-align: left; }
+    .custom-table th { background: #2b6cb0; color: white; font-weight: 600; font-size: 10.5px; }
     .view-box { display: none; }
 
     .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
-    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 6px; text-align: center; }
-    .kpi-title { font-size: 9.5px; font-weight: 700; color: #718096; text-transform: uppercase; }
-    .kpi-val { font-size: 13.5px; font-weight: 800; color: #2b6cb0; }
+    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 7px 5px; text-align: center; }
+    .kpi-title { font-size: 9px; font-weight: 700; color: #718096; text-transform: uppercase; }
+    .kpi-val { font-size: 13px; font-weight: 800; color: #2b6cb0; }
 
-    .company-block { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
-    .company-header { background: #2d3748; color: #fff; padding: 8px 10px; font-weight: bold; font-size: 12px; display: flex; justify-content: space-between; }
+    .company-block { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 9px; margin-bottom: 12px; overflow: hidden; }
+    .company-header { background: #2d3748; color: #fff; padding: 7px 10px; font-weight: bold; font-size: 11.5px; display: flex; justify-content: space-between; }
     .vehicle-card { border-bottom: 1px solid #e2e8f0; padding: 8px 10px; }
     .vehicle-card:last-child { border-bottom: none; }
     .vehicle-head-row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .vehicle-title { font-weight: 800; color: #2b6cb0; font-size: 12px; }
-    .vehicle-cost { font-weight: 800; color: #2d3748; font-size: 12px; }
+    .vehicle-title { font-weight: 800; color: #2b6cb0; font-size: 11.5px; }
+    .vehicle-cost { font-weight: 800; color: #2d3748; font-size: 11.5px; }
 
     /* Modals */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 18px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
-    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11.5px; }
+    .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
+    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
 
-    /* Scanner Modal Specific */
-    #scannerModalBox { max-width: 400px; text-align: center; }
-    #reader { width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+    #scannerModalBox { max-width: 380px; text-align: center; }
+    #reader { width: 100%; min-height: 240px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -91,7 +90,7 @@
     <button class="tab-btn" id="tabOrderBtn" onclick="switchTab('ORDER')">📝 Order (PO)</button>
   </div>
 
-  <!-- Main Form -->
+  <!-- Main Entry Form -->
   <form id="stockForm">
     <div class="form-group">
       <label>Date & Time</label>
@@ -207,10 +206,10 @@
   <!-- Stock Summary View -->
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:14px;">Live Inventory Stock</h3>
+      <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" id="refreshStockBtn" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
@@ -229,10 +228,10 @@
   <!-- Tally Supplier Ledger -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:14px;">Supplier Ledger (Dr / Cr)</h3>
+      <h3 style="margin:0; font-size:13.5px;">Supplier Ledger (Dr / Cr)</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" onclick="hardRefreshData('Ledger')" style="padding:4px 8px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" onclick="hardRefreshData('Ledger')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
@@ -249,13 +248,13 @@
     </div>
   </div>
 
-  <!-- Classic Month Closing & Machine Service View -->
+  <!-- Month Closing & Machine Service View -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:14px;">🔒 Month Closing & Machine Report</h3>
+      <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
@@ -273,7 +272,7 @@
     </div>
 
     <div style="margin-bottom:10px; display:flex; gap:8px;">
-      <label style="font-size:11.5px; font-weight:normal; display:flex; align-items:center; gap:4px;">
+      <label style="font-size:11px; font-weight:normal; display:flex; align-items:center; gap:4px;">
         <input type="checkbox" id="serviceOnlyToggle" onchange="renderClosingReport()"> ⚙️ Show Only 500/1000 Hrs Service Records
       </label>
     </div>
@@ -292,10 +291,10 @@
   <!-- Purchase Order (PO) Tab -->
   <div class="view-box" id="orderView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:14px;">Purchase Order (PO) & Re-Order</h3>
+      <h3 style="margin:0; font-size:13.5px;">Purchase Order (PO) & Re-Order</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="openCreateOrderModal()" style="padding:5px 10px; background:#38a169; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">➕ New Order</button>
-        <button type="button" onclick="hardRefreshData('Orders')" style="padding:5px 9px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="openCreateOrderModal()" style="padding:5px 9px; background:#38a169; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:10.5px;">➕ New Order</button>
+        <button type="button" onclick="hardRefreshData('Orders')" style="padding:5px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
     <div id="orderListContent">Loading orders...</div>
@@ -307,21 +306,21 @@
 <!-- Modal: Barcode Camera Scanner -->
 <div class="modal" id="scannerModal">
   <div class="modal-content" id="scannerModalBox">
-    <h4 style="margin: 0 0 10px 0;">📷 Scan Barcode / QR</h4>
+    <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
     <div id="reader"></div>
-    <button type="button" onclick="closeScannerModal()" style="background:#e53e3e; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">Stop Camera</button>
+    <button type="button" onclick="closeScannerModal()" style="background:#e53e3e; color:white; border:none; padding:7px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Stop Camera</button>
   </div>
 </div>
 
-<!-- Modal: Password / PIN Protection -->
+<!-- Modal: Password / PIN Protection (4251) -->
 <div class="modal" id="pinModal">
-  <div class="modal-content" style="max-width:300px; text-align:center;">
-    <h3 style="margin-top:0; font-size:16px;">🔒 Security PIN</h3>
-    <p style="font-size:11.5px; color:#718096;">Is section ko access karne ke liye PIN daalein:</p>
-    <input type="password" id="pinInput" maxlength="6" placeholder="PIN (Default: 1234)" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;">
+  <div class="modal-content" style="max-width:290px; text-align:center;">
+    <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
+    <p style="font-size:11px; color:#718096;">Is section ko access karne ke liye PIN daalein:</p>
+    <input type="password" id="pinInput" maxlength="6" placeholder="Enter PIN" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;">
     <div style="display:flex; gap:8px;">
-      <button type="button" onclick="verifyPin()" style="flex:1; background:#2b6cb0; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;">Unlock</button>
-      <button type="button" onclick="closePinModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
+      <button type="button" onclick="verifyPin()" style="flex:1; background:#2b6cb0; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Unlock</button>
+      <button type="button" onclick="closePinModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
@@ -329,50 +328,50 @@
 <!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; font-size:15px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
-    <p style="font-size:11.5px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
+    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
+    <p style="font-size:11px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
     
     <div id="serviceItemsList"></div>
 
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
-      <label style="font-size:10.5px;">➕ Add Extra Part / Oil to this service:</label>
+      <label style="font-size:10px;">➕ Add Extra Part / Oil to this service:</label>
       <div style="display:flex; gap:6px;">
-        <select id="extraPartSelect" style="flex:2; font-size:11.5px;"></select>
-        <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11.5px;">
-        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 10px; border-radius:6px; cursor:pointer; font-size:11.5px;">Add</button>
+        <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
+        <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
+        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 9px; border-radius:6px; cursor:pointer; font-size:11px;">Add</button>
       </div>
     </div>
 
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Confirm & Issue All</button>
-      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Cancel</button>
+      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Confirm & Issue All</button>
+      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Create Purchase Order (PO) -->
+<!-- Modal: Create Purchase Order (PO) & WhatsApp Share -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; font-size:15px; color:#2d3748;">New Purchase Order (PO)</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
     <div class="form-group">
       <label>Select Supplier / Vendor</label>
-      <select id="poSupplierSelect" style="font-size:12px;">
+      <select id="poSupplierSelect" style="font-size:11px;">
         <option value="">-- Choose Supplier --</option>
       </select>
     </div>
-    <div style="font-weight:bold; font-size:11.5px; margin-bottom:6px;">Select Items to Re-order:</div>
+    <div style="font-weight:bold; font-size:11px; margin-bottom:6px;">Select Items to Re-order:</div>
     <div id="poItemList" style="max-height:180px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px;"></div>
 
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Save & Create PO</button>
-      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">Cancel</button>
+      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
+      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
-  const APP_PIN = "1234"; 
+  const APP_PIN = "4251"; // Configured Security PIN
 
   let currentTab = "IN";
   let productList = [];
@@ -407,10 +406,10 @@
           <title>${title}</title>
           <style>
             body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
-            h2 { font-size: 16px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
-            .date-stamp { font-size: 11px; color: #718096; margin-bottom: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
-            th, td { border: 1px solid #cbd5e0; padding: 6px 8px; text-align: left; }
+            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
+            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
+            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
             th { background: #edf2f7; font-weight: bold; }
             .company-block { border: 1px solid #a0aec0; margin-bottom: 14px; page-break-inside: avoid; }
             .company-header { background: #edf2f7; font-weight: bold; padding: 6px 8px; border-bottom: 1px solid #a0aec0; }
@@ -430,7 +429,7 @@
     setTimeout(() => { printWin.print(); printWin.close(); }, 350);
   }
 
-  // 2. Barcode Camera Scanner (Fix)
+  // 2. Barcode Camera Scanner
   function openScannerModal() {
     document.getElementById("scannerModal").style.display = "flex";
     html5QrScanner = new Html5Qrcode("reader");
@@ -470,7 +469,7 @@
     }
   }
 
-  // 3. Tab Switching & PIN
+  // 3. Tab Switching with PIN Protection on Both CLOSING & LEDGER
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -519,7 +518,7 @@
       closePinModal();
       switchTab(pendingTab);
     } else {
-      alert("❌ Galat PIN!");
+      alert("❌ Galat PIN! Kripya sahi PIN (4251) daalein.");
       document.getElementById("pinInput").value = "";
     }
   }
@@ -676,8 +675,8 @@
         <div class="service-item-row">
           <div>
             <b>${p.itemName}</b>
-            <div style="font-size:11px; color:${isLow ? '#c53030' : '#2f855a'};">
-              Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:45px; padding:2px; font-size:11px;">
+            <div style="font-size:10.5px; color:${isLow ? '#c53030' : '#2f855a'};">
+              Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:42px; padding:2px; font-size:10.5px;">
             </div>
           </div>
           <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
@@ -859,7 +858,7 @@
               <span class="vehicle-title">🚜 ${vehicle}</span>
               <span class="vehicle-cost">Total: ₹${vCost.toLocaleString('en-IN')}</span>
             </div>
-            <table class="custom-table">
+            <table class="custom-table" style="margin-top:6px;">
               <thead>
                 <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
               </thead>
@@ -922,7 +921,7 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  // 8. Purchase Order (PO) & Duplicate Blocker
+  // 8. Purchase Order (PO) with WhatsApp Ready Action
   async function loadOrders() {
     const container = document.getElementById("orderListContent");
     try {
@@ -931,7 +930,7 @@
       if (data.status === "success") {
         poData = data.data;
         let html = `<table class="custom-table">
-          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
         poData.forEach(o => {
           html += `<tr>
             <td>${o.orderNo}</td>
@@ -939,13 +938,21 @@
             <td>${o.item}</td>
             <td>${o.qty} ${o.unit}</td>
             <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
-            <td>${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; cursor:pointer;">Receive</button>` : '-'}</td>
+            <td style="display:flex; gap:4px;">
+              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
+              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
+            </td>
           </tr>`;
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
       }
     } catch(e) { container.innerHTML = "Error loading orders."; }
+  }
+
+  function shareSinglePoWhatsApp(ordNo, party, item, qty, unit) {
+    const text = `*PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   }
 
   function openCreateOrderModal() {
@@ -955,9 +962,9 @@
     summaryData.forEach(s => {
       const isLow = s.balance <= 2;
       html += `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px solid #edf2f7; font-size:11.5px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px solid #edf2f7; font-size:11px;">
           <label><input type="checkbox" class="po-chk" data-item="${s.item}" data-rate="${s.rate}" ${isLow ? 'checked' : ''}> ${s.item} (${s.balance} left)</label>
-          <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:55px; padding:2px; font-size:11px;">
+          <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:50px; padding:2px; font-size:10.5px;">
         </div>`;
     });
     list.innerHTML = html;
@@ -972,7 +979,6 @@
     const party = document.getElementById("poSupplierSelect").value.trim();
     if (!party) return alert("Kripya Supplier select karein!");
 
-    // Duplicate submission cooldown blocker
     const now = Date.now();
     if (now - lastPoSubmitTime < 10000) {
       return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
@@ -1000,14 +1006,24 @@
       });
       const data = await res.json();
       if (data.status === "success") {
-        alert(data.message);
         closeCreateOrderModal();
         loadOrders();
+
+        // Direct WhatsApp Prompt
+        let waText = `*PURCHASE ORDER: ${data.orderNo || ''}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
+        items.forEach((it, i) => {
+          waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
+        });
+        waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!`;
+
+        if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
+        }
       }
     } catch(e) { alert("Order error: " + e.message); }
     finally {
       btn.disabled = false;
-      btn.innerText = "Save & Create PO";
+      btn.innerText = "Save PO";
     }
   }
 
@@ -1037,7 +1053,7 @@
     } catch(e) { alert(e.message); }
   }
 
-  // 9. Form Calculations & Save
+  // 9. Calculations & Save
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
