@@ -3,174 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fleet & Inventory Pro</title>
+  <title>Fleet & Excavator Maintenance Pro</title>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
     body { background: #f0f4f8; margin: 0; padding: 12px; color: #2d3748; }
-    .container { max-width: 700px; margin: auto; background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    .container { max-width: 760px; margin: auto; background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
     
-    /* Modern Pill Segmented Tabs */
-    .tab-header { 
-      display: flex; 
-      gap: 5px; 
-      margin-bottom: 16px; 
-      background: #edf2f7; 
-      padding: 5px; 
-      border-radius: 12px; 
-      overflow-x: auto;
-    }
-    .tab-btn { 
-      flex: 1; 
-      min-width: 82px;
-      padding: 9px 4px; 
-      text-align: center; 
-      border: none; 
-      background: transparent; 
-      color: #4a5568; 
-      font-weight: 700; 
-      font-size: 11px; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      transition: all 0.25s ease; 
-      white-space: nowrap;
-    }
-    .tab-btn.active { 
-      background: #2b6cb0; 
-      color: #ffffff; 
-      box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); 
-    }
+    .tab-header { display: flex; gap: 5px; margin-bottom: 16px; background: #edf2f7; padding: 5px; border-radius: 12px; overflow-x: auto; }
+    .tab-btn { flex: 1; min-width: 75px; padding: 9px 3px; text-align: center; border: none; background: transparent; color: #4a5568; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; transition: 0.2s all; white-space: nowrap; }
+    .tab-btn.active { background: #2b6cb0; color: #ffffff; box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); }
 
-    /* Form Styles */
     .form-group { margin-bottom: 12px; position: relative; }
     label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 12px; color: #4a5568; }
-    input, select { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13.5px; background: #fff; transition: border-color 0.2s; }
-    input:focus, select:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15); }
+    input, select { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13.5px; background: #fff; }
+    input:focus, select:focus { outline: none; border-color: #3182ce; }
 
     .barcode-row { display: flex; gap: 8px; }
-    .btn-scan { background: #319795; color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+    .btn-scan { background: #319795; color: white; border: none; padding: 0 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    /* Search Box inside Product Section */
-    .search-filter-input {
-      padding: 7px 10px;
-      font-size: 12px;
-      margin-bottom: 5px;
-      border: 1px dashed #3182ce;
-      background: #f7fafc;
-      border-radius: 6px;
-    }
+    .qty-stepper-row { display: flex; gap: 6px; }
+    .stepper-btn { width: 44px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+    .unit-select { width: 110px; flex-shrink: 0; font-weight: bold; background: #f7fafc; }
 
-    /* Badges */
     .stock-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-left: 6px; }
     .stock-in-hand { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
     .stock-low { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
 
-    /* Quantity Stepper */
-    .qty-stepper-row { display: flex; gap: 6px; }
-    .stepper-btn { width: 44px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+    .service-alert-banner { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 8px 10px; margin-bottom: 12px; font-size: 12px; color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; }
 
-    /* Payment Split Grid */
-    .payment-grid { display: flex; gap: 8px; }
-    .payment-grid > div { flex: 1; }
-
-    #reader-container { display: none; margin-bottom: 12px; border: 2px solid #319795; border-radius: 8px; padding: 6px; background: #000; text-align: center; }
-    #reader { width: 100%; }
-    .btn-close-scan { margin-top: 6px; background: #e53e3e; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-
-    .btn-submit { width: 100%; padding: 13px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.2s all; }
-    .btn-submit:disabled { background: #a0aec0; cursor: not-allowed; opacity: 0.8; }
+    .btn-submit { width: 100%; padding: 13px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; }
     .hidden { display: none !important; }
     #msg { margin-top: 10px; text-align: center; font-weight: 700; font-size: 13px; }
 
-    /* KPI Summary Cards */
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
-    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 8px; text-align: center; }
-    .kpi-title { font-size: 10px; font-weight: 700; color: #718096; text-transform: uppercase; margin-bottom: 2px; }
-    .kpi-val { font-size: 14px; font-weight: 800; color: #2b6cb0; }
-
-    /* Search & Filter Bar */
-    .search-row { display: flex; gap: 8px; margin-bottom: 10px; }
-    .search-box-wrap { position: relative; flex: 1; }
-    .search-box-wrap input { padding-left: 32px; border-radius: 8px; }
-    .search-icon { position: absolute; left: 10px; top: 11px; font-size: 13px; color: #a0aec0; }
-    .filter-btn { padding: 0 12px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: #4a5568; white-space: nowrap; }
-    .filter-btn.active { background: #fed7d7; color: #c53030; border-color: #feb2b2; }
-
-    /* Tables */
-    .view-box { display: none; }
     .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; background: #fff; }
     .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 7px 9px; text-align: left; }
     .custom-table th { background: #2b6cb0; color: white; font-weight: 600; }
-    
-    .company-title-banner { background: #1a365d; color: #fff; padding: 9px 12px; font-size: 13.5px; font-weight: bold; border-radius: 6px; margin-top: 15px; }
-    .vehicle-header-bar { background: #edf2f7; color: #2d3748; font-weight: bold; padding: 6px 10px; font-size: 12.5px; border-left: 4px solid #3182ce; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .subtotal-row { background: #f7fafc; font-weight: bold; color: #2b6cb0; }
-    .company-total-banner { background: #e2e3e5; font-weight: bold; color: #1a202c; padding: 7px 10px; text-align: right; border-radius: 4px; margin-top: 4px; font-size: 12.5px; }
+    .view-box { display: none; }
 
-    /* Tally Style Ledger Account Banner */
-    .tally-account-header {
-      background: #1a365d;
-      color: #fff;
-      padding: 12px 14px;
-      border-radius: 8px 8px 0 0;
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .tally-title { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; }
-    .tally-period { font-size: 11px; color: #bee3f8; }
-    
-    .summary-heading { margin-top: 25px; font-size: 14px; font-weight: 800; color: #2d3748; text-transform: uppercase; border-bottom: 2px solid #4a5568; padding-bottom: 4px; }
-    .company-summary-row { background: #ffff00; font-weight: bold; color: #000; }
-    .vehicle-summary-row { background: #ffffff; }
-    .vehicle-summary-row td:first-child { padding-left: 20px; color: #4a5568; }
-
-    .veh-history-link { font-size: 11px; color: #3182ce; font-weight: bold; cursor: pointer; text-decoration: underline; margin-left: 6px; }
-
-    /* Recent Live Ticker */
-    .recent-box { margin-top: 22px; background: #f8fafc; border: 1.5px dashed #cbd5e0; border-radius: 10px; padding: 12px; }
-    .recent-header { font-size: 11.5px; font-weight: 700; color: #4a5568; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .recent-item { font-size: 12px; padding: 6px 0; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; }
-    .recent-item:last-child { border-bottom: none; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 8px; text-align: center; }
+    .kpi-title { font-size: 10px; font-weight: 700; color: #718096; text-transform: uppercase; }
+    .kpi-val { font-size: 14px; font-weight: 800; color: #2b6cb0; }
 
     /* Modals */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 92%; max-width: 440px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
-    .btn-add-mini { background: none; border: none; color: #3182ce; font-weight: bold; cursor: pointer; font-size: 12px; }
+    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 94%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 12px; }
 
+    /* Smart Filtered Print */
     @media print {
       body { background: #fff; padding: 0; }
-      .container { max-width: 100%; box-shadow: none; padding: 0; width: 100%; }
-      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-add-mini, #msg, #closingDateFilters, #ledgerDateFilters, .refresh-btn, .search-row, .kpi-grid, .recent-box, .stepper-btn, .btn-csv, .btn-excel, .veh-history-link, #btnOpenPayModal, .search-filter-input, .btn-back-summary {
+      .container { max-width: 100%; box-shadow: none; padding: 0; }
+      .tab-header, .btn-scan, #reader-container, .btn-submit, .btn-print, .btn-excel, .btn-csv, #msg, .search-row, .kpi-grid, #closingDateFilters, #ledgerDateFilters, .stepper-btn, .btn-action-no-print {
         display: none !important;
       }
       .view-box { display: block !important; }
-      .custom-table { width: 100%; border: 1px solid #000; font-size: 11px; }
-      .custom-table th, .custom-table td { border: 1px solid #000; padding: 4px 6px; color: #000; }
-      .company-title-banner, .tally-account-header { background: #ddd !important; color: #000 !important; border: 1px solid #000; -webkit-print-color-adjust: exact; }
-      .company-summary-row { background: #ffff00 !important; -webkit-print-color-adjust: exact; }
+      .custom-table { border: 1px solid #000; font-size: 11px; }
+      .custom-table th, .custom-table td { border: 1px solid #000; }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Modern Segmented Pill Tabs -->
   <div class="tab-header">
-    <button class="tab-btn active" id="tabInBtn" type="button" onclick="switchTab('IN')">📥 Stock In</button>
-    <button class="tab-btn" id="tabOutBtn" type="button" onclick="switchTab('OUT')">📤 Stock Out</button>
-    <button class="tab-btn" id="tabSummaryBtn" type="button" onclick="switchTab('SUMMARY')">📊 Stock</button>
-    <button class="tab-btn" id="tabLedgerBtn" type="button" onclick="switchTab('LEDGER')">📑 Ledger</button>
-    <button class="tab-btn" id="tabClosingBtn" type="button" onclick="switchTab('CLOSING')">🔒 Closing</button>
+    <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">📥 Stock In</button>
+    <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">📤 Stock Out</button>
+    <button class="tab-btn" id="tabSummaryBtn" onclick="switchTab('SUMMARY')">📊 Stock</button>
+    <button class="tab-btn" id="tabLedgerBtn" onclick="switchTab('LEDGER')">📑 Ledger</button>
+    <button class="tab-btn" id="tabClosingBtn" onclick="switchTab('CLOSING')">🔒 Closing</button>
+    <button class="tab-btn" id="tabOrderBtn" onclick="switchTab('ORDER')">📝 Order (PO)</button>
   </div>
 
-  <!-- Camera Container -->
-  <div id="reader-container">
-    <div id="reader"></div>
-    <button type="button" class="btn-close-scan" onclick="stopScanner()">Close Camera</button>
-  </div>
-
-  <!-- Entry Form -->
+  <!-- Main Form -->
   <form id="stockForm">
     <div class="form-group">
       <label>Date & Time</label>
@@ -178,25 +83,24 @@
     </div>
 
     <div class="form-group">
-      <label>Barcode</label>
+      <label>Barcode / Scanner</label>
       <div class="barcode-row">
-        <input type="text" id="barcodeInput" placeholder="Type barcode or scan..." autocomplete="off">
-        <button type="button" class="btn-scan" onclick="startScanner('MAIN')">📷 Scan</button>
+        <input type="text" id="barcodeInput" placeholder="Scan or type barcode...">
+        <button type="button" class="btn-scan" onclick="startScanner()">📷 Scan</button>
       </div>
     </div>
 
-    <!-- Product Select Dropdown WITH Quick Search Filter -->
+    <!-- Product / Service Selection -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <label style="display:inline-block;">Product / Item Name</label>
+          <label style="display:inline-block;">Product / Service Hour Kit</label>
           <span id="stockInHandBadge" class="stock-badge hidden"></span>
         </div>
-        <button type="button" class="btn-add-mini" onclick="openAddProductModal()">➕ Add New</button>
+        <button type="button" onclick="openAddProductModal()" style="border:none; background:none; color:#3182ce; font-weight:bold; cursor:pointer; font-size:12px;">➕ Add Product</button>
       </div>
-      <input type="text" id="productFilterBox" class="search-filter-input" placeholder="🔍 Type to filter dropdown..." oninput="filterProductDropdown(this.value)">
       <select id="productSelect" onchange="onProductSelect(this.value)">
-        <option value="">-- Select Product --</option>
+        <option value="">-- Select Item or Service --</option>
       </select>
     </div>
 
@@ -205,355 +109,198 @@
       <input type="text" id="hsnInput" placeholder="Auto filled">
     </div>
 
-    <!-- Quantity with Quick Stepper -->
+    <!-- Quantity & Units -->
     <div class="form-group">
-      <label>Quantity</label>
+      <label>Quantity & Unit</label>
       <div class="qty-stepper-row">
         <button type="button" class="stepper-btn" onclick="stepQty(-1)">-</button>
-        <input type="number" id="qtyInput" min="1" value="1" placeholder="Quantity" required oninput="calculateTotal()">
+        <input type="number" id="qtyInput" min="0.1" step="any" value="1" required oninput="calculateTotal()">
         <button type="button" class="stepper-btn" onclick="stepQty(1)">+</button>
+        <select id="unitSelect" class="unit-select">
+          <option value="Nos">Nos</option>
+          <option value="L">L (Litre)</option>
+          <option value="Set">Set</option>
+          <option value="Kg">Kg</option>
+          <option value="Mtr">Mtr</option>
+        </select>
       </div>
     </div>
 
     <div class="form-group">
       <label>Rate (per unit)</label>
-      <input type="number" id="rateInput" step="0.01" placeholder="Rate" oninput="calculateTotal()">
+      <input type="number" id="rateInput" step="0.01" oninput="calculateTotal()">
     </div>
 
     <div class="form-group">
-      <label>Total Bill Amount</label>
-      <input type="number" id="totalAmountInput" readonly style="background:#edf2f7;">
+      <label>Total Amount (₹)</label>
+      <input type="number" id="totalAmountInput" readonly style="background:#edf2f7; font-weight:bold;">
     </div>
 
-    <!-- Payment Tracking (Stock In) -->
+    <!-- Stock In Fields -->
     <div id="paymentGroup" class="form-group">
-      <label>Payment on Purchase (Khata / Ledger)</label>
-      <div class="payment-grid">
-        <div>
-          <input type="number" id="paidAmountInput" step="0.01" placeholder="Paid Amount (₹)" oninput="calculateDue()">
-          <span style="font-size:10px; color:#718096;">Kitna diya</span>
-        </div>
-        <div>
-          <input type="number" id="dueAmountInput" readonly placeholder="Due / Baki (₹)" style="background:#edf2f7; font-weight:bold; color:#c53030;">
-          <span style="font-size:10px; color:#718096;">Kitna baki hai</span>
-        </div>
+      <label>Payment Tracking (Ledger)</label>
+      <div style="display:flex; gap:8px;">
+        <input type="number" id="paidAmountInput" placeholder="Paid (₹)" oninput="calculateDue()">
+        <input type="number" id="dueAmountInput" readonly placeholder="Due (₹)" style="background:#edf2f7; color:#c53030; font-weight:bold;">
       </div>
     </div>
 
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
-      <input type="text" id="partyInput" placeholder="e.g. Patna Auto Spares, Mahavir Diesels" list="partyDataList">
+      <input type="text" id="partyInput" placeholder="e.g. Mahavir Diesels" list="partyDataList">
       <datalist id="partyDataList"></datalist>
     </div>
 
-    <!-- Vehicle Select Dropdown (ONLY VEHICLE NUMBER SHOWN) -->
+    <!-- Stock Out Fields -->
     <div class="form-group hidden" id="vehicleGroup">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <label style="display:inline-block;">Vehicle Number</label>
-          <span id="vehHistoryBtn" class="veh-history-link hidden" onclick="openVehicleHistoryModal()">📋 View Past Parts</span>
-        </div>
-        <button type="button" class="btn-add-mini" onclick="openAddVehicleModal()">➕ Add New</button>
+        <label>Vehicle / Machine Number</label>
+        <button type="button" onclick="openAddVehicleModal()" style="border:none; background:none; color:#3182ce; font-weight:bold; cursor:pointer; font-size:12px;">➕ Add Machine</button>
       </div>
-      <select id="vehicleSelect" onchange="onVehicleDropdownChange(this.value)">
-        <option value="">-- Select Vehicle --</option>
+      <select id="vehicleSelect" onchange="onVehicleSelect(this.value)">
+        <option value="">-- Select Machine --</option>
       </select>
+      <div id="nextServiceBanner" class="service-alert-banner hidden" style="margin-top:6px;">
+        <span>⏳ Next Service Due At: <b id="nextServiceReading">0 Hrs</b></span>
+      </div>
     </div>
 
-    <!-- Company Select Dropdown (SEPARATE FIELD) -->
     <div class="form-group hidden" id="companyGroup">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>Company Name (Auto Selected)</label>
-        <button type="button" class="btn-add-mini" onclick="openAddCompanyModal()">➕ Add New</button>
-      </div>
+      <label>Company</label>
       <select id="companyInput">
-        <option value="">-- Select Company --</option>
         <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
         <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
       </select>
     </div>
 
-    <!-- Current KM / Running Hours -->
     <div class="form-group hidden" id="kmGroup">
-      <label>Current KM / Running Hours (Optional)</label>
-      <input type="text" id="kmInput" placeholder="e.g. 142500 KM / 3200 Hrs">
+      <label>Current Engine Hours / KM</label>
+      <input type="text" id="kmInput" placeholder="e.g. 3200 Hrs">
     </div>
 
     <div class="form-group hidden" id="driverGroup">
-      <label>Driver Name</label>
-      <input type="text" id="driverInput" placeholder="Driver name">
+      <label>Driver / Operator Name</label>
+      <input type="text" id="driverInput">
     </div>
 
     <div class="form-group">
       <label>Remarks / Bill No</label>
-      <input type="text" id="remarksInput" placeholder="Invoice / Challan / Notes">
+      <input type="text" id="remarksInput">
     </div>
 
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
-  <!-- Live Mini Activity Ticker -->
-  <div class="recent-box" id="recentBox">
-    <div class="recent-header">
-      <span>📌 Recent Live Transactions</span>
-      <span style="font-size:10px; color:#718096; font-weight:normal;">Last 5 Entries</span>
-    </div>
-    <div id="recentList"><span style="font-size:12px; color:#a0aec0;">Loading recent entries...</span></div>
-  </div>
-
   <!-- Stock Summary View -->
   <div class="view-box" id="summaryView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-      <h3 style="margin:0; font-size:15px; color:#1a202c;">Inventory Dashboard</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="margin:0; font-size:15px;">Live Inventory Stock</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" class="btn-excel" onclick="exportSummaryToExcel()" style="padding:5px 9px; font-size:11px; background:#107c41; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">📊 Excel</button>
-        <button type="button" class="btn-csv" onclick="exportSummaryToCSV()" style="padding:5px 9px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
-        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
-        <button type="button" class="refresh-btn" onclick="loadSummary(true)" style="padding:5px 9px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print View</button>
+        <button type="button" onclick="loadSummary()" style="padding:5px 9px; font-size:11px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-title">Total Items</div>
-        <div class="kpi-val" id="kpiItems">0</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Stock Qty</div>
-        <div class="kpi-val" id="kpiStock">0</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Total Value</div>
-        <div class="kpi-val" id="kpiValue">₹0</div>
-      </div>
+      <div class="kpi-card"><div class="kpi-title">Items</div><div class="kpi-val" id="kpiItems">0</div></div>
+      <div class="kpi-card"><div class="kpi-title">Total Units</div><div class="kpi-val" id="kpiStock">0</div></div>
+      <div class="kpi-card"><div class="kpi-title">Total Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
     </div>
 
-    <div class="search-row">
-      <div class="search-box-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="summarySearchInput" placeholder="Search item / spare part..." oninput="filterSummaryTable()">
-      </div>
-      <button type="button" id="lowStockFilterBtn" class="filter-btn" onclick="toggleLowStockFilter()">⚠️ Low Stock (≤2)</button>
-    </div>
-
-    <div id="summaryContent" style="margin-top:6px;">Loading live stock summary...</div>
+    <input type="text" id="summarySearch" placeholder="🔍 Search spare parts or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
+    <div id="summaryTableContent">Loading stock...</div>
   </div>
 
-  <!-- TALLY STYLE ACCOUNTING PARTY LEDGER -->
+  <!-- Tally Supplier Ledger -->
   <div class="view-box" id="ledgerView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="margin:0; font-size:15px; color:#1a202c;">Tally Supplier Ledger (Dr / Cr)</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" id="btnOpenPayModal" onclick="openSupplierPaymentModal()" style="padding:5px 9px; font-size:11px; background:#28a745; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">➕ Pay Supplier</button>
-        <button type="button" class="btn-excel" onclick="exportLedgerToExcel()" style="padding:5px 9px; font-size:11px; background:#107c41; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">📊 Excel</button>
-        <button type="button" class="btn-csv" onclick="exportLedgerToCSV()" style="padding:5px 9px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
-        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print</button>
-      </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="margin:0; font-size:15px;">Supplier Ledger (Dr / Cr)</h3>
+      <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered Statement</button>
     </div>
 
-    <!-- Tally Dynamic KPI Cards -->
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-title" id="kpiDrLabel">Total Purchases (Dr)</div>
-        <div class="kpi-val" id="kpiLedgerTotal">₹0</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title" id="kpiCrLabel">Total Payments (Cr)</div>
-        <div class="kpi-val" id="kpiLedgerPaid" style="color:#2f855a;">₹0</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Closing Balance (Due)</div>
-        <div class="kpi-val" id="kpiLedgerDue" style="color:#c53030;">₹0</div>
-      </div>
+    <div id="ledgerDateFilters" style="display:flex; gap:6px; margin-bottom:10px;">
+      <input type="date" id="ledgerSDate" onchange="renderPartyLedger()">
+      <input type="date" id="ledgerEDate" onchange="renderPartyLedger()">
+      <select id="ledgerPartyFilter" onchange="renderPartyLedger()">
+        <option value="">-- All Suppliers --</option>
+      </select>
     </div>
-
-    <!-- Tally Account Filter Bar -->
-    <div id="ledgerDateFilters" style="display:flex; gap:6px; align-items:flex-end; margin-bottom:12px;">
-      <div style="flex:1;">
-        <label>From Date</label>
-        <input type="date" id="ledgerStartDate" onchange="renderPartyLedger()">
-      </div>
-      <div style="flex:1;">
-        <label>To Date</label>
-        <input type="date" id="ledgerEndDate" onchange="renderPartyLedger()">
-      </div>
-      <div style="flex:1.3;">
-        <label>Select Ledger Account</label>
-        <select id="ledgerPartyFilter" onchange="renderPartyLedger()">
-          <option value="">-- All Parties Summary --</option>
-        </select>
-      </div>
-      <button type="button" onclick="clearLedgerFilters()" style="padding:9px 12px; background:#718096; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">All</button>
-    </div>
-
-    <div id="ledgerContent">Loading Tally ledger account...</div>
+    <div id="ledgerContent">Loading ledger...</div>
   </div>
 
-  <!-- Month Closing Report View -->
+  <!-- Month Closing & Service History -->
   <div class="view-box" id="closingView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="margin:0; font-size:15px; color:#1a202c;">Monthly Vehicle Consumption Report</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" class="btn-excel" onclick="exportClosingToExcel()" style="padding:5px 10px; font-size:11px; background:#107c41; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">📊 Excel</button>
-        <button type="button" class="btn-csv" onclick="exportClosingToCSV()" style="padding:5px 10px; font-size:11px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">📥 CSV</button>
-        <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 10px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print / PDF</button>
-      </div>
-    </div>
-    
-    <div id="closingDateFilters" style="display:flex; gap:6px; align-items:flex-end; margin-bottom:12px;">
-      <div style="flex:1;">
-        <label>Start Date</label>
-        <input type="date" id="closingStartDate" onchange="renderClosingReport()">
-      </div>
-      <div style="flex:1;">
-        <label>End Date</label>
-        <input type="date" id="closingEndDate" onchange="renderClosingReport()">
-      </div>
-      <button type="button" onclick="clearDateFilters()" style="padding:9px 12px; background:#718096; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">All</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="margin:0; font-size:15px;">Vehicle & Machine Consumption</h3>
+      <button type="button" class="btn-print" onclick="window.print()" style="padding:5px 9px; font-size:11px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered Report</button>
     </div>
 
+    <div id="closingDateFilters" style="display:flex; gap:6px; margin-bottom:10px;">
+      <input type="date" id="closingSDate" onchange="renderClosingReport()">
+      <input type="date" id="closingEDate" onchange="renderClosingReport()">
+      <select id="closingVehFilter" onchange="renderClosingReport()">
+        <option value="">-- All Machines --</option>
+      </select>
+    </div>
     <div id="closingContent">Loading closing data...</div>
+  </div>
+
+  <!-- Purchase Order (Re-order) Tab -->
+  <div class="view-box" id="orderView">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="margin:0; font-size:15px;">Purchase Order (PO) & Re-Order</h3>
+      <button type="button" onclick="openCreateOrderModal()" style="padding:6px 12px; background:#38a169; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">➕ New Order</button>
+    </div>
+    <div id="orderListContent">Loading orders...</div>
   </div>
 
   <div id="msg"></div>
 </div>
 
-<!-- Password Modal -->
-<div class="modal" id="authModal">
-  <div class="modal-content" style="text-align:center;">
-    <h3 style="margin-top:0; color:#2d3748;">🔒 Security Lock</h3>
-    <p style="font-size:13px; color:#718096; margin-bottom:14px;">Month Closing dekhne ke liye password daalein:</p>
-    <input type="password" id="closingPasswordInput" placeholder="Password daalein" style="text-align:center; font-size:16px; margin-bottom:14px;">
-    <div style="display:flex; gap:8px;">
-      <button type="button" onclick="verifyPassword()" style="flex:1; background:#3182ce; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Unlock</button>
-      <button type="button" onclick="cancelPassword()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
-    </div>
-    <div id="authErrMsg" style="color:#e53e3e; font-size:12px; margin-top:8px;"></div>
-  </div>
-</div>
-
-<!-- Modal: Record Supplier Payment (Cr Voucher) -->
-<div class="modal" id="supplierPaymentModal">
+<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) -->
+<div class="modal" id="serviceHoursModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; color:#2d3748;">➕ Record Supplier Payment (Cr Voucher)</h3>
+    <h3 style="margin-top:0; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
+    <p style="font-size:12px; color:#718096; margin-bottom:10px;">Neeche diye gaye parts godown se deduct honge:</p>
     
-    <div class="form-group">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>Select Supplier / Party</label>
-        <span id="paySupplierDueBadge" style="font-size:11px; font-weight:bold; color:#c53030;"></span>
-      </div>
-      <select id="payPartySelect" onchange="onPaySupplierSelect(this.value)">
-        <option value="">-- Select Supplier --</option>
-      </select>
-      <input type="text" id="payPartyCustomInput" class="hidden" placeholder="Type new supplier name..." style="margin-top:6px; text-transform:uppercase;">
-    </div>
+    <div id="serviceItemsList"></div>
 
-    <div class="form-group">
-      <label>Amount Paid (₹)</label>
-      <input type="number" id="payAmountInput" step="0.01" placeholder="Amount (₹)" required>
-    </div>
-    
-    <div class="form-group">
-      <label>Payment Mode / Account</label>
-      <select id="payModeInput">
-        <option value="Online / Bank Transfer">Online / Bank Transfer (NEFT/RTGS/UPI)</option>
-        <option value="Cash">Cash</option>
-        <option value="Cheque">Cheque</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label>Ref / Voucher No / Remarks</label>
-      <input type="text" id="payRefInput" placeholder="UTR / Cheque No / Notes">
-    </div>
-    
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="savePayBtn" onclick="saveSupplierPayment()" style="flex:1; background:#38a169; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Save Payment</button>
-      <button type="button" onclick="closeSupplierPaymentModal()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Vehicle Past History -->
-<div class="modal" id="vehicleHistoryModal">
-  <div class="modal-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="margin:0; font-size:14px; color:#2d3748;" id="vehHistTitle">Vehicle History</h3>
-      <button type="button" onclick="closeVehicleHistoryModal()" style="border:none; background:none; font-size:16px; cursor:pointer;">✖</button>
-    </div>
-    <div id="vehHistoryContent" style="font-size:12px;">Loading past history...</div>
-  </div>
-</div>
-
-<!-- Modal: Add Product (WITH BARCODE SCANNER & DUPLICATE PROTECTION) -->
-<div class="modal" id="addProductModal">
-  <div class="modal-content">
-    <h3 style="margin-top:0; color:#2d3748;">Add New Product</h3>
-    <div class="form-group">
-      <label>Barcode</label>
-      <div class="barcode-row">
-        <input type="text" id="newProdBarcode" placeholder="Type or scan barcode...">
-        <button type="button" class="btn-scan" onclick="startScanner('MODAL')">📷 Scan</button>
+    <!-- Add Extra Item in same popup -->
+    <div style="margin-top:12px; padding:10px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
+      <label style="font-size:11px;">➕ Add Extra Part / Oil to this service:</label>
+      <div style="display:flex; gap:6px;">
+        <select id="extraPartSelect" style="flex:2; font-size:12px;">
+          <option value="">-- Choose Extra Item --</option>
+        </select>
+        <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:12px;">
+        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 10px; border-radius:6px; cursor:pointer; font-size:12px;">Add</button>
       </div>
     </div>
-    <div class="form-group">
-      <label>Product Name</label>
-      <input type="text" id="newProdName" required placeholder="e.g. Mobil Oil 15W40">
-    </div>
-    <div class="form-group">
-      <label>HSN Code</label>
-      <input type="text" id="newProdHsn">
-    </div>
-    <div class="form-group">
-      <label>Default Rate</label>
-      <input type="number" id="newProdRate" step="0.01">
-    </div>
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="saveProdBtn" onclick="saveNewProduct()" style="flex:1; background:#38a169; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Save</button>
-      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
-    </div>
-  </div>
-</div>
 
-<!-- Modal: Add Vehicle with Linked Company -->
-<div class="modal" id="addVehicleModal">
-  <div class="modal-content">
-    <h3 style="margin-top:0; color:#2d3748;">Add New Vehicle</h3>
-    <div class="form-group">
-      <label>Vehicle Number</label>
-      <input type="text" id="newVehicleNo" placeholder="BR01GL0101" style="text-transform:uppercase;">
-    </div>
-    <div class="form-group">
-      <label>Belongs to Company</label>
-      <select id="newVehicleCompany">
-        <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
-        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
-      </select>
-    </div>
     <div style="display:flex; gap:8px; margin-top:14px;">
-      <button type="button" id="saveVehBtn" onclick="saveNewVehicle()" style="flex:1; background:#38a169; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Save Vehicle</button>
-      <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
+      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:11px; border-radius:6px; font-weight:bold; cursor:pointer;">Confirm & Issue All</button>
+      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:11px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Add New Company -->
-<div class="modal" id="addCompanyModal">
+<!-- Modal: Create Purchase Order -->
+<div class="modal" id="createOrderModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; color:#2d3748;">Add New Company</h3>
+    <h3 style="margin-top:0; color:#2d3748;">New Purchase Order (PO)</h3>
     <div class="form-group">
-      <label>Company Name</label>
-      <input type="text" id="newCompanyNameInput" placeholder="e.g. BALAJI TRANSPORT" style="text-transform:uppercase;">
+      <label>Supplier / Vendor</label>
+      <input type="text" id="poPartyInput" placeholder="Supplier name...">
     </div>
+    <div style="font-weight:bold; font-size:12px; margin-bottom:6px;">Select Items to Re-order:</div>
+    <div id="poItemList" style="max-height:200px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px;"></div>
+
     <div style="display:flex; gap:8px; margin-top:14px;">
-      <button type="button" onclick="saveNewCompany()" style="flex:1; background:#38a169; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Add Company</button>
-      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#718096; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
+      <button type="button" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Save & Create PO</button>
+      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
-
-<!-- Safe Barcode Scanner Lib -->
-<script src="https://unpkg.com/html5-qrcode" defer></script>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
@@ -561,1560 +308,540 @@
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
-  let customCompanies = ["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"];
-  let summaryRawData = [];
-  let closingRawData = [];
-  let ledgerRawData = [];
-  let stockBalanceMap = new Map();
-  let recentEntries = [];
-  let filterLowStockOnly = false;
+  let kitsMap = {};
+  let summaryData = [];
+  let closingData = [];
+  let ledgerData = [];
+  let poData = [];
 
-  let lastUserActivityTime = Date.now();
-  let isUserTyping = false;
-
-  let isSavingProduct = false;
-  let isSavingVehicle = false;
-
-  try {
-    productList = JSON.parse(localStorage.getItem("cached_products") || "[]");
-    recentEntries = JSON.parse(localStorage.getItem("cached_recent_entries") || "[]");
-    let cachedVehicles = JSON.parse(localStorage.getItem("cached_vehicles_obj") || "[]");
-    cachedVehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
-    let cachedComps = JSON.parse(localStorage.getItem("cached_companies") || "[]");
-    cachedComps.forEach(c => { if (!customCompanies.includes(c)) customCompanies.push(c); });
-  } catch(e) {}
-
-  const defaultComrao = ["BR01GM1087", "BR01GM3679", "BR01GK0023", "BR01GN7538"];
-  defaultComrao.forEach(v => {
-    if (!vehicleMap.has(v)) vehicleMap.set(v, "COMRAO PVT. LTD");
-  });
-
-  let barcodeMap = new Map();
-  let html5QrCode = null;
-
-  const CLOSING_PASSWORD = "425151"; 
-  let isClosingUnlocked = false;
-
-  let isSubmitting = false;
-  let lastSubmissionPayload = null;
-  let lastSubmissionTime = 0;
-
-  function playPosBeep(type = "beep") {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      if (type === "success") {
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.25);
-      } else {
-        osc.frequency.setValueAtTime(950, ctx.currentTime);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.12);
-      }
-    } catch (e) {}
-  }
-
-  function buildBarcodeMap() {
-    barcodeMap.clear();
-    productList.forEach(p => {
-      if (p.barcode) barcodeMap.set(String(p.barcode).trim().toLowerCase(), p);
-    });
-  }
-  buildBarcodeMap();
-
-  function renderProductDropdown(filteredItems = null) {
-    const pSel = document.getElementById("productSelect");
-    const curVal = pSel.value;
-    pSel.innerHTML = '<option value="">-- Select Product --</option>';
-
-    const itemsToRender = filteredItems || productList;
-    itemsToRender.forEach(p => {
-      let opt = document.createElement("option");
-      opt.value = p.name;
-      opt.innerText = p.name;
-      pSel.appendChild(opt);
-    });
-
-    if (curVal && !filteredItems) pSel.value = curVal;
-  }
-
-  function filterProductDropdown(searchQuery) {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) {
-      renderProductDropdown();
-      return;
-    }
-    const filtered = productList.filter(p => p.name.toLowerCase().includes(query));
-    renderProductDropdown(filtered);
-    if (filtered.length > 0) {
-      document.getElementById("productSelect").value = filtered[0].name;
-      onProductSelect(filtered[0].name);
-    }
-  }
-
-  function onProductSelect(val) {
-    const p = productList.find(x => x.name === val);
-    if (p) {
-      document.getElementById("barcodeInput").value = p.barcode || "";
-      document.getElementById("hsnInput").value = p.hsn || "";
-      document.getElementById("rateInput").value = p.rate || "";
-    }
-    updateStockBadge(val);
-    calculateTotal();
-  }
-
-  function renderCompanyDropdowns() {
-    const compSel = document.getElementById("companyInput");
-    const newVehCompSel = document.getElementById("newVehicleCompany");
-    const curVal = compSel.value;
-
-    compSel.innerHTML = '<option value="">-- Select Company --</option>';
-    newVehCompSel.innerHTML = '';
-
-    customCompanies.forEach(c => {
-      let opt = document.createElement("option"); opt.value = c; opt.innerText = c;
-      compSel.appendChild(opt);
-
-      let opt2 = document.createElement("option"); opt2.value = c; opt2.innerText = c;
-      newVehCompSel.appendChild(opt2);
-    });
-
-    if (curVal) compSel.value = curVal;
-  }
-
-  function renderVehicleDropdown() {
-    const vSel = document.getElementById("vehicleSelect");
-    const curVal = vSel.value;
-    vSel.innerHTML = '<option value="">-- Select Vehicle --</option>';
-
-    Array.from(vehicleMap.keys()).sort().forEach(v => {
-      let opt = document.createElement("option");
-      opt.value = v;
-      opt.innerText = v;
-      vSel.appendChild(opt);
-    });
-
-    if (curVal) vSel.value = curVal;
-  }
-
-  function onVehicleDropdownChange(vNo) {
-    const cleanNo = (vNo || "").trim().toUpperCase();
-    const compSel = document.getElementById("companyInput");
-    const histBtn = document.getElementById("vehHistoryBtn");
-
-    if (!cleanNo) {
-      compSel.value = "";
-      if (histBtn) histBtn.classList.add("hidden");
-      return;
-    }
-
-    let assignedCompany = vehicleMap.get(cleanNo);
-    if (!assignedCompany) {
-      assignedCompany = defaultComrao.includes(cleanNo) ? "COMRAO PVT. LTD" : "GOKULESHWAR RD PVT. LTD";
-      vehicleMap.set(cleanNo, assignedCompany);
-    }
-
-    compSel.value = assignedCompany;
-    if (histBtn) histBtn.classList.remove("hidden");
-  }
-
-  function updateClock() {
-    const now = new Date();
-    const elem = document.getElementById("dateTimeDisplay");
-    if (elem) elem.value = now.toLocaleString('en-GB');
-  }
-  setInterval(updateClock, 1000);
-
-  function stepQty(change) {
-    const qElem = document.getElementById("qtyInput");
-    let val = parseInt(qElem.value) || 1;
-    val += change;
-    if (val < 1) val = 1;
-    qElem.value = val;
-    calculateTotal();
-  }
+  let activeServiceParts = [];
+  let activeServiceName = "";
 
   function switchTab(type) {
-    if (type === "CLOSING" && !isClosingUnlocked) {
-      document.getElementById("authErrMsg").innerText = "";
-      document.getElementById("closingPasswordInput").value = "";
-      document.getElementById("authModal").style.display = "flex";
-      return;
-    }
-
     currentTab = type;
-    document.getElementById("tabInBtn").classList.toggle("active", type === "IN");
-    document.getElementById("tabOutBtn").classList.toggle("active", type === "OUT");
-    document.getElementById("tabSummaryBtn").classList.toggle("active", type === "SUMMARY");
-    document.getElementById("tabLedgerBtn").classList.toggle("active", type === "LEDGER");
-    document.getElementById("tabClosingBtn").classList.toggle("active", type === "CLOSING");
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".view-box").forEach(v => v.style.display = "none");
+    document.getElementById("stockForm").style.display = "none";
 
-    const form = document.getElementById("stockForm");
-    const summaryView = document.getElementById("summaryView");
-    const ledgerView = document.getElementById("ledgerView");
-    const closingView = document.getElementById("closingView");
-    const paymentGroup = document.getElementById("paymentGroup");
-    const partyGroup = document.getElementById("partyGroup");
-    const vehicleGroup = document.getElementById("vehicleGroup");
-    const companyGroup = document.getElementById("companyGroup");
-    const kmGroup = document.getElementById("kmGroup");
-    const driverGroup = document.getElementById("driverGroup");
-    const recentBox = document.getElementById("recentBox");
-    const badge = document.getElementById("stockInHandBadge");
-    document.getElementById("msg").innerText = "";
-
-    if (type === "SUMMARY") {
-      form.style.display = "none";
-      recentBox.style.display = "none";
-      ledgerView.style.display = "none";
-      closingView.style.display = "none";
-      summaryView.style.display = "block";
-      loadSummary(false);
+    if (type === "IN" || type === "OUT") {
+      document.getElementById("stockForm").style.display = "block";
+      document.getElementById(type === "IN" ? "tabInBtn" : "tabOutBtn").classList.add("active");
+      document.getElementById("paymentGroup").classList.toggle("hidden", type === "OUT");
+      document.getElementById("partyGroup").classList.toggle("hidden", type === "OUT");
+      document.getElementById("vehicleGroup").classList.toggle("hidden", type === "IN");
+      document.getElementById("companyGroup").classList.toggle("hidden", type === "IN");
+      document.getElementById("kmGroup").classList.toggle("hidden", type === "IN");
+      document.getElementById("driverGroup").classList.toggle("hidden", type === "IN");
+    } else if (type === "SUMMARY") {
+      document.getElementById("summaryView").style.display = "block";
+      document.getElementById("tabSummaryBtn").classList.add("active");
+      loadSummary();
     } else if (type === "LEDGER") {
-      form.style.display = "none";
-      recentBox.style.display = "none";
-      summaryView.style.display = "none";
-      closingView.style.display = "none";
-      ledgerView.style.display = "block";
-      loadLedgerData();
+      document.getElementById("ledgerView").style.display = "block";
+      document.getElementById("tabLedgerBtn").classList.add("active");
+      loadLedger();
     } else if (type === "CLOSING") {
-      form.style.display = "none";
-      recentBox.style.display = "none";
-      summaryView.style.display = "none";
-      ledgerView.style.display = "none";
-      closingView.style.display = "block";
-      loadClosingData();
-    } else {
-      form.style.display = "block";
-      recentBox.style.display = "block";
-      summaryView.style.display = "none";
-      ledgerView.style.display = "none";
-      closingView.style.display = "none";
-
-      if (type === "OUT") {
-        paymentGroup.classList.add("hidden");
-        partyGroup.classList.add("hidden");
-        vehicleGroup.classList.remove("hidden");
-        companyGroup.classList.remove("hidden");
-        kmGroup.classList.remove("hidden");
-        driverGroup.classList.remove("hidden");
-        renderVehicleDropdown();
-      } else {
-        paymentGroup.classList.remove("hidden");
-        partyGroup.classList.remove("hidden");
-        vehicleGroup.classList.add("hidden");
-        companyGroup.classList.add("hidden");
-        kmGroup.classList.add("hidden");
-        driverGroup.classList.add("hidden");
-        badge.classList.add("hidden");
-      }
+      document.getElementById("closingView").style.display = "block";
+      document.getElementById("tabClosingBtn").classList.add("active");
+      loadClosing();
+    } else if (type === "ORDER") {
+      document.getElementById("orderView").style.display = "block";
+      document.getElementById("tabOrderBtn").classList.add("active");
+      loadOrders();
     }
   }
 
-  function verifyPassword() {
-    const inputPass = document.getElementById("closingPasswordInput").value;
-    if (inputPass === CLOSING_PASSWORD) {
-      isClosingUnlocked = true;
-      document.getElementById("authModal").style.display = "none";
-      switchTab("CLOSING");
-    } else {
-      document.getElementById("authErrMsg").innerText = "❌ Galat Password! Access Denied.";
-      document.getElementById("closingPasswordInput").value = "";
-    }
-  }
-
-  document.getElementById("closingPasswordInput").addEventListener("keyup", function(e) {
-    if (e.key === "Enter") verifyPassword();
-  });
-
-  function cancelPassword() {
-    document.getElementById("authModal").style.display = "none";
-  }
-
-  async function fetchMasterData(selectedNewProd = null) {
+  async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData`);
       const data = await res.json();
       if (data.status === "success") {
         productList = data.products || [];
-        localStorage.setItem("cached_products", JSON.stringify(productList));
+        kitsMap = data.kits || {};
+        (data.vehicles || []).forEach(v => vehicleMap.set(v.vehicleNo, v.company));
 
-        defaultComrao.forEach(v => vehicleMap.set(v, "COMRAO PVT. LTD"));
-
-        if (data.vehicles && Array.isArray(data.vehicles)) {
-          data.vehicles.forEach(v => {
-            if (v.vehicleNo) {
-              let cleanNo = String(v.vehicleNo).trim().toUpperCase();
-              let comp = String(v.company || "").trim().toUpperCase();
-              if (!comp) {
-                comp = defaultComrao.includes(cleanNo) ? "COMRAO PVT. LTD" : "GOKULESHWAR RD PVT. LTD";
-              }
-              vehicleMap.set(cleanNo, comp);
-              if (comp && !customCompanies.includes(comp)) {
-                customCompanies.push(comp);
-              }
-            }
-          });
-
-          let arr = [];
-          vehicleMap.forEach((comp, vNo) => arr.push({ vehicleNo: vNo, company: comp }));
-          localStorage.setItem("cached_vehicles_obj", JSON.stringify(arr));
-          localStorage.setItem("cached_companies", JSON.stringify(customCompanies));
-        }
-
-        buildBarcodeMap();
         renderProductDropdown();
-        renderCompanyDropdowns();
         renderVehicleDropdown();
-
-        if (selectedNewProd) {
-          document.getElementById("productSelect").value = selectedNewProd;
-          onProductSelect(selectedNewProd);
-        }
       }
     } catch (e) { console.log(e); }
   }
 
-  document.getElementById("barcodeInput").addEventListener("input", function() {
-    const val = this.value.trim().toLowerCase();
-    if (!val) return;
-    if (barcodeMap.has(val)) {
-      playPosBeep("beep");
-      const p = barcodeMap.get(val);
-      document.getElementById("productSelect").value = p.name;
-      document.getElementById("hsnInput").value = p.hsn;
-      document.getElementById("rateInput").value = p.rate;
-      updateStockBadge(p.name);
-      calculateTotal();
-    }
-  });
+  function renderProductDropdown() {
+    const sel = document.getElementById("productSelect");
+    const extraSel = document.getElementById("extraPartSelect");
+    sel.innerHTML = '<option value="">-- Select Item or Service --</option>';
+    extraSel.innerHTML = '<option value="">-- Choose Extra Item --</option>';
 
-  function updateStockBadge(prodName) {
-    const badge = document.getElementById("stockInHandBadge");
-    if (!prodName || currentTab !== "OUT") {
-      badge.classList.add("hidden");
-      return;
+    // Service Hours Group
+    const kitNames = Object.keys(kitsMap);
+    if (kitNames.length > 0) {
+      let grp = document.createElement("optgroup");
+      grp.label = "⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)";
+      kitNames.forEach(k => {
+        let opt = document.createElement("option");
+        opt.value = k;
+        opt.innerText = k;
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
     }
-    const bal = stockBalanceMap.has(prodName) ? stockBalanceMap.get(prodName) : null;
-    if (bal !== null) {
-      badge.classList.remove("hidden");
-      badge.innerText = `Available: ${bal} pcs`;
-      badge.className = (bal <= 2) ? "stock-badge stock-low" : "stock-badge stock-in-hand";
+
+    let pGrp = document.createElement("optgroup");
+    pGrp.label = "📦 INDIVIDUAL PARTS & OILS";
+    productList.forEach(p => {
+      let opt = document.createElement("option");
+      opt.value = p.name;
+      opt.innerText = `${p.name} (${p.unit || 'Nos'})`;
+      pGrp.appendChild(opt);
+
+      let opt2 = document.createElement("option");
+      opt2.value = p.name;
+      opt2.innerText = `${p.name} (${p.unit || 'Nos'})`;
+      extraSel.appendChild(opt2);
+    });
+    sel.appendChild(pGrp);
+  }
+
+  function renderVehicleDropdown() {
+    const vSel = document.getElementById("vehicleSelect");
+    const fSel = document.getElementById("closingVehFilter");
+    vSel.innerHTML = '<option value="">-- Select Machine --</option>';
+    fSel.innerHTML = '<option value="">-- All Machines --</option>';
+
+    Array.from(vehicleMap.keys()).sort().forEach(v => {
+      let opt = document.createElement("option"); opt.value = v; opt.innerText = v;
+      vSel.appendChild(opt);
+
+      let opt2 = document.createElement("option"); opt2.value = v; opt2.innerText = v;
+      fSel.appendChild(opt2);
+    });
+  }
+
+  function onVehicleSelect(vNo) {
+    if (!vNo) return;
+    const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
+    document.getElementById("companyInput").value = comp;
+
+    // Next Service Calculation
+    const banner = document.getElementById("nextServiceBanner");
+    const pastEntries = closingData.filter(c => c.vehicle === vNo && (c.km.includes("Hrs") || !isNaN(parseFloat(c.km))));
+    if (pastEntries.length > 0) {
+      const lastKm = parseFloat(pastEntries[pastEntries.length - 1].km) || 0;
+      if (lastKm > 0) {
+        document.getElementById("nextServiceReading").innerText = (lastKm + 500) + " Hrs";
+        banner.classList.remove("hidden");
+      }
     } else {
-      badge.classList.add("hidden");
+      banner.classList.add("hidden");
     }
   }
 
+  function onProductSelect(val) {
+    if (!val) return;
+
+    // Check if Service Hours Kit Selected
+    if (kitsMap[val] && currentTab === "OUT") {
+      activeServiceName = val;
+      activeServiceParts = JSON.parse(JSON.stringify(kitsMap[val]));
+      openServiceModal();
+      return;
+    }
+
+    const prod = productList.find(p => p.name === val);
+    if (prod) {
+      document.getElementById("barcodeInput").value = prod.barcode || "";
+      document.getElementById("hsnInput").value = prod.hsn || "";
+      document.getElementById("rateInput").value = prod.rate || "";
+      document.getElementById("unitSelect").value = prod.unit || "Nos";
+
+      // Left Qty Stock Badge
+      const itemStock = summaryData.find(s => s.item === val);
+      const badge = document.getElementById("stockInHandBadge");
+      if (itemStock && currentTab === "OUT") {
+        badge.classList.remove("hidden");
+        badge.innerText = `Left: ${itemStock.balance} ${prod.unit || 'Nos'}`;
+        badge.className = itemStock.balance <= 2 ? "stock-badge stock-low" : "stock-badge stock-in-hand";
+
+        if (itemStock.balance <= 0) {
+          alert(`⚠️ Negative Stock Warning: ${val} godown mein khatam (0) hai!`);
+        }
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+    calculateTotal();
+  }
+
+  // Service Hours Modal Operations
+  function openServiceModal() {
+    document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
+    renderServiceItems();
+    document.getElementById("serviceHoursModal").style.display = "flex";
+  }
+
+  function renderServiceItems() {
+    const container = document.getElementById("serviceItemsList");
+    let html = "";
+    activeServiceParts.forEach((p, idx) => {
+      const st = summaryData.find(s => s.item === p.itemName);
+      const left = st ? st.balance : 0;
+      const isLow = left < p.qty;
+
+      html += `
+        <div class="service-item-row">
+          <div>
+            <b>${p.itemName}</b>
+            <div style="font-size:11px; color:${isLow ? '#c53030' : '#2f855a'};">
+              Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:50px; padding:2px; font-size:11px;">
+            </div>
+          </div>
+          <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
+        </div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  function addExtraItemToService() {
+    const sel = document.getElementById("extraPartSelect");
+    const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
+    if (!sel.value) return;
+
+    const prod = productList.find(p => p.name === sel.value);
+    activeServiceParts.push({
+      itemName: sel.value,
+      qty: qty,
+      rate: prod ? prod.rate : 0,
+      unit: prod ? prod.unit : "Nos"
+    });
+    sel.value = "";
+    renderServiceItems();
+  }
+
+  function removeServiceItem(idx) {
+    activeServiceParts.splice(idx, 1);
+    renderServiceItems();
+  }
+
+  function closeServiceModal() {
+    document.getElementById("serviceHoursModal").style.display = "none";
+  }
+
+  async function confirmServiceOutward() {
+    const vNo = document.getElementById("vehicleSelect").value;
+    if (!vNo) return alert("Pehle Vehicle Number select karein!");
+
+    const payload = {
+      type: "OUT",
+      serviceName: activeServiceName,
+      vehicleNo: vNo,
+      companyName: document.getElementById("companyInput").value,
+      kmReading: document.getElementById("kmInput").value,
+      driverName: document.getElementById("driverInput").value,
+      remarks: document.getElementById("remarksInput").value,
+      items: activeServiceParts
+    };
+
+    closeServiceModal();
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Deducting Service Items...";
+
+    try {
+      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (data.status === "success") {
+        alert("✅ " + data.message);
+        document.getElementById("stockForm").reset();
+      }
+    } catch(e) { alert("Error: " + e.message); }
+    finally {
+      btn.disabled = false;
+      btn.innerText = "Save Entry";
+    }
+  }
+
+  // Purchase Order Operations
+  async function loadOrders() {
+    const container = document.getElementById("orderListContent");
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders`);
+      const data = await res.json();
+      if (data.status === "success") {
+        poData = data.data;
+        let html = `<table class="custom-table">
+          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+        poData.forEach(o => {
+          html += `<tr>
+            <td>${o.orderNo}</td>
+            <td><b>${o.party}</b></td>
+            <td>${o.item}</td>
+            <td>${o.qty} ${o.unit}</td>
+            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
+            <td>${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">Receive Inward</button>` : '-'}</td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      }
+    } catch(e) { container.innerHTML = "Error loading orders."; }
+  }
+
+  function openCreateOrderModal() {
+    const list = document.getElementById("poItemList");
+    let html = "";
+    summaryData.forEach(s => {
+      const isLow = s.balance <= 2;
+      html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:12px;">
+          <label><input type="checkbox" class="po-chk" data-item="${s.item}" data-rate="${s.rate}" ${isLow ? 'checked' : ''}> ${s.item} (${s.balance} left)</label>
+          <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:60px; padding:2px; font-size:11px;">
+        </div>`;
+    });
+    list.innerHTML = html;
+    document.getElementById("createOrderModal").style.display = "flex";
+  }
+
+  function closeCreateOrderModal() {
+    document.getElementById("createOrderModal").style.display = "none";
+  }
+
+  async function submitPurchaseOrder() {
+    const party = document.getElementById("poPartyInput").value.trim();
+    if (!party) return alert("Supplier Party ka naam likhein!");
+
+    const chks = document.querySelectorAll(".po-chk:checked");
+    const items = [];
+    chks.forEach(c => {
+      const itemRow = c.closest("div");
+      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
+      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
+    });
+
+    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        alert(data.message);
+        closeCreateOrderModal();
+        loadOrders();
+      }
+    } catch(e) { alert("Order failed: " + e.message); }
+  }
+
+  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
+    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          type: "IN",
+          itemName: item,
+          qty: qty,
+          unit: unit,
+          rate: rate,
+          totalAmount: qty * rate,
+          partyName: party,
+          orderNo: ordNo,
+          remarks: "Received from " + ordNo
+        })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        alert("Stock Inward Complete!");
+        loadOrders();
+      }
+    } catch(e) { alert(e.message); }
+  }
+
+  // Stock Summary & Ledgers
+  async function loadSummary() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getSummary`);
+      const data = await res.json();
+      if (data.status === "success") {
+        summaryData = data.data;
+        document.getElementById("kpiItems").innerText = summaryData.length;
+        document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0);
+        document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
+        renderSummaryTable();
+      }
+    } catch(e){}
+  }
+
+  function renderSummaryTable() {
+    const q = (document.getElementById("summarySearch").value || "").toLowerCase();
+    const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
+    let html = `<table class="custom-table">
+      <thead><tr><th>Spare Part</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
+    filtered.forEach(s => {
+      html += `<tr>
+        <td><b>${s.item}</b></td>
+        <td>${s.totalIn}</td>
+        <td>${s.totalOut}</td>
+        <td style="font-weight:bold; color:${s.balance<=2?'#c53030':'#2f855a'};">${s.balance}</td>
+        <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("summaryTableContent").innerHTML = html;
+  }
+
+  async function loadClosing() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData`);
+      const data = await res.json();
+      if (data.status === "success") {
+        closingData = data.data;
+        renderClosingReport();
+      }
+    } catch(e){}
+  }
+
+  function renderClosingReport() {
+    const sDate = document.getElementById("closingSDate").value;
+    const eDate = document.getElementById("closingEDate").value;
+    const veh = document.getElementById("closingVehFilter").value;
+
+    const filtered = closingData.filter(c => {
+      if (sDate && c.date < sDate) return false;
+      if (eDate && c.date > eDate) return false;
+      if (veh && c.vehicle !== veh) return false;
+      return true;
+    });
+
+    let html = `<table class="custom-table">
+      <thead><tr><th>Date</th><th>Machine</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Amount (₹)</th></tr></thead><tbody>`;
+    filtered.forEach(c => {
+      html += `<tr>
+        <td>${c.displayDate || c.date}</td>
+        <td><b>${c.vehicle}</b></td>
+        <td>${c.item}</td>
+        <td>${c.qty} ${c.unit}</td>
+        <td>${c.km || '-'}</td>
+        <td>₹${c.amount.toLocaleString('en-IN')}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("closingContent").innerHTML = html;
+  }
+
+  async function loadLedger() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger`);
+      const data = await res.json();
+      if (data.status === "success") {
+        ledgerData = data.data;
+        const pSel = document.getElementById("ledgerPartyFilter");
+        const parties = [...new Set(ledgerData.map(l => l.party))].sort();
+        pSel.innerHTML = '<option value="">-- All Suppliers --</option>';
+        parties.forEach(p => {
+          let opt = document.createElement("option"); opt.value = p; opt.innerText = p;
+          pSel.appendChild(opt);
+        });
+        renderPartyLedger();
+      }
+    } catch(e){}
+  }
+
+  function renderPartyLedger() {
+    const selParty = document.getElementById("ledgerPartyFilter").value;
+    const sDate = document.getElementById("ledgerSDate").value;
+    const eDate = document.getElementById("ledgerEDate").value;
+
+    const filtered = ledgerData.filter(l => {
+      if (selParty && l.party !== selParty) return false;
+      if (sDate && l.date < sDate) return false;
+      if (eDate && l.date > eDate) return false;
+      return true;
+    });
+
+    let running = 0;
+    let html = `<table class="custom-table">
+      <thead><tr><th>Date</th><th>Particulars</th><th>Dr (Purchases)</th><th>Cr (Payments)</th><th>Balance Due</th></tr></thead><tbody>`;
+    filtered.forEach(l => {
+      running += ((l.dr || 0) - (l.cr || 0));
+      html += `<tr>
+        <td>${l.displayDate || l.date}</td>
+        <td><b>${l.party}</b>: ${l.particulars}</td>
+        <td style="color:#2d3748;">${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
+        <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
+        <td style="font-weight:bold; color:${running>0?'#c53030':'#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("ledgerContent").innerHTML = html;
+  }
+
   function calculateTotal() {
-    const qty = parseFloat(document.getElementById("qtyInput").value) || 0;
-    const rate = parseFloat(document.getElementById("rateInput").value) || 0;
-    const total = qty * rate;
-    document.getElementById("totalAmountInput").value = total.toFixed(2);
+    const q = parseFloat(document.getElementById("qtyInput").value) || 0;
+    const r = parseFloat(document.getElementById("rateInput").value) || 0;
+    document.getElementById("totalAmountInput").value = (q * r).toFixed(2);
     calculateDue();
   }
 
   function calculateDue() {
     const tot = parseFloat(document.getElementById("totalAmountInput").value) || 0;
     const paid = parseFloat(document.getElementById("paidAmountInput").value) || 0;
-    const due = tot - paid;
-    document.getElementById("dueAmountInput").value = (due >= 0 ? due : 0).toFixed(2);
+    document.getElementById("dueAmountInput").value = (tot - paid).toFixed(2);
   }
 
-  function renderRecentActivity(entry = null) {
-    if (entry) {
-      recentEntries.unshift(entry);
-      if (recentEntries.length > 5) recentEntries.pop();
-      localStorage.setItem("cached_recent_entries", JSON.stringify(recentEntries));
-    }
-
-    const container = document.getElementById("recentList");
-    if (!recentEntries || recentEntries.length === 0) {
-      container.innerHTML = `<span style="font-size:12px; color:#a0aec0;">Abhi tak koi entry save nahi hui hai.</span>`;
-      return;
-    }
-
-    let html = "";
-    recentEntries.forEach(r => {
-      const isIN = r.type === "IN";
-      const tag = isIN 
-        ? `<span style='background:#c6f6d5; color:#22543d; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;'>IN</span>` 
-        : `<span style='background:#fed7d7; color:#742a2a; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;'>OUT</span>`;
-      
-      html += `
-        <div class="recent-item">
-          <div>
-            ${tag} <b style="color:#2d3748; margin-left:4px;">${r.itemName}</b> 
-            <span style="color:#718096; font-size:11.5px;">(${r.qty} pcs)</span>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-weight:700; color:#2b6cb0;">₹${Number(r.totalAmount || 0).toLocaleString('en-IN')}</div>
-            <div style="font-size:10.5px; color:#718096;">${r.dest || '-'}</div>
-          </div>
-        </div>`;
-    });
-    container.innerHTML = html;
-  }
-
-  document.addEventListener("keydown", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
-  document.addEventListener("input", () => { lastUserActivityTime = Date.now(); isUserTyping = true; });
-  setInterval(() => {
-    if (Date.now() - lastUserActivityTime > 4000) isUserTyping = false;
-  }, 1000);
-
-  setInterval(() => {
-    if (!isUserTyping && !isSubmitting && !isSavingProduct && !isSavingVehicle) {
-      if (currentTab === "SUMMARY") loadSummary(false);
-      else if (currentTab === "LEDGER") loadLedgerData(false);
-      else if (currentTab === "CLOSING") loadClosingData();
-    }
-  }, 8000);
-
-  async function openVehicleHistoryModal() {
-    const vNo = document.getElementById("vehicleSelect").value.trim().toUpperCase();
-    if (!vNo) return;
-
-    document.getElementById("vehHistTitle").innerText = `Past History: ${vNo}`;
-    const container = document.getElementById("vehHistoryContent");
-    document.getElementById("vehicleHistoryModal").style.display = "flex";
-    container.innerHTML = "Fetching past history...";
-
-    if (!closingRawData || closingRawData.length === 0) {
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=getClosingData`);
-        const resData = await res.json();
-        if (resData.status === "success") closingRawData = resData.data;
-      } catch(e){}
-    }
-
-    const pastItems = closingRawData.filter(r => r.vehicle === vNo).slice(-6).reverse();
-    if (pastItems.length === 0) {
-      container.innerHTML = "<p style='color:#718096;'>Is gaadi par abhi koi purana record nahi mila.</p>";
-      return;
-    }
-
-    let html = `<table class="custom-table">
-      <thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>KM</th><th>Amount</th></tr></thead><tbody>`;
-    pastItems.forEach(it => {
-      html += `<tr>
-        <td>${it.displayDate || it.date}</td>
-        <td><b>${it.item}</b></td>
-        <td>${it.qty}</td>
-        <td>${it.km || '-'}</td>
-        <td>₹${it.amount}</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
-    container.innerHTML = html;
-  }
-
-  function closeVehicleHistoryModal() {
-    document.getElementById("vehicleHistoryModal").style.display = "none";
-  }
-
-  async function loadLedgerData(showSpinner = true) {
-    const container = document.getElementById("ledgerContent");
-    if (showSpinner) container.innerHTML = "Fetching supplier accounting ledger...";
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger`);
-      const resData = await res.json();
-      if (resData.status === "success") {
-        ledgerRawData = resData.data;
-        populatePartyFilterOptions();
-        populateSupplierPaymentDropdown();
-        renderPartyLedger();
-      }
-    } catch (e) {
-      if (showSpinner) container.innerHTML = "Error loading ledger data.";
-    }
-  }
-
-  function populatePartyFilterOptions() {
-    const pSel = document.getElementById("ledgerPartyFilter");
-    const dList = document.getElementById("partyDataList");
-    const currentVal = pSel.value;
-    const parties = [...new Set(ledgerRawData.map(r => r.party).filter(Boolean))].sort();
-    
-    pSel.innerHTML = '<option value="">-- All Parties Summary --</option>';
-    dList.innerHTML = '';
-
-    parties.forEach(p => {
-      let opt = document.createElement("option"); opt.value = p; opt.innerText = p;
-      pSel.appendChild(opt);
-
-      let dOpt = document.createElement("option"); dOpt.value = p;
-      dList.appendChild(dOpt);
-    });
-    if (currentVal) pSel.value = currentVal;
-  }
-
-  function populateSupplierPaymentDropdown() {
-    const paySel = document.getElementById("payPartySelect");
-    const curVal = paySel.value;
-    const parties = [...new Set(ledgerRawData.map(r => r.party).filter(Boolean))].sort();
-
-    paySel.innerHTML = '<option value="">-- Select Supplier --</option>';
-    parties.forEach(p => {
-      let opt = document.createElement("option");
-      opt.value = p;
-      opt.innerText = p;
-      paySel.appendChild(opt);
-    });
-
-    let customOpt = document.createElement("option");
-    customOpt.value = "__NEW_SUPPLIER__";
-    customOpt.innerText = "➕ Type New Supplier...";
-    paySel.appendChild(customOpt);
-
-    if (curVal && curVal !== "__NEW_SUPPLIER__") {
-      paySel.value = curVal;
-      onPaySupplierSelect(curVal);
-    }
-  }
-
-  function onPaySupplierSelect(val) {
-    const customInput = document.getElementById("payPartyCustomInput");
-    const dueBadge = document.getElementById("paySupplierDueBadge");
-
-    if (val === "__NEW_SUPPLIER__") {
-      customInput.classList.remove("hidden");
-      customInput.focus();
-      dueBadge.innerText = "";
-      return;
-    }
-
-    customInput.classList.add("hidden");
-    customInput.value = "";
-
-    if (!val) {
-      dueBadge.innerText = "";
-      return;
-    }
-
-    let due = 0;
-    ledgerRawData.filter(r => r.party === val).forEach(it => {
-      due += (Number(it.dr || 0) - Number(it.cr || 0));
-    });
-
-    dueBadge.innerText = `Due: ₹${due.toLocaleString('en-IN')}`;
-    if (due <= 0) dueBadge.style.color = "#2f855a";
-    else dueBadge.style.color = "#c53030";
-  }
-
-  // --- TALLY STYLE DETAILED LEDGER ACCOUNT RENDERER ---
-  function renderPartyLedger() {
-    const container = document.getElementById("ledgerContent");
-    const sDate = document.getElementById("ledgerStartDate").value;
-    const eDate = document.getElementById("ledgerEndDate").value;
-    const selectedParty = document.getElementById("ledgerPartyFilter").value;
-
-    if (!ledgerRawData || ledgerRawData.length === 0) {
-      container.innerHTML = "<p style='color:#718096;'>Sheet me abhi koi ledger record nahi mila.</p>";
-      return;
-    }
-
-    // Filter by Date Range and Party
-    let filtered = ledgerRawData.filter(r => {
-      let rowDate = normalizeToISODate(r.date);
-      if (sDate && rowDate < sDate) return false;
-      if (eDate && rowDate > eDate) return false;
-      if (selectedParty && r.party !== selectedParty) return false;
-      return true;
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding:15px; color:#718096;">
-        <p>⚠️ Selected date range / party ke liye koi entry nahi mili.</p>
-        <button type="button" onclick="clearLedgerFilters()" style="padding:6px 14px; background:#3182ce; color:white; border:none; border-radius:4px; cursor:pointer;">Show All Ledger</button>
-      </div>`;
-      return;
-    }
-
-    // MODE 1: ALL PARTIES CONSOLIDATED SUMMARY (Tally Group Summary)
-    if (!selectedParty) {
-      document.getElementById("kpiDrLabel").innerText = "Total Purchases (Dr)";
-      document.getElementById("kpiCrLabel").innerText = "Total Payments (Cr)";
-
-      const partySummary = {};
-      let totalDr = 0, totalCr = 0;
-
-      filtered.forEach(r => {
-        const p = r.party || "OTHER";
-        if (!partySummary[p]) partySummary[p] = { dr: 0, cr: 0, txnCount: 0 };
-        partySummary[p].dr += (r.dr || 0);
-        partySummary[p].cr += (r.cr || 0);
-        partySummary[p].txnCount += 1;
-        totalDr += (r.dr || 0);
-        totalCr += (r.cr || 0);
-      });
-
-      document.getElementById("kpiLedgerTotal").innerText = "₹" + totalDr.toLocaleString('en-IN');
-      document.getElementById("kpiLedgerPaid").innerText = "₹" + totalCr.toLocaleString('en-IN');
-      document.getElementById("kpiLedgerDue").innerText = "₹" + (totalDr - totalCr).toLocaleString('en-IN');
-
-      let html = `
-        <div style="font-weight:bold; margin-bottom:6px; font-size:13px; color:#2c5282;">
-          📋 All Supplier Ledger Accounts (Click party name to view detailed Tally Ledger):
-        </div>
-        <table class="custom-table">
-          <thead>
-            <tr>
-              <th>Supplier / Party Name</th>
-              <th style="text-align:right;">Debit / Purchases (₹)</th>
-              <th style="text-align:right;">Credit / Payments (₹)</th>
-              <th style="text-align:right;">Closing Balance (₹)</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      for (const p in partySummary) {
-        let dr = partySummary[p].dr;
-        let cr = partySummary[p].cr;
-        let bal = dr - cr;
-        html += `
-          <tr style="cursor:pointer;" onclick="selectPartyInFilter('${p}')">
-            <td>
-              <b style="color:#2b6cb0;">🏪 ${p}</b> 
-              <span style="font-size:10px; color:#718096;">(${partySummary[p].txnCount} entries)</span>
-            </td>
-            <td style="text-align:right;">₹${dr.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#2f855a;">₹${cr.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; font-weight:bold; color:${bal > 0 ? '#c53030' : '#2f855a'};">
-              ₹${bal.toLocaleString('en-IN')} ${bal > 0 ? 'Dr' : 'Nil'}
-            </td>
-          </tr>
-        `;
-      }
-
-      html += `
-          <tr class="subtotal-row">
-            <td>GRAND TOTAL:</td>
-            <td style="text-align:right;">₹${totalDr.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#2f855a;">₹${totalCr.toLocaleString('en-IN')}</td>
-            <td style="text-align:right; color:#c53030;">₹${(totalDr - totalCr).toLocaleString('en-IN')} Dr</td>
-          </tr>
-        </tbody>
-      </table>`;
-
-      container.innerHTML = html;
-      return;
-    }
-
-    // MODE 2: TALLY STYLE DETAILED STATEMENT FOR INDIVIDUAL PARTY
-    document.getElementById("kpiDrLabel").innerText = `Total Purchases (${selectedParty})`;
-    document.getElementById("kpiCrLabel").innerText = `Total Paid (${selectedParty})`;
-
-    let runningBalance = 0;
-    let pTotalDr = 0, pTotalCr = 0;
-
-    let periodText = (sDate && eDate) ? `${formatToDisplayDate(sDate)} to ${formatToDisplayDate(eDate)}` : "All Time Transactions";
-
-    let html = `
-      <div class="tally-account-header">
-        <div>
-          <div class="tally-title">Ledger Account: <b>${selectedParty}</b></div>
-          <div class="tally-period">Period: ${periodText}</div>
-        </div>
-        <button type="button" class="btn-back-summary" onclick="clearLedgerFilters()" style="background:#fff; color:#1a365d; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">⬅ Back to All Parties</button>
-      </div>
-      <table class="custom-table" style="margin-top:0; border-top:none;">
-        <thead>
-          <tr>
-            <th style="width:15%;">Date</th>
-            <th>Particulars (Item / Voucher)</th>
-            <th style="width:13%;">Vch Type</th>
-            <th style="width:15%; text-align:right;">Debit / Bill (₹)</th>
-            <th style="width:15%; text-align:right;">Credit / Paid (₹)</th>
-            <th style="width:18%; text-align:right;">Balance Due (₹)</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    filtered.forEach(it => {
-      let dr = Number(it.dr || 0);
-      let cr = Number(it.cr || 0);
-      pTotalDr += dr;
-      pTotalCr += cr;
-      runningBalance += (dr - cr);
-
-      let dateToShow = formatToDisplayDate(it.displayDate || it.date);
-      let isPayment = (it.voucherType === "PAYMENT" || cr > 0);
-      let vchBadge = isPayment
-        ? `<span style="background:#c6f6d5; color:#22543d; font-size:9.5px; font-weight:700; padding:1px 5px; border-radius:3px;">PAYMENT</span>`
-        : `<span style="background:#bee3f8; color:#2b6cb0; font-size:9.5px; font-weight:700; padding:1px 5px; border-radius:3px;">PURCHASE</span>`;
-
-      html += `
-        <tr>
-          <td>${dateToShow}</td>
-          <td>
-            <b>${it.particulars}</b> 
-            ${it.refNo ? `<span style="font-size:10px; color:#718096; display:block;">Ref: ${it.refNo}</span>` : ''}
-          </td>
-          <td>${vchBadge}</td>
-          <td style="text-align:right; font-weight:600; color:${dr > 0 ? '#2d3748' : '#a0aec0'};">
-            ${dr > 0 ? '₹' + dr.toLocaleString('en-IN') : '-'}
-          </td>
-          <td style="text-align:right; font-weight:700; color:${cr > 0 ? '#2f855a' : '#a0aec0'};">
-            ${cr > 0 ? '₹' + cr.toLocaleString('en-IN') : '-'}
-          </td>
-          <td style="text-align:right; font-weight:800; color:${runningBalance > 0 ? '#c53030' : '#2f855a'};">
-            ₹${runningBalance.toLocaleString('en-IN')} ${runningBalance > 0 ? 'Dr' : 'Nil'}
-          </td>
-        </tr>
-      `;
-    });
-
-    html += `
-        <tr class="subtotal-row" style="background:#edf2f7; font-size:12.5px;">
-          <td colspan="3" style="text-align:right;">Total (${selectedParty}):</td>
-          <td style="text-align:right; color:#2d3748; font-weight:bold;">₹${pTotalDr.toLocaleString('en-IN')}</td>
-          <td style="text-align:right; color:#2f855a; font-weight:bold;">₹${pTotalCr.toLocaleString('en-IN')}</td>
-          <td style="text-align:right; color:#c53030; font-weight:bold;">₹${(pTotalDr - pTotalCr).toLocaleString('en-IN')} Dr</td>
-        </tr>
-      </tbody>
-    </table>`;
-
-    document.getElementById("kpiLedgerTotal").innerText = "₹" + pTotalDr.toLocaleString('en-IN');
-    document.getElementById("kpiLedgerPaid").innerText = "₹" + pTotalCr.toLocaleString('en-IN');
-    document.getElementById("kpiLedgerDue").innerText = "₹" + (pTotalDr - pTotalCr).toLocaleString('en-IN');
-
-    container.innerHTML = html;
-  }
-
-  function selectPartyInFilter(partyName) {
-    document.getElementById("ledgerPartyFilter").value = partyName;
-    renderPartyLedger();
-  }
-
-  function clearLedgerFilters() {
-    document.getElementById("ledgerStartDate").value = "";
-    document.getElementById("ledgerEndDate").value = "";
-    document.getElementById("ledgerPartyFilter").value = "";
-    renderPartyLedger();
-  }
-
-  // --- EXCEL & CSV UTILITIES ---
-  function downloadExcelTable(tableHtml, filename) {
-    const template = `
-      <html xmlns:o="urn:schemas-microsoft-com:office:office" 
-            xmlns:x="urn:schemas-microsoft-com:office:excel" 
-            xmlns="http://www.w3.org/TR/REC-html40">
-      <head>
-        <!--[if gte mso 9]>
-        <xml>
-          <x:ExcelWorkbook>
-            <x:ExcelWorksheets>
-              <x:ExcelWorksheet>
-                <x:Name>Sheet1</x:Name>
-                <x:WorksheetOptions>
-                  <x:DisplayGridlines/>
-                </x:WorksheetOptions>
-              </x:ExcelWorksheet>
-            </x:ExcelWorksheets>
-          </x:ExcelWorkbook>
-        </xml>
-        <![endif]-->
-        <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
-        <style>
-          th { background-color: #2b6cb0; color: #ffffff; font-weight: bold; border: 1px solid #999; }
-          td { border: 1px solid #ccc; }
-        </style>
-      </head>
-      <body>
-        ${tableHtml}
-      </body>
-      </html>`;
-    const blob = new Blob([template], { type: "application/vnd.ms-excel;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-  }
-
-  function downloadCSVFile(csvContent, fileName) {
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    link.click();
-  }
-
-  function exportSummaryToExcel() {
-    if (!summaryRawData || summaryRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let html = `<table><tr><th>Item Name</th><th>Total In</th><th>Total Out</th><th>Current Balance</th><th>Rate</th><th>Total Value</th></tr>`;
-    summaryRawData.forEach(r => {
-      html += `<tr><td>${r.item}</td><td>${r.totalIn}</td><td>${r.totalOut}</td><td>${r.balance}</td><td>${r.rate}</td><td>${r.totalValue}</td></tr>`;
-    });
-    html += `</table>`;
-    downloadExcelTable(html, "Stock_Summary.xls");
-  }
-
-  function exportSummaryToCSV() {
-    if (!summaryRawData || summaryRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let csv = "Item,Total In,Total Out,Balance,Rate,Total Value\n";
-    summaryRawData.forEach(r => {
-      csv += `"${r.item}",${r.totalIn},${r.totalOut},${r.balance},${r.rate},${r.totalValue}\n`;
-    });
-    downloadCSVFile(csv, "Stock_Summary.csv");
-  }
-
-  function exportLedgerToExcel() {
-    if (!ledgerRawData || ledgerRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    const selectedParty = document.getElementById("ledgerPartyFilter").value;
-    let dataToExport = selectedParty ? ledgerRawData.filter(r => r.party === selectedParty) : ledgerRawData;
-
-    let html = `<table><tr><th>Date</th><th>Party Name</th><th>Particulars</th><th>Voucher Type</th><th>Ref No</th><th>Debit / Purchases (Dr)</th><th>Credit / Payments (Cr)</th></tr>`;
-    dataToExport.forEach(r => {
-      html += `<tr><td>${r.displayDate || r.date}</td><td>${r.party}</td><td>${r.particulars}</td><td>${r.voucherType}</td><td>${r.refNo || ''}</td><td>${r.dr}</td><td>${r.cr}</td></tr>`;
-    });
-    html += `</table>`;
-    downloadExcelTable(html, `${selectedParty ? selectedParty + '_Ledger' : 'All_Suppliers_Ledger'}.xls`);
-  }
-
-  function exportLedgerToCSV() {
-    if (!ledgerRawData || ledgerRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    const selectedParty = document.getElementById("ledgerPartyFilter").value;
-    let dataToExport = selectedParty ? ledgerRawData.filter(r => r.party === selectedParty) : ledgerRawData;
-
-    let csv = "Date,Party,Particulars,VoucherType,RefNo,Debit (Dr),Credit (Cr)\n";
-    dataToExport.forEach(r => {
-      csv += `"${r.displayDate || r.date}","${r.party}","${r.particulars}","${r.voucherType}","${r.refNo || ''}",${r.dr},${r.cr}\n`;
-    });
-    downloadCSVFile(csv, `${selectedParty ? selectedParty + '_Ledger' : 'All_Suppliers_Ledger'}.csv`);
-  }
-
-  function exportClosingToExcel() {
-    if (!closingRawData || closingRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let html = `<table><tr><th>Date</th><th>Company</th><th>Vehicle No</th><th>Spare Part Name</th><th>HSN</th><th>Qty</th><th>KM/Hours</th><th>Rate</th><th>Total Amount</th><th>Driver Name</th></tr>`;
-    closingRawData.forEach(r => {
-      html += `<tr><td>${r.displayDate || r.date}</td><td>${r.company}</td><td>${r.vehicle}</td><td>${r.item}</td><td>${r.hsn || ''}</td><td>${r.qty}</td><td>${r.km || ''}</td><td>${r.rate}</td><td>${r.amount}</td><td>${r.driver || ''}</td></tr>`;
-    });
-    html += `</table>`;
-    downloadExcelTable(html, "Month_Closing_Report.xls");
-  }
-
-  function exportClosingToCSV() {
-    if (!closingRawData || closingRawData.length === 0) return alert("Export ke liye koi data nahi hai!");
-    let csv = "Date,Company,Vehicle,Item,Qty,Rate,Amount,KM Reading\n";
-    closingRawData.forEach(r => {
-      csv += `"${r.displayDate || r.date}","${r.company}","${r.vehicle}","${r.item}",${r.qty},${r.rate},${r.amount},"${r.km || ''}"\n`;
-    });
-    downloadCSVFile(csv, "Month_Closing_Report.csv");
-  }
-
-  function openSupplierPaymentModal() {
-    populateSupplierPaymentDropdown();
-    const currentPartyFilter = document.getElementById("ledgerPartyFilter").value;
-    if (currentPartyFilter) {
-      document.getElementById("payPartySelect").value = currentPartyFilter;
-      onPaySupplierSelect(currentPartyFilter);
-    } else {
-      document.getElementById("payPartySelect").value = "";
-      onPaySupplierSelect("");
-    }
-
-    document.getElementById("payAmountInput").value = "";
-    document.getElementById("payRefInput").value = "";
-    document.getElementById("supplierPaymentModal").style.display = "flex";
-  }
-
-  function closeSupplierPaymentModal() {
-    document.getElementById("supplierPaymentModal").style.display = "none";
-  }
-
-  async function saveSupplierPayment() {
-    const selParty = document.getElementById("payPartySelect").value;
-    let party = "";
-
-    if (selParty === "__NEW_SUPPLIER__") {
-      party = document.getElementById("payPartyCustomInput").value.trim().toUpperCase();
-    } else {
-      party = selParty.trim().toUpperCase();
-    }
-
-    const amt = parseFloat(document.getElementById("payAmountInput").value) || 0;
-    const mode = document.getElementById("payModeInput").value;
-    const ref = document.getElementById("payRefInput").value.trim();
-
-    if (!party) return alert("Kripya Supplier Party chunein ya likhein!");
-    if (amt <= 0) return alert("Valid payment amount daalein!");
-
-    const btn = document.getElementById("savePayBtn");
-    btn.disabled = true;
-    btn.innerText = "Saving Payment...";
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          type: "SUPPLIER_PAYMENT",
-          partyName: party,
-          amount: amt,
-          mode: mode,
-          refNo: ref
-        })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        playPosBeep("success");
-        closeSupplierPaymentModal();
-        loadLedgerData();
-        alert("Payment Recorded! Supplier ka balance update ho gaya.");
-      } else {
-        alert("Error: " + data.message);
-      }
-    } catch(e) {
-      alert("Request error: " + e.message);
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "Save Payment";
-    }
-  }
-
-  async function loadClosingData() {
-    const container = document.getElementById("closingContent");
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getClosingData`);
-      const resData = await res.json();
-      if (resData.status === "success") {
-        closingRawData = resData.data;
-        renderClosingReport();
-
-        if (recentEntries.length === 0 && closingRawData.length > 0) {
-          const latestOuts = closingRawData.slice(-5).reverse();
-          latestOuts.forEach(o => {
-            recentEntries.push({
-              type: "OUT",
-              itemName: o.item,
-              qty: o.qty,
-              totalAmount: o.amount,
-              dest: o.vehicle
-            });
-          });
-          renderRecentActivity();
-        }
-      }
-    } catch (e) { container.innerHTML = "Error loading closing data."; }
-  }
-
-  function normalizeToISODate(val) {
-    if (!val) return "";
-    let str = String(val).trim();
-    let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-    if (m1) return `${m1[1]}-${String(m1[2]).padStart(2, '0')}-${String(m1[3]).padStart(2, '0')}`;
-    let m2 = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if (m2) return `${m2[3]}-${String(m2[2]).padStart(2, '0')}-${String(m2[1]).padStart(2, '0')}`;
-    let parsedD = new Date(str);
-    if (!isNaN(parsedD.getTime())) {
-      let y = parsedD.getFullYear();
-      let m = String(parsedD.getMonth() + 1).padStart(2, '0');
-      let d = String(parsedD.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-    return str;
-  }
-
-  function formatToDisplayDate(val) {
-    if (!val) return "-";
-    let str = String(val).trim();
-    let m2 = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if (m2) return `${String(m2[1]).padStart(2, '0')}/${String(m2[2]).padStart(2, '0')}/${m2[3]}`;
-    let m1 = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-    if (m1) return `${String(m1[3]).padStart(2, '0')}/${String(m1[2]).padStart(2, '0')}/${m1[1]}`;
-    let parsedD = new Date(str);
-    if (!isNaN(parsedD.getTime())) {
-      let d = String(parsedD.getDate()).padStart(2, '0');
-      let m = String(parsedD.getMonth() + 1).padStart(2, '0');
-      let y = parsedD.getFullYear();
-      return `${d}/${m}/${y}`;
-    }
-    return str;
-  }
-
-  function renderClosingReport() {
-    const container = document.getElementById("closingContent");
-    const sDate = document.getElementById("closingStartDate").value;
-    const eDate = document.getElementById("closingEndDate").value;
-
-    if (!closingRawData || closingRawData.length === 0) {
-      container.innerHTML = "<p style='color:#666;'>Sheet me abhi koi Stock Out entry nahi mili.</p>";
-      return;
-    }
-
-    let filtered = closingRawData.filter(r => {
-      let rowDate = normalizeToISODate(r.date);
-      if (sDate && rowDate < sDate) return false;
-      if (eDate && rowDate > eDate) return false;
-      return true;
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = `
-        <div style="text-align:center; padding:15px; color:#666;">
-          <p>⚠️ Is date range me koi data nahi mila.</p>
-          <button type="button" onclick="clearDateFilters()" style="padding:6px 14px; background:#3182ce; color:white; border:none; border-radius:4px; cursor:pointer;">Saara Data Dekhein</button>
-        </div>`;
-      return;
-    }
-
-    const tree = {};
-    const summaryData = {};
-    let grandOverallTotal = 0;
-
-    filtered.forEach(r => {
-      const comp = String(r.company || "OTHER").trim().toUpperCase();
-      const veh = String(r.vehicle || "UNKNOWN").trim().toUpperCase();
-      const amt = Number(r.amount) || 0;
-
-      if (!tree[comp]) tree[comp] = {};
-      if (!tree[comp][veh]) tree[comp][veh] = { items: [], totalAmount: 0 };
-
-      tree[comp][veh].items.push(r);
-      tree[comp][veh].totalAmount += amt;
-
-      if (!summaryData[comp]) summaryData[comp] = { total: 0, vehicles: {} };
-      summaryData[comp].total += amt;
-      summaryData[comp].vehicles[veh] = (summaryData[comp].vehicles[veh] || 0) + amt;
-      grandOverallTotal += amt;
-    });
-
-    let html = `<div>`;
-    for (const comp in tree) {
-      let compGrandTotal = 0;
-      html += `<div class="company-title-banner">🏢 ${comp}</div>`;
-
-      for (const veh in tree[comp]) {
-        const vData = tree[comp][veh];
-        compGrandTotal += vData.totalAmount;
-
-        html += `
-          <div class="vehicle-header-bar">
-            <span>🚛 Vehicle: ${veh}</span>
-            <span style="font-size:11px; font-weight:normal; color:#718096;">${vData.items.length} items issued</span>
-          </div>
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th style="width:20%;">Date</th>
-                <th>Item / Spare Part</th>
-                <th style="width:10%; text-align:right;">Qty</th>
-                <th style="width:15%; text-align:right;">KM / Hrs</th>
-                <th style="width:15%; text-align:right;">Rate (₹)</th>
-                <th style="width:18%; text-align:right;">Amount (₹)</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-
-        vData.items.forEach(it => {
-          let dateToShow = formatToDisplayDate(it.displayDate || it.date);
-          html += `
-            <tr>
-              <td>${dateToShow}</td>
-              <td><b>${it.item}</b></td>
-              <td style="text-align:right;">${it.qty}</td>
-              <td style="text-align:right; color:#718096;">${it.km || '-'}</td>
-              <td style="text-align:right;">₹${it.rate.toLocaleString('en-IN')}</td>
-              <td style="text-align:right; font-weight:600;">₹${it.amount.toLocaleString('en-IN')}</td>
-            </tr>
-          `;
-        });
-
-        html += `
-            <tr class="subtotal-row">
-              <td colspan="5" style="text-align:right;">Vehicle ${veh} Total:</td>
-              <td style="text-align:right; font-weight:bold; color:#2b6cb0;">₹${vData.totalAmount.toLocaleString('en-IN')}</td>
-            </tr>
-          </tbody>
-        </table>
-        `;
-      }
-
-      html += `
-        <div class="company-total-banner">
-          Total Consumption for ${comp}: <span style="color:#c53030; font-size:14px;">₹${compGrandTotal.toLocaleString('en-IN')}</span>
-        </div>
-      `;
-    }
-
-    html += `
-      <div class="summary-heading">📌 Month Closing Summary (Company & Vehicle Wise)</div>
-      <table class="custom-table" style="margin-top:10px;">
-        <thead>
-          <tr>
-            <th>Company / Vehicle</th>
-            <th style="text-align:right;">Total Amount (₹)</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    for (const comp in summaryData) {
-      html += `
-        <tr class="company-summary-row">
-          <td>${comp}</td>
-          <td style="text-align:right;">₹${summaryData[comp].total.toLocaleString('en-IN')}</td>
-        </tr>
-      `;
-      for (const veh in summaryData[comp].vehicles) {
-        html += `
-          <tr class="vehicle-summary-row">
-            <td>${veh}</td>
-            <td style="text-align:right;">₹${summaryData[comp].vehicles[veh].toLocaleString('en-IN')}</td>
-          </tr>
-        `;
-      }
-    }
-
-    html += `
-        <tr style="background:#2d3748; color:#fff; font-weight:bold;">
-          <td>GRAND TOTAL CONSUMPTION:</td>
-          <td style="text-align:right; color:#48bb78; font-size:13px;">₹${grandOverallTotal.toLocaleString('en-IN')}</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>`;
-
-    container.innerHTML = html;
-  }
-
-  function clearDateFilters() {
-    document.getElementById("closingStartDate").value = "";
-    document.getElementById("closingEndDate").value = "";
-    renderClosingReport();
-  }
-
-  async function loadSummary(isManualRefresh = false) {
-    const container = document.getElementById("summaryContent");
-    if (isManualRefresh) container.innerHTML = "<p style='color:#718096;'>Refreshing stock...</p>";
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getSummary`);
-      const resData = await res.json();
-      if (resData.status === "success") {
-        summaryRawData = resData.data;
-
-        stockBalanceMap.clear();
-        summaryRawData.forEach(r => {
-          stockBalanceMap.set(r.item, r.balance);
-        });
-
-        let totalItems = summaryRawData.length;
-        let totalUnits = summaryRawData.reduce((acc, r) => acc + (r.balance || 0), 0);
-        let totalVal = summaryRawData.reduce((acc, r) => acc + (r.totalValue || 0), 0);
-
-        document.getElementById("kpiItems").innerText = totalItems;
-        document.getElementById("kpiStock").innerText = totalUnits.toLocaleString('en-IN');
-        document.getElementById("kpiValue").innerText = "₹" + totalVal.toLocaleString('en-IN');
-
-        filterSummaryTable();
-      }
-    } catch(e) { if (isManualRefresh) container.innerHTML = "Error loading summary"; }
-  }
-
-  function toggleLowStockFilter() {
-    filterLowStockOnly = !filterLowStockOnly;
-    const btn = document.getElementById("lowStockFilterBtn");
-    btn.classList.toggle("active", filterLowStockOnly);
-    filterSummaryTable();
-  }
-
-  function filterSummaryTable() {
-    const query = (document.getElementById("summarySearchInput").value || "").trim().toLowerCase();
-    const container = document.getElementById("summaryContent");
-
-    let filtered = summaryRawData.filter(r => {
-      if (filterLowStockOnly && r.balance > 2) return false;
-      if (!query) return true;
-      return String(r.item).toLowerCase().includes(query);
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = "<p style='color:#718096; text-align:center; padding:10px;'>Koi spare part match nahi hua.</p>";
-      return;
-    }
-
-    let grandTotal = 0;
-    let html = `<table class="custom-table">
-      <thead><tr><th>Item</th><th style='text-align:center;'>In</th><th style='text-align:center;'>Out</th><th style='text-align:center;'>Bal</th><th style='text-align:right;'>Value (₹)</th></tr></thead><tbody>`;
-    
-    filtered.forEach(r => {
-      grandTotal += r.totalValue;
-      let balBadge = r.balance <= 2 
-        ? `<span style='color:#c53030; font-weight:bold;'>${r.balance} <span style='font-size:9px; background:#fed7d7; padding:1px 4px; border-radius:3px;'>Low</span></span>`
-        : `<span style='color:#2f855a; font-weight:bold;'>${r.balance}</span>`;
-
-      html += `<tr>
-        <td><b>${r.item}</b></td>
-        <td style='text-align:center;'>${r.totalIn}</td>
-        <td style='text-align:center;'>${r.totalOut}</td>
-        <td style='text-align:center;'>${balBadge}</td>
-        <td style='text-align:right;'>₹${r.totalValue.toLocaleString('en-IN')}</td>
-      </tr>`;
-    });
-    
-    html += `<tr style="background:#edf2f7;font-weight:bold;"><td colspan="4" style="text-align:right;">Subtotal:</td><td style="color:#c53030; text-align:right;">₹${grandTotal.toLocaleString('en-IN')}</td></tr></tbody></table>`;
-    container.innerHTML = html;
-  }
-
-  // MULTI-TARGET CAMERA SCANNER
-  function startScanner(target) {
-    if (typeof Html5Qrcode === "undefined") {
-      alert("Scanner module load ho raha hai, thoda intezaar karein.");
-      return;
-    }
-    const container = document.getElementById("reader-container");
-    container.style.display = "block";
-    container.scrollIntoView({ behavior: 'smooth' });
-
-    html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-      { facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
-      (decoded) => {
-        playPosBeep("beep");
-        if (target === "MODAL") {
-          document.getElementById("newProdBarcode").value = decoded;
-        } else {
-          document.getElementById("barcodeInput").value = decoded;
-          document.getElementById("barcodeInput").dispatchEvent(new Event("input"));
-        }
-        stopScanner();
-      }, () => {}
-    );
-  }
-
-  function stopScanner() {
-    if (html5QrCode) {
-      try { html5QrCode.stop(); } catch(e){}
-    }
-    document.getElementById("reader-container").style.display = "none";
-  }
-
-  function openAddProductModal() { 
-    document.getElementById("newProdName").value = "";
-    document.getElementById("newProdBarcode").value = "";
-    document.getElementById("newProdHsn").value = "";
-    document.getElementById("newProdRate").value = "";
-    document.getElementById("addProductModal").style.display = "flex"; 
-  }
-  function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
-  function openAddVehicleModal() { 
-    document.getElementById("newVehicleNo").value = "";
-    document.getElementById("addVehicleModal").style.display = "flex"; 
-  }
-  function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
-  function openAddCompanyModal() { 
-    document.getElementById("newCompanyNameInput").value = "";
-    document.getElementById("addCompanyModal").style.display = "flex"; 
-  }
-  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
-
-  async function saveNewProduct() {
-    if (isSavingProduct) return;
-
-    const btn = document.getElementById("saveProdBtn");
-    const pName = document.getElementById("newProdName").value.trim();
-    const barcode = document.getElementById("newProdBarcode").value.trim();
-    const hsn = document.getElementById("newProdHsn").value.trim();
-    const rate = Number(document.getElementById("newProdRate").value || 0);
-
-    if (!pName) return alert("Product Name likhna zaroori hai!");
-
-    const alreadyExists = productList.some(p => p.name.toLowerCase() === pName.toLowerCase());
-    if (alreadyExists) {
-      alert(`⚠️ "${pName}" pehle se product list mein majood hai!`);
-      return;
-    }
-
-    isSavingProduct = true;
-    btn.disabled = true;
-    btn.innerText = "Saving to Sheet...";
-
-    const newProd = {
-      type: "ADD_PRODUCT",
-      barcode: barcode,
-      itemName: pName,
-      hsn: hsn,
-      rate: rate
-    };
-
-    try {
-      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(newProd) });
-      const data = await res.json();
-
-      if (data.status === "success") {
-        playPosBeep("success");
-
-        productList.push({ barcode: barcode, name: pName, hsn: hsn, rate: rate });
-        localStorage.setItem("cached_products", JSON.stringify(productList));
-        buildBarcodeMap();
-
-        closeAddProductModal();
-
-        let remaining = 3;
-        const timer = setInterval(() => {
-          btn.innerText = `⏳ Ready in ${remaining}s...`;
-          remaining--;
-          if (remaining < 0) {
-            clearInterval(timer);
-            btn.disabled = false;
-            btn.innerText = "Save";
-            isSavingProduct = false;
-          }
-        }, 1000);
-
-        await fetchMasterData(pName);
-        loadSummary(false);
-
-      } else {
-        alert("❌ " + data.message);
-        btn.disabled = false;
-        btn.innerText = "Save";
-        isSavingProduct = false;
-      }
-    } catch(e) {
-      alert("❌ Error: " + e.message);
-      btn.disabled = false;
-      btn.innerText = "Save";
-      isSavingProduct = false;
-    }
-  }
-
-  async function saveNewVehicle() {
-    if (isSavingVehicle) return;
-
-    const btn = document.getElementById("saveVehBtn");
-    const vNo = document.getElementById("newVehicleNo").value.trim().toUpperCase();
-    const vComp = document.getElementById("newVehicleCompany").value;
-    if (!vNo) return alert("Vehicle Number daalein!");
-
-    if (vehicleMap.has(vNo)) {
-      alert(`⚠️ Gaadi "${vNo}" pehle se list me add hai!`);
-      return;
-    }
-
-    isSavingVehicle = true;
-    btn.disabled = true;
-    btn.innerText = "Saving...";
-
-    try {
-      const res = await fetch(SCRIPT_URL, { 
-        method: "POST", 
-        body: JSON.stringify({ type: "ADD_VEHICLE", vehicleNo: vNo, companyName: vComp }) 
-      });
-      const data = await res.json();
-
-      if (data.status === "success") {
-        playPosBeep("success");
-        vehicleMap.set(vNo, vComp);
-        let arr = [];
-        vehicleMap.forEach((comp, no) => arr.push({ vehicleNo: no, company: comp }));
-        localStorage.setItem("cached_vehicles_obj", JSON.stringify(arr));
-
-        renderVehicleDropdown();
-        document.getElementById("vehicleSelect").value = vNo;
-        onVehicleDropdownChange(vNo);
-
-        closeAddVehicleModal();
-
-        let remaining = 3;
-        const timer = setInterval(() => {
-          btn.innerText = `⏳ Ready in ${remaining}s...`;
-          remaining--;
-          if (remaining < 0) {
-            clearInterval(timer);
-            btn.disabled = false;
-            btn.innerText = "Save Vehicle";
-            isSavingVehicle = false;
-          }
-        }, 1000);
-
-      } else {
-        alert("❌ " + data.message);
-        btn.disabled = false;
-        btn.innerText = "Save Vehicle";
-        isSavingVehicle = false;
-      }
-    } catch(e) {
-      alert("❌ Error: " + e.message);
-      btn.disabled = false;
-      btn.innerText = "Save Vehicle";
-      isSavingVehicle = false;
-    }
-  }
-
-  function saveNewCompany() {
-    const cName = document.getElementById("newCompanyNameInput").value.trim().toUpperCase();
-    if (!cName) return alert("Company Name daalein!");
-
-    if (!customCompanies.includes(cName)) {
-      customCompanies.push(cName);
-      localStorage.setItem("cached_companies", JSON.stringify(customCompanies));
-      renderCompanyDropdowns();
-      document.getElementById("companyInput").value = cName;
-      alert(`Company "${cName}" add ho gayi!`);
-    }
-
-    document.getElementById("newCompanyNameInput").value = "";
-    closeAddCompanyModal();
-  }
-
-  function startCooldownTimer(seconds) {
-    const btn = document.getElementById("submitBtn");
-    let remaining = seconds;
-    btn.disabled = true;
-
-    const timer = setInterval(() => {
-      btn.innerText = `⏳ Ready in ${remaining}s...`;
-      remaining--;
-      if (remaining < 0) {
-        clearInterval(timer);
-        btn.disabled = false;
-        btn.innerText = "Save Entry";
-        isSubmitting = false;
-      }
-    }, 1000);
+  function stepQty(c) {
+    const q = document.getElementById("qtyInput");
+    let val = (parseFloat(q.value) || 1) + c;
+    if (val < 0.1) val = 0.1;
+    q.value = val;
+    calculateTotal();
   }
 
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    if (isSubmitting) return;
-
     const btn = document.getElementById("submitBtn");
-    const msg = document.getElementById("msg");
-    const nowMs = Date.now();
+    btn.disabled = true;
+    btn.innerText = "Saving Entry...";
 
     const payload = {
       type: currentTab,
       barcode: document.getElementById("barcodeInput").value,
-      itemName: document.getElementById("productSelect").value.trim(),
+      itemName: document.getElementById("productSelect").value,
       hsn: document.getElementById("hsnInput").value,
       qty: document.getElementById("qtyInput").value,
+      unit: document.getElementById("unitSelect").value,
       rate: document.getElementById("rateInput").value,
       totalAmount: document.getElementById("totalAmountInput").value,
       paidAmount: document.getElementById("paidAmountInput").value || 0,
       dueAmount: document.getElementById("dueAmountInput").value || 0,
-      partyName: document.getElementById("partyInput").value.trim().toUpperCase(),
+      partyName: document.getElementById("partyInput").value,
+      vehicleNo: document.getElementById("vehicleSelect").value,
       companyName: document.getElementById("companyInput").value,
-      vehicleNo: document.getElementById("vehicleSelect").value.trim().toUpperCase(),
-      kmReading: document.getElementById("kmInput").value.trim(),
+      kmReading: document.getElementById("kmInput").value,
       driverName: document.getElementById("driverInput").value,
       remarks: document.getElementById("remarksInput").value
     };
 
-    if (!payload.itemName) {
-      alert("Kripya Product Name dropdown se chunein!");
-      return;
-    }
-
-    if (currentTab === "OUT" && !payload.vehicleNo) {
-      alert("Kripya Vehicle Number dropdown se chunein!");
-      return;
-    }
-
-    if (currentTab === "IN" && !payload.partyName) {
-      alert("Kripya Supplier / Party Name daalein!");
-      return;
-    }
-
-    if (lastSubmissionPayload && (nowMs - lastSubmissionTime) < 20000) {
-      const isIdentical = (
-        lastSubmissionPayload.type === payload.type &&
-        lastSubmissionPayload.itemName === payload.itemName &&
-        lastSubmissionPayload.qty === payload.qty &&
-        lastSubmissionPayload.vehicleNo === payload.vehicleNo &&
-        lastSubmissionPayload.partyName === payload.partyName
-      );
-
-      if (isIdentical) {
-        const confirmSave = confirm("⚠️ Warning: Same entry abhi 20 second pehle save hui thi. Dobara save karein?");
-        if (!confirmSave) {
-          msg.innerText = "Entry cancelled.";
-          msg.style.color = "#718096";
-          return;
-        }
-      }
-    }
-
-    isSubmitting = true;
-    btn.disabled = true;
-    btn.innerText = "Saving to Sheet...";
-    msg.innerText = "⏳ Saving...";
-    msg.style.color = "#3182ce";
-
     try {
       const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
       const data = await res.json();
-
       if (data.status === "success") {
-        playPosBeep("success");
-        msg.innerText = "✅ " + data.message;
-        msg.style.color = "#2f855a";
-
-        if (navigator.vibrate) navigator.vibrate(80);
-
-        renderRecentActivity({
-          type: payload.type,
-          itemName: payload.itemName,
-          qty: payload.qty,
-          totalAmount: payload.totalAmount,
-          dest: payload.type === "OUT" ? payload.vehicleNo : payload.partyName
-        });
-
-        lastSubmissionPayload = payload;
-        lastSubmissionTime = Date.now();
-
+        alert("✅ " + data.message);
         document.getElementById("stockForm").reset();
-        document.getElementById("qtyInput").value = "1";
-        document.getElementById("stockInHandBadge").classList.add("hidden");
-        document.getElementById("vehHistoryBtn").classList.add("hidden");
-        document.getElementById("productFilterBox").value = "";
-        renderProductDropdown();
-        updateClock();
-        document.getElementById("barcodeInput").focus();
-
-        loadSummary(false);
-        loadClosingData();
-        loadLedgerData(false);
-
-        startCooldownTimer(3);
-      } else {
-        msg.innerText = "❌ " + data.message;
-        msg.style.color = "#e53e3e";
-        btn.disabled = false;
-        btn.innerText = "Save Entry";
-        isSubmitting = false;
-      }
-    } catch(err) {
-      msg.innerText = "❌ Request Error: " + err.message;
-      msg.style.color = "#e53e3e";
+      } else { alert("❌ " + data.message); }
+    } catch(err) { alert("Error: " + err.message); }
+    finally {
       btn.disabled = false;
       btn.innerText = "Save Entry";
-      isSubmitting = false;
     }
   });
 
   window.addEventListener("DOMContentLoaded", () => {
-    updateClock();
-    renderCompanyDropdowns();
-    renderVehicleDropdown();
-    renderProductDropdown();
-    renderRecentActivity();
+    document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     fetchMasterData();
     loadSummary();
-    loadLedgerData();
-    loadClosingData();
   });
 </script>
 </body>
