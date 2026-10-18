@@ -69,6 +69,10 @@
     .vehicle-title { font-weight: 800; color: #2b6cb0; font-size: 11.5px; }
     .vehicle-cost { font-weight: 800; color: #2d3748; font-size: 11.5px; }
 
+    /* Auto-Refresh Status Pill */
+    .refresh-indicator { font-size: 10px; color: #718096; text-align: right; margin-bottom: 4px; }
+    .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #38a169; border-radius: 50%; margin-right: 4px; }
+
     /* Modals */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
@@ -81,6 +85,10 @@
 <body>
 
 <div class="container" id="mainContainer">
+  <div class="refresh-indicator">
+    <span class="pulse-dot"></span>Auto-Sync Active (7s)
+  </div>
+
   <div class="tab-header">
     <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">📥 Stock In</button>
     <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">📤 Stock Out</button>
@@ -105,7 +113,7 @@
       </div>
     </div>
 
-    <!-- Product / Service Selection (Clean Item Names) -->
+    <!-- Product / Service Selection -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -313,7 +321,7 @@
   </div>
 </div>
 
-<!-- Modal: Password / PIN Protection (4251 Masked) -->
+<!-- Modal: Security PIN (4251 Masked) -->
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
@@ -364,7 +372,7 @@
     <div id="poSupplierItemsSection" class="hidden">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <span style="font-weight:bold; font-size:11px;">Supplier History Items:</span>
-        <small style="color:#718096; font-size:10px;">(Pehle khareede gaye items)</small>
+        <small style="color:#718096; font-size:10px;">(Pehle khareede gaye)</small>
       </div>
       <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
 
@@ -372,7 +380,9 @@
       <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
         <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product (Is PO me jodein):</label>
         <div style="display:flex; gap:6px; margin-top:4px;">
-          <select id="poOtherProductSelect" style="flex:2; font-size:11px;"></select>
+          <select id="poOtherProductSelect" style="flex:2; font-size:11px;">
+            <option value="">-- Choose Any Product --</option>
+          </select>
           <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
           <button type="button" onclick="addOtherItemToPo()" style="background:#3182ce; color:white; border:none; padding:0 8px; border-radius:6px; font-size:11px; cursor:pointer;">Add</button>
         </div>
@@ -409,8 +419,9 @@
   let activeServiceName = "";
   let html5QrScanner = null;
   let lastPoSubmitTime = 0;
+  let autoRefreshTimer = null;
 
-  // 1. Fast String-based DOM Rendering (No Lag)
+  // 1. Safe & Fast Dropdown Rendering Engine
   function renderProductDropdown() {
     const sel = document.getElementById("productSelect");
     const extraSel = document.getElementById("extraPartSelect");
@@ -427,23 +438,27 @@
       mainHtml += '</optgroup>';
     }
 
-    mainHtml += '<optgroup label="📦 PARTS & OILS">';
-    productList.forEach(p => {
-      // Clean item name without (Nos)/(L)
-      mainHtml += `<option value="${p.name}">${p.name}</option>`;
-      extraHtml += `<option value="${p.name}">${p.name}</option>`;
-      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
-    });
-    mainHtml += '</optgroup>';
+    if (productList && productList.length > 0) {
+      mainHtml += '<optgroup label="📦 PARTS & OILS">';
+      productList.forEach(p => {
+        const itemOpt = `<option value="${p.name}">${p.name}</option>`;
+        mainHtml += itemOpt;
+        extraHtml += itemOpt;
+        poOtherHtml += itemOpt;
+      });
+      mainHtml += '</optgroup>';
+    }
 
-    sel.innerHTML = mainHtml;
-    extraSel.innerHTML = extraHtml;
+    if (sel) sel.innerHTML = mainHtml;
+    if (extraSel) extraSel.innerHTML = extraHtml;
     if (poOtherSel) poOtherSel.innerHTML = poOtherHtml;
   }
 
   function renderVehicleDropdown() {
     const vSel = document.getElementById("vehicleSelect");
     const fSel = document.getElementById("closingVehFilter");
+    if (!vSel || !fSel) return;
+
     let html = '<option value="">-- Select Machine --</option>';
     let fHtml = '<option value="">-- All Machines --</option>';
 
@@ -471,9 +486,9 @@
       ledSupHtml += `<option value="${s}">${s}</option>`;
     });
 
-    pIn.innerHTML = pInHtml;
-    poSup.innerHTML = poSupHtml;
-    ledSup.innerHTML = ledSupHtml;
+    if (pIn) pIn.innerHTML = pInHtml;
+    if (poSup) poSup.innerHTML = poSupHtml;
+    if (ledSup) ledSup.innerHTML = ledSupHtml;
   }
 
   // 2. Tab Switching & Masked PIN Verification
@@ -525,7 +540,6 @@
       closePinModal();
       switchTab(pendingTab);
     } else {
-      // Masked Error Alert: Never reveals actual PIN
       alert("❌ Galat PIN! Kripya dobara koshish karein.");
       document.getElementById("pinInput").value = "";
     }
@@ -752,8 +766,8 @@
     }
   }
 
-  // 7. Supplier Ledger (Summary-First View & Drilldown)
-  async function loadLedger() {
+  // 7. Supplier Ledger
+  async function loadLedger(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
       const data = await res.json();
@@ -762,7 +776,7 @@
         supplierItemsMap = data.supplierItemsMap || {};
         ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
         populateSupplierDropdowns();
-        renderActiveLedgerView();
+        if (currentTab === "LEDGER" || !silent) renderActiveLedgerView();
       }
     } catch(e){}
   }
@@ -792,7 +806,6 @@
     }
   }
 
-  // Summary-First Screen (All Suppliers)
   function renderAllSuppliersSummary() {
     document.getElementById("ledgerHeadingTitle").innerText = "Supplier Balances Summary";
     document.getElementById("ledgerBackBtn").classList.add("hidden");
@@ -858,7 +871,6 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  // Detailed Statement Screen (Single Supplier)
   function renderSinglePartyDetailedLedger(party) {
     document.getElementById("ledgerHeadingTitle").innerText = `Statement: ${party}`;
     document.getElementById("ledgerBackBtn").classList.remove("hidden");
@@ -898,7 +910,7 @@
   // 8. Purchase Order (PO) with Supplier Item History & WhatsApp
   function openCreateOrderModal() {
     populateSupplierDropdowns();
-    renderProductDropdown();
+    renderProductDropdown(); // Populates poOtherProductSelect safely
     document.getElementById("poSupplierSelect").value = "";
     document.getElementById("poSupplierItemsSection").classList.add("hidden");
     document.getElementById("poItemList").innerHTML = "";
@@ -919,6 +931,8 @@
     }
 
     section.classList.remove("hidden");
+    renderProductDropdown(); // Ensure other products dropdown is full
+
     const pastItems = supplierItemsMap[supplier] || {};
     const itemNames = Object.keys(pastItems);
 
@@ -945,7 +959,7 @@
   function addOtherItemToPo() {
     const sel = document.getElementById("poOtherProductSelect");
     const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
-    if (!sel.value) return alert("Pehle item select karein!");
+    if (!sel || !sel.value) return alert("Pehle item select karein!");
 
     const itm = sel.value;
     const prod = productList.find(p => p.name === itm);
@@ -1076,7 +1090,7 @@
   }
 
   // 9. Stock Summary & Month Closing
-  async function loadSummary() {
+  async function loadSummary(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
       const data = await res.json();
@@ -1085,7 +1099,7 @@
         document.getElementById("kpiItems").innerText = summaryData.length;
         document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0);
         document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
-        renderSummaryTable();
+        if (currentTab === "SUMMARY" || !silent) renderSummaryTable();
       }
     } catch(e){}
   }
@@ -1108,13 +1122,13 @@
     document.getElementById("summaryTableContent").innerHTML = html;
   }
 
-  async function loadClosing() {
+  async function loadClosing(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success") {
         closingData = data.data;
-        renderClosingReport();
+        if (currentTab === "CLOSING" || !silent) renderClosingReport();
       }
     } catch(e){}
   }
@@ -1193,7 +1207,7 @@
     container.innerHTML = html;
   }
 
-  // 10. Hard Refresh Engine
+  // 10. Manual & Auto 7-8s Silent Refresh
   async function hardRefreshData(section) {
     const notify = document.getElementById("msg");
     notify.innerText = `🔄 Reloading fresh ${section} data...`;
@@ -1207,10 +1221,44 @@
 
     notify.innerText = `✅ ${section} Refreshed Live!`;
     notify.style.color = "#2f855a";
-    setTimeout(() => { notify.innerText = ""; }, 2500);
+    setTimeout(() => { notify.innerText = ""; }, 2000);
   }
 
-  // 11. Calculations & Save
+  function startAutoRefreshLoop() {
+    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+    autoRefreshTimer = setInterval(async () => {
+      // Don't disturb user if a modal is open or user is actively typing in inputs
+      const activeEl = document.activeElement;
+      const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "SELECT");
+      const isModalOpen = Array.from(document.querySelectorAll('.modal')).some(m => m.style.display === "flex");
+
+      if (isTyping || isModalOpen) return;
+
+      // Silent background fetch
+      if (currentTab === "SUMMARY") await loadSummary(true);
+      else if (currentTab === "LEDGER") await loadLedger(true);
+      else if (currentTab === "CLOSING") await loadClosing(true);
+      else if (currentTab === "ORDER") await loadOrders();
+    }, 7500); // Exactly every 7.5 seconds
+  }
+
+  // 11. Initial Master Data Fetch
+  async function fetchMasterData() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        productList = data.products || [];
+        kitsMap = data.kits || {};
+        (data.vehicles || []).forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+
+        renderProductDropdown();
+        renderVehicleDropdown();
+      }
+    } catch (e) { console.log(e); }
+  }
+
+  // 12. Calculations & Save Entry
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1271,16 +1319,17 @@
     }
   });
 
-  // Fast Startup Initialization
+  // Startup Orchestration
   window.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     
-    // Prioritized Fast Load (No Delay in Dropdowns)
+    // Fast initial load of master data and dropdowns
     await fetchMasterData();
+    loadSummary(true);
+    loadLedger(true);
 
-    // Secondary Data in Background
-    loadSummary();
-    loadLedger();
+    // Start the 7.5-second background auto-refresh
+    startAutoRefreshLoop();
   });
 </script>
 </body>
