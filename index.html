@@ -18,7 +18,7 @@
     .form-group { margin-bottom: 11px; position: relative; }
     label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 11px; color: #4a5568; }
     
-    /* Extra-Compact Single-line Inputs & Dropdowns */
+    /* Clean Compact Single-line Inputs & Dropdowns */
     input, select { 
       width: 100%; 
       padding: 7px 9px; 
@@ -71,7 +71,7 @@
 
     /* Modals */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
+    .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
     .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
 
     #scannerModalBox { max-width: 380px; text-align: center; }
@@ -105,7 +105,7 @@
       </div>
     </div>
 
-    <!-- Product / Service Selection -->
+    <!-- Product / Service Selection (Clean Item Names) -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -225,21 +225,22 @@
     </div>
   </div>
 
-  <!-- Tally Supplier Ledger -->
+  <!-- Supplier Ledger (Summary-First View) -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:13.5px;">Supplier Ledger (Dr / Cr)</h3>
+      <h3 style="margin:0; font-size:13.5px;" id="ledgerHeadingTitle">Supplier Ledger Summary</h3>
       <div style="display:flex; gap:6px;">
+        <button type="button" id="ledgerBackBtn" class="hidden" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10.5px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">⬅ All Suppliers</button>
         <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
         <button type="button" onclick="hardRefreshData('Ledger')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
     <div id="ledgerDateFilters" style="display:flex; gap:6px; margin-bottom:8px;">
-      <input type="date" id="ledgerSDate" onchange="renderPartyLedger()" style="flex:1;">
-      <input type="date" id="ledgerEDate" onchange="renderPartyLedger()" style="flex:1;">
-      <select id="ledgerPartyFilter" onchange="renderPartyLedger()" style="flex:1.5;">
-        <option value="">-- All Suppliers --</option>
+      <input type="date" id="ledgerSDate" onchange="renderActiveLedgerView()" style="flex:1;">
+      <input type="date" id="ledgerEDate" onchange="renderActiveLedgerView()" style="flex:1;">
+      <select id="ledgerPartyFilter" onchange="onLedgerPartyDropdownChange(this.value)" style="flex:1.5;">
+        <option value="">-- All Suppliers (Summary) --</option>
       </select>
     </div>
     
@@ -312,7 +313,7 @@
   </div>
 </div>
 
-<!-- Modal: Password / PIN Protection (4251) -->
+<!-- Modal: Password / PIN Protection (4251 Masked) -->
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
@@ -349,18 +350,34 @@
   </div>
 </div>
 
-<!-- Modal: Create Purchase Order (PO) & WhatsApp Share -->
+<!-- Modal: Create Purchase Order (PO) with Supplier-Item History -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
     <div class="form-group">
       <label>Select Supplier / Vendor</label>
-      <select id="poSupplierSelect" style="font-size:11px;">
+      <select id="poSupplierSelect" onchange="onPoSupplierSelected(this.value)" style="font-size:11px;">
         <option value="">-- Choose Supplier --</option>
       </select>
     </div>
-    <div style="font-weight:bold; font-size:11px; margin-bottom:6px;">Select Items to Re-order:</div>
-    <div id="poItemList" style="max-height:180px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px;"></div>
+
+    <div id="poSupplierItemsSection" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-weight:bold; font-size:11px;">Supplier History Items:</span>
+        <small style="color:#718096; font-size:10px;">(Pehle khareede gaye items)</small>
+      </div>
+      <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
+
+      <!-- Add Extra Other Product to this PO -->
+      <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
+        <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product (Is PO me jodein):</label>
+        <div style="display:flex; gap:6px; margin-top:4px;">
+          <select id="poOtherProductSelect" style="flex:2; font-size:11px;"></select>
+          <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
+          <button type="button" onclick="addOtherItemToPo()" style="background:#3182ce; color:white; border:none; padding:0 8px; border-radius:6px; font-size:11px; cursor:pointer;">Add</button>
+        </div>
+      </div>
+    </div>
 
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
@@ -371,13 +388,14 @@
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
-  const APP_PIN = "4251"; // Configured Security PIN
+  const APP_PIN = "4251"; 
 
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
   let kitsMap = {};
   let supplierSet = new Set();
+  let supplierItemsMap = {};
   let summaryData = [];
   let closingData = [];
   let ledgerData = [];
@@ -385,91 +403,80 @@
 
   let pendingTab = "";
   let isAuthenticated = false;
+  let activeSelectedLedgerParty = "";
 
   let activeServiceParts = [];
   let activeServiceName = "";
   let html5QrScanner = null;
   let lastPoSubmitTime = 0;
 
-  // 1. Isolated Pure-Filtered Print
-  function printTargetSection(targetId, title) {
-    const el = document.getElementById(targetId);
-    if (!el || !el.innerHTML.trim()) {
-      alert("Print karne ke liye koi data nahi hai!");
-      return;
+  // 1. Fast String-based DOM Rendering (No Lag)
+  function renderProductDropdown() {
+    const sel = document.getElementById("productSelect");
+    const extraSel = document.getElementById("extraPartSelect");
+    const poOtherSel = document.getElementById("poOtherProductSelect");
+
+    let mainHtml = '<option value="">-- Select Item or Service --</option>';
+    let extraHtml = '<option value="">-- Choose Extra Item --</option>';
+    let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
+
+    const kitNames = Object.keys(kitsMap);
+    if (kitNames.length > 0) {
+      mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
+      kitNames.forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
+      mainHtml += '</optgroup>';
     }
 
-    const printWin = window.open('', '', 'width=850,height=700');
-    printWin.document.write(`
-      <html>
-        <head>
-          <title>${title}</title>
-          <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
-            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
-            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
-            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
-            th { background: #edf2f7; font-weight: bold; }
-            .company-block { border: 1px solid #a0aec0; margin-bottom: 14px; page-break-inside: avoid; }
-            .company-header { background: #edf2f7; font-weight: bold; padding: 6px 8px; border-bottom: 1px solid #a0aec0; }
-            .vehicle-card { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
-            .vehicle-title { font-weight: bold; color: #2b6cb0; }
-          </style>
-        </head>
-        <body>
-          <h2>${title}</h2>
-          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
-          ${el.innerHTML}
-        </body>
-      </html>
-    `);
-    printWin.document.close();
-    printWin.focus();
-    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
-  }
-
-  // 2. Barcode Camera Scanner
-  function openScannerModal() {
-    document.getElementById("scannerModal").style.display = "flex";
-    html5QrScanner = new Html5Qrcode("reader");
-    html5QrScanner.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 250, height: 160 } },
-      (decodedText) => {
-        document.getElementById("barcodeInput").value = decodedText;
-        matchProductByBarcode(decodedText);
-        closeScannerModal();
-      },
-      (errorMessage) => {}
-    ).catch(err => {
-      alert("Camera error: " + err);
-      closeScannerModal();
+    mainHtml += '<optgroup label="📦 PARTS & OILS">';
+    productList.forEach(p => {
+      // Clean item name without (Nos)/(L)
+      mainHtml += `<option value="${p.name}">${p.name}</option>`;
+      extraHtml += `<option value="${p.name}">${p.name}</option>`;
+      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
     });
+    mainHtml += '</optgroup>';
+
+    sel.innerHTML = mainHtml;
+    extraSel.innerHTML = extraHtml;
+    if (poOtherSel) poOtherSel.innerHTML = poOtherHtml;
   }
 
-  function closeScannerModal() {
-    if (html5QrScanner) {
-      html5QrScanner.stop().then(() => {
-        html5QrScanner.clear();
-        document.getElementById("scannerModal").style.display = "none";
-      }).catch(() => {
-        document.getElementById("scannerModal").style.display = "none";
-      });
-    } else {
-      document.getElementById("scannerModal").style.display = "none";
-    }
+  function renderVehicleDropdown() {
+    const vSel = document.getElementById("vehicleSelect");
+    const fSel = document.getElementById("closingVehFilter");
+    let html = '<option value="">-- Select Machine --</option>';
+    let fHtml = '<option value="">-- All Machines --</option>';
+
+    Array.from(vehicleMap.keys()).sort().forEach(v => {
+      html += `<option value="${v}">${v}</option>`;
+      fHtml += `<option value="${v}">${v}</option>`;
+    });
+
+    vSel.innerHTML = html;
+    fSel.innerHTML = fHtml;
   }
 
-  function matchProductByBarcode(code) {
-    const prod = productList.find(p => p.barcode === code);
-    if (prod) {
-      document.getElementById("productSelect").value = prod.name;
-      onProductSelect(prod.name);
-    }
+  function populateSupplierDropdowns() {
+    const pIn = document.getElementById("partySelectInput");
+    const poSup = document.getElementById("poSupplierSelect");
+    const ledSup = document.getElementById("ledgerPartyFilter");
+
+    let pInHtml = '<option value="">-- Select Supplier --</option>';
+    let poSupHtml = '<option value="">-- Choose Supplier --</option>';
+    let ledSupHtml = '<option value="">-- All Suppliers (Summary) --</option>';
+
+    Array.from(supplierSet).sort().forEach(s => {
+      pInHtml += `<option value="${s}">${s}</option>`;
+      poSupHtml += `<option value="${s}">${s}</option>`;
+      ledSupHtml += `<option value="${s}">${s}</option>`;
+    });
+
+    pIn.innerHTML = pInHtml;
+    poSup.innerHTML = poSupHtml;
+    ledSup.innerHTML = ledSupHtml;
   }
 
-  // 3. Tab Switching with PIN Protection on Both CLOSING & LEDGER
+  // 2. Tab Switching & Masked PIN Verification
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -518,7 +525,8 @@
       closePinModal();
       switchTab(pendingTab);
     } else {
-      alert("❌ Galat PIN! Kripya sahi PIN (4251) daalein.");
+      // Masked Error Alert: Never reveals actual PIN
+      alert("❌ Galat PIN! Kripya dobara koshish karein.");
       document.getElementById("pinInput").value = "";
     }
   }
@@ -528,82 +536,82 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 4. Data Loading & Dropdowns
-  async function fetchMasterData() {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getInitialData`);
-      const data = await res.json();
-      if (data.status === "success") {
-        productList = data.products || [];
-        kitsMap = data.kits || {};
-        (data.vehicles || []).forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+  // 3. Isolated Clean Print
+  function printTargetSection(targetId, title) {
+    const el = document.getElementById(targetId);
+    if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
 
-        renderProductDropdown();
-        renderVehicleDropdown();
-      }
-    } catch (e) { console.log(e); }
+    const printWin = window.open('', '', 'width=850,height=700');
+    printWin.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
+            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
+            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
+            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
+            th { background: #edf2f7; font-weight: bold; }
+            .company-block { border: 1px solid #a0aec0; margin-bottom: 14px; page-break-inside: avoid; }
+            .company-header { background: #edf2f7; font-weight: bold; padding: 6px 8px; border-bottom: 1px solid #a0aec0; }
+            .vehicle-card { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
+            .vehicle-title { font-weight: bold; color: #2b6cb0; }
+          </style>
+        </head>
+        <body>
+          <h2>${title}</h2>
+          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
+          ${el.innerHTML}
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
   }
 
-  function renderProductDropdown() {
-    const sel = document.getElementById("productSelect");
-    const extraSel = document.getElementById("extraPartSelect");
-    sel.innerHTML = '<option value="">-- Select Item or Service --</option>';
-    extraSel.innerHTML = '<option value="">-- Choose Extra Item --</option>';
+  // 4. Barcode Camera Scanner
+  function openScannerModal() {
+    document.getElementById("scannerModal").style.display = "flex";
+    html5QrScanner = new Html5Qrcode("reader");
+    html5QrScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 160 } },
+      (decodedText) => {
+        document.getElementById("barcodeInput").value = decodedText;
+        matchProductByBarcode(decodedText);
+        closeScannerModal();
+      },
+      () => {}
+    ).catch(err => {
+      alert("Camera error: " + err);
+      closeScannerModal();
+    });
+  }
 
-    const kitNames = Object.keys(kitsMap);
-    if (kitNames.length > 0) {
-      let grp = document.createElement("optgroup");
-      grp.label = "⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)";
-      kitNames.forEach(k => {
-        let opt = document.createElement("option"); opt.value = k; opt.innerText = k;
-        grp.appendChild(opt);
+  function closeScannerModal() {
+    if (html5QrScanner) {
+      html5QrScanner.stop().then(() => {
+        html5QrScanner.clear();
+        document.getElementById("scannerModal").style.display = "none";
+      }).catch(() => {
+        document.getElementById("scannerModal").style.display = "none";
       });
-      sel.appendChild(grp);
+    } else {
+      document.getElementById("scannerModal").style.display = "none";
     }
-
-    let pGrp = document.createElement("optgroup");
-    pGrp.label = "📦 PARTS & OILS";
-    productList.forEach(p => {
-      let opt = document.createElement("option"); opt.value = p.name; opt.innerText = `${p.name} (${p.unit || 'Nos'})`;
-      pGrp.appendChild(opt);
-
-      let opt2 = document.createElement("option"); opt2.value = p.name; opt2.innerText = `${p.name} (${p.unit || 'Nos'})`;
-      extraSel.appendChild(opt2);
-    });
-    sel.appendChild(pGrp);
   }
 
-  function renderVehicleDropdown() {
-    const vSel = document.getElementById("vehicleSelect");
-    const fSel = document.getElementById("closingVehFilter");
-    vSel.innerHTML = '<option value="">-- Select Machine --</option>';
-    fSel.innerHTML = '<option value="">-- All Machines --</option>';
-
-    Array.from(vehicleMap.keys()).sort().forEach(v => {
-      let opt = document.createElement("option"); opt.value = v; opt.innerText = v;
-      vSel.appendChild(opt);
-
-      let opt2 = document.createElement("option"); opt2.value = v; opt2.innerText = v;
-      fSel.appendChild(opt2);
-    });
+  function matchProductByBarcode(code) {
+    const prod = productList.find(p => p.barcode === code);
+    if (prod) {
+      document.getElementById("productSelect").value = prod.name;
+      onProductSelect(prod.name);
+    }
   }
 
-  function populateSupplierDropdowns() {
-    const pIn = document.getElementById("partySelectInput");
-    const poSup = document.getElementById("poSupplierSelect");
-    const ledSup = document.getElementById("ledgerPartyFilter");
-
-    pIn.innerHTML = '<option value="">-- Select Supplier --</option>';
-    poSup.innerHTML = '<option value="">-- Choose Supplier --</option>';
-    ledSup.innerHTML = '<option value="">-- All Suppliers --</option>';
-
-    Array.from(supplierSet).sort().forEach(s => {
-      let o1 = document.createElement("option"); o1.value = s; o1.innerText = s; pIn.appendChild(o1);
-      let o2 = document.createElement("option"); o2.value = s; o2.innerText = s; poSup.appendChild(o2);
-      let o3 = document.createElement("option"); o3.value = s; o3.innerText = s; ledSup.appendChild(o3);
-    });
-  }
-
+  // 5. Form Interactions
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
@@ -656,7 +664,7 @@
     calculateTotal();
   }
 
-  // 5. Service Hours Modal
+  // 6. Service Hours Modal
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     renderServiceItems();
@@ -744,24 +752,330 @@
     }
   }
 
-  // 6. Hard Refresh Engine
-  async function hardRefreshData(section) {
-    const notify = document.getElementById("msg");
-    notify.innerText = `🔄 Reloading fresh ${section} data...`;
-    notify.style.color = "#3182ce";
-
-    await fetchMasterData();
-    if (section === 'Stock') await loadSummary();
-    if (section === 'Ledger') await loadLedger();
-    if (section === 'Closing') await loadClosing();
-    if (section === 'Orders') await loadOrders();
-
-    notify.innerText = `✅ ${section} Refreshed Live!`;
-    notify.style.color = "#2f855a";
-    setTimeout(() => { notify.innerText = ""; }, 2500);
+  // 7. Supplier Ledger (Summary-First View & Drilldown)
+  async function loadLedger() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        ledgerData = data.data;
+        supplierItemsMap = data.supplierItemsMap || {};
+        ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
+        populateSupplierDropdowns();
+        renderActiveLedgerView();
+      }
+    } catch(e){}
   }
 
-  // 7. Data Loaders & Renderers
+  function onLedgerPartyDropdownChange(party) {
+    activeSelectedLedgerParty = party;
+    renderActiveLedgerView();
+  }
+
+  function showAllSupplierSummary() {
+    activeSelectedLedgerParty = "";
+    document.getElementById("ledgerPartyFilter").value = "";
+    renderActiveLedgerView();
+  }
+
+  function openSinglePartyLedger(party) {
+    activeSelectedLedgerParty = party;
+    document.getElementById("ledgerPartyFilter").value = party;
+    renderActiveLedgerView();
+  }
+
+  function renderActiveLedgerView() {
+    if (activeSelectedLedgerParty) {
+      renderSinglePartyDetailedLedger(activeSelectedLedgerParty);
+    } else {
+      renderAllSuppliersSummary();
+    }
+  }
+
+  // Summary-First Screen (All Suppliers)
+  function renderAllSuppliersSummary() {
+    document.getElementById("ledgerHeadingTitle").innerText = "Supplier Balances Summary";
+    document.getElementById("ledgerBackBtn").classList.add("hidden");
+
+    const sDate = document.getElementById("ledgerSDate").value;
+    const eDate = document.getElementById("ledgerEDate").value;
+
+    const filtered = ledgerData.filter(l => {
+      if (sDate && l.date < sDate) return false;
+      if (eDate && l.date > eDate) return false;
+      return true;
+    });
+
+    const summaryMap = {};
+    filtered.forEach(l => {
+      const p = l.party || "UNKNOWN";
+      if (!summaryMap[p]) summaryMap[p] = { totalDr: 0, totalCr: 0, balance: 0 };
+      summaryMap[p].totalDr += (l.dr || 0);
+      summaryMap[p].totalCr += (l.cr || 0);
+      summaryMap[p].balance = summaryMap[p].totalDr - summaryMap[p].totalCr;
+    });
+
+    let html = `<table class="custom-table">
+      <thead>
+        <tr>
+          <th>Supplier Name</th>
+          <th>Total Purchases (Dr)</th>
+          <th>Total Paid (Cr)</th>
+          <th>Balance Due</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    const partyNames = Object.keys(summaryMap).sort();
+    if (partyNames.length === 0) {
+      html += `<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>`;
+    } else {
+      let totDr = 0, totCr = 0, totBal = 0;
+      partyNames.forEach(name => {
+        const item = summaryMap[name];
+        totDr += item.totalDr;
+        totCr += item.totalCr;
+        totBal += item.balance;
+
+        html += `<tr>
+          <td><b>${name}</b></td>
+          <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
+          <td style="color:#2f855a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
+          <td style="font-weight:bold; color:${item.balance > 0 ? '#c53030' : '#2f855a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
+          <td><button onclick="openSinglePartyLedger('${name}')" style="background:#2b6cb0; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">View Statement</button></td>
+        </tr>`;
+      });
+      html += `<tr style="background:#edf2f7; font-weight:bold;">
+        <td>TOTAL:</td>
+        <td>₹${totDr.toLocaleString('en-IN')}</td>
+        <td style="color:#2f855a;">₹${totCr.toLocaleString('en-IN')}</td>
+        <td style="color:#c53030;">₹${totBal.toLocaleString('en-IN')} Dr</td>
+        <td>-</td>
+      </tr>`;
+    }
+    html += `</tbody></table>`;
+    document.getElementById("ledgerContent").innerHTML = html;
+  }
+
+  // Detailed Statement Screen (Single Supplier)
+  function renderSinglePartyDetailedLedger(party) {
+    document.getElementById("ledgerHeadingTitle").innerText = `Statement: ${party}`;
+    document.getElementById("ledgerBackBtn").classList.remove("hidden");
+
+    const sDate = document.getElementById("ledgerSDate").value;
+    const eDate = document.getElementById("ledgerEDate").value;
+
+    const filtered = ledgerData.filter(l => {
+      if (l.party !== party) return false;
+      if (sDate && l.date < sDate) return false;
+      if (eDate && l.date > eDate) return false;
+      return true;
+    });
+
+    let running = 0;
+    let html = `<table class="custom-table">
+      <thead><tr><th>Date</th><th>Particulars</th><th>Dr (Purchases)</th><th>Cr (Payments)</th><th>Balance Due</th></tr></thead><tbody>`;
+    
+    if (filtered.length === 0) {
+      html += `<tr><td colspan="5" style="text-align:center;">No records for this party.</td></tr>`;
+    } else {
+      filtered.forEach(l => {
+        running += ((l.dr || 0) - (l.cr || 0));
+        html += `<tr>
+          <td>${l.displayDate || l.date}</td>
+          <td>${l.particulars}</td>
+          <td style="color:#2d3748;">${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
+          <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
+          <td style="font-weight:bold; color:${running > 0 ? '#c53030' : '#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
+        </tr>`;
+      });
+    }
+    html += `</tbody></table>`;
+    document.getElementById("ledgerContent").innerHTML = html;
+  }
+
+  // 8. Purchase Order (PO) with Supplier Item History & WhatsApp
+  function openCreateOrderModal() {
+    populateSupplierDropdowns();
+    renderProductDropdown();
+    document.getElementById("poSupplierSelect").value = "";
+    document.getElementById("poSupplierItemsSection").classList.add("hidden");
+    document.getElementById("poItemList").innerHTML = "";
+    document.getElementById("createOrderModal").style.display = "flex";
+  }
+
+  function closeCreateOrderModal() {
+    document.getElementById("createOrderModal").style.display = "none";
+  }
+
+  function onPoSupplierSelected(supplier) {
+    const section = document.getElementById("poSupplierItemsSection");
+    const container = document.getElementById("poItemList");
+    if (!supplier) {
+      section.classList.add("hidden");
+      container.innerHTML = "";
+      return;
+    }
+
+    section.classList.remove("hidden");
+    const pastItems = supplierItemsMap[supplier] || {};
+    const itemNames = Object.keys(pastItems);
+
+    let html = "";
+    if (itemNames.length === 0) {
+      html = `<p style="font-size:10.5px; color:#718096; margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se product add karein.</p>`;
+    } else {
+      itemNames.forEach(itm => {
+        const rate = pastItems[itm] || 0;
+        const curStock = summaryData.find(s => s.item === itm);
+        const left = curStock ? curStock.balance : 0;
+        const isLow = left <= 2;
+
+        html += `
+          <div class="po-item-row" style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;">
+            <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" ${isLow ? 'checked' : ''}> <b>${itm}</b> (${left} left)</label>
+            <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:50px; padding:2px; font-size:10.5px;">
+          </div>`;
+      });
+    }
+    container.innerHTML = html;
+  }
+
+  function addOtherItemToPo() {
+    const sel = document.getElementById("poOtherProductSelect");
+    const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
+    if (!sel.value) return alert("Pehle item select karein!");
+
+    const itm = sel.value;
+    const prod = productList.find(p => p.name === itm);
+    const rate = prod ? prod.rate : 0;
+    const curStock = summaryData.find(s => s.item === itm);
+    const left = curStock ? curStock.balance : 0;
+
+    const container = document.getElementById("poItemList");
+    const newRow = document.createElement("div");
+    newRow.className = "po-item-row";
+    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;";
+    newRow.innerHTML = `
+      <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" checked> <b>${itm}</b> (${left} left)</label>
+      <input type="number" class="po-qty" value="${qty}" style="width:50px; padding:2px; font-size:10.5px;">
+    `;
+    container.appendChild(newRow);
+    sel.value = "";
+  }
+
+  async function submitPurchaseOrder() {
+    const party = document.getElementById("poSupplierSelect").value.trim();
+    if (!party) return alert("Kripya Supplier select karein!");
+
+    const now = Date.now();
+    if (now - lastPoSubmitTime < 10000) {
+      return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
+    }
+
+    const chks = document.querySelectorAll(".po-chk:checked");
+    const items = [];
+    chks.forEach(c => {
+      const itemRow = c.closest(".po-item-row");
+      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
+      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
+    });
+
+    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
+
+    const btn = document.getElementById("poSubmitBtn");
+    btn.disabled = true;
+    btn.innerText = "Placing PO...";
+    lastPoSubmitTime = now;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        closeCreateOrderModal();
+        loadOrders();
+
+        let waText = `*PURCHASE ORDER: ${data.orderNo || ''}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
+        items.forEach((it, i) => {
+          waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
+        });
+        waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!`;
+
+        if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
+        }
+      }
+    } catch(e) { alert("Order error: " + e.message); }
+    finally {
+      btn.disabled = false;
+      btn.innerText = "Save PO";
+    }
+  }
+
+  async function loadOrders() {
+    const container = document.getElementById("orderListContent");
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        poData = data.data;
+        let html = `<table class="custom-table">
+          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+        poData.forEach(o => {
+          html += `<tr>
+            <td>${o.orderNo}</td>
+            <td><b>${o.party}</b></td>
+            <td>${o.item}</td>
+            <td>${o.qty} ${o.unit}</td>
+            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
+            <td style="display:flex; gap:4px;">
+              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
+              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
+            </td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      }
+    } catch(e) { container.innerHTML = "Error loading orders."; }
+  }
+
+  function shareSinglePoWhatsApp(ordNo, party, item, qty, unit) {
+    const text = `*PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
+    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          type: "IN",
+          itemName: item,
+          qty: qty,
+          unit: unit,
+          rate: rate,
+          totalAmount: qty * rate,
+          partyName: party,
+          orderNo: ordNo,
+          remarks: "Received from " + ordNo
+        })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        alert("Stock Inward Complete!");
+        loadOrders();
+      }
+    } catch(e) { alert(e.message); }
+  }
+
+  // 9. Stock Summary & Month Closing
   async function loadSummary() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
@@ -879,181 +1193,24 @@
     container.innerHTML = html;
   }
 
-  async function loadLedger() {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        ledgerData = data.data;
-        ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
-        populateSupplierDropdowns();
-        renderPartyLedger();
-      }
-    } catch(e){}
+  // 10. Hard Refresh Engine
+  async function hardRefreshData(section) {
+    const notify = document.getElementById("msg");
+    notify.innerText = `🔄 Reloading fresh ${section} data...`;
+    notify.style.color = "#3182ce";
+
+    await fetchMasterData();
+    if (section === 'Stock') await loadSummary();
+    if (section === 'Ledger') await loadLedger();
+    if (section === 'Closing') await loadClosing();
+    if (section === 'Orders') await loadOrders();
+
+    notify.innerText = `✅ ${section} Refreshed Live!`;
+    notify.style.color = "#2f855a";
+    setTimeout(() => { notify.innerText = ""; }, 2500);
   }
 
-  function renderPartyLedger() {
-    const selParty = document.getElementById("ledgerPartyFilter").value;
-    const sDate = document.getElementById("ledgerSDate").value;
-    const eDate = document.getElementById("ledgerEDate").value;
-
-    const filtered = ledgerData.filter(l => {
-      if (selParty && l.party !== selParty) return false;
-      if (sDate && l.date < sDate) return false;
-      if (eDate && l.date > eDate) return false;
-      return true;
-    });
-
-    let running = 0;
-    let html = `<table class="custom-table">
-      <thead><tr><th>Date</th><th>Particulars</th><th>Dr (Purchases)</th><th>Cr (Payments)</th><th>Balance Due</th></tr></thead><tbody>`;
-    filtered.forEach(l => {
-      running += ((l.dr || 0) - (l.cr || 0));
-      html += `<tr>
-        <td>${l.displayDate || l.date}</td>
-        <td><b>${l.party}</b>: ${l.particulars}</td>
-        <td style="color:#2d3748;">${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
-        <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
-        <td style="font-weight:bold; color:${running>0?'#c53030':'#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
-    document.getElementById("ledgerContent").innerHTML = html;
-  }
-
-  // 8. Purchase Order (PO) with WhatsApp Ready Action
-  async function loadOrders() {
-    const container = document.getElementById("orderListContent");
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        poData = data.data;
-        let html = `<table class="custom-table">
-          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-        poData.forEach(o => {
-          html += `<tr>
-            <td>${o.orderNo}</td>
-            <td><b>${o.party}</b></td>
-            <td>${o.item}</td>
-            <td>${o.qty} ${o.unit}</td>
-            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
-            <td style="display:flex; gap:4px;">
-              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
-              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
-            </td>
-          </tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-      }
-    } catch(e) { container.innerHTML = "Error loading orders."; }
-  }
-
-  function shareSinglePoWhatsApp(ordNo, party, item, qty, unit) {
-    const text = `*PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-  }
-
-  function openCreateOrderModal() {
-    populateSupplierDropdowns();
-    const list = document.getElementById("poItemList");
-    let html = "";
-    summaryData.forEach(s => {
-      const isLow = s.balance <= 2;
-      html += `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px solid #edf2f7; font-size:11px;">
-          <label><input type="checkbox" class="po-chk" data-item="${s.item}" data-rate="${s.rate}" ${isLow ? 'checked' : ''}> ${s.item} (${s.balance} left)</label>
-          <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:50px; padding:2px; font-size:10.5px;">
-        </div>`;
-    });
-    list.innerHTML = html;
-    document.getElementById("createOrderModal").style.display = "flex";
-  }
-
-  function closeCreateOrderModal() {
-    document.getElementById("createOrderModal").style.display = "none";
-  }
-
-  async function submitPurchaseOrder() {
-    const party = document.getElementById("poSupplierSelect").value.trim();
-    if (!party) return alert("Kripya Supplier select karein!");
-
-    const now = Date.now();
-    if (now - lastPoSubmitTime < 10000) {
-      return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
-    }
-
-    const chks = document.querySelectorAll(".po-chk:checked");
-    const items = [];
-    chks.forEach(c => {
-      const itemRow = c.closest("div");
-      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
-      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
-    });
-
-    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
-
-    const btn = document.getElementById("poSubmitBtn");
-    btn.disabled = true;
-    btn.innerText = "Placing PO...";
-    lastPoSubmitTime = now;
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        closeCreateOrderModal();
-        loadOrders();
-
-        // Direct WhatsApp Prompt
-        let waText = `*PURCHASE ORDER: ${data.orderNo || ''}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
-        items.forEach((it, i) => {
-          waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
-        });
-        waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!`;
-
-        if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
-          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
-        }
-      }
-    } catch(e) { alert("Order error: " + e.message); }
-    finally {
-      btn.disabled = false;
-      btn.innerText = "Save PO";
-    }
-  }
-
-  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
-    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          type: "IN",
-          itemName: item,
-          qty: qty,
-          unit: unit,
-          rate: rate,
-          totalAmount: qty * rate,
-          partyName: party,
-          orderNo: ordNo,
-          remarks: "Received from " + ordNo
-        })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        alert("Stock Inward Complete!");
-        loadOrders();
-      }
-    } catch(e) { alert(e.message); }
-  }
-
-  // 9. Calculations & Save
+  // 11. Calculations & Save
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1114,9 +1271,14 @@
     }
   });
 
-  window.addEventListener("DOMContentLoaded", () => {
+  // Fast Startup Initialization
+  window.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
-    fetchMasterData();
+    
+    // Prioritized Fast Load (No Delay in Dropdowns)
+    await fetchMasterData();
+
+    // Secondary Data in Background
     loadSummary();
     loadLedger();
   });
