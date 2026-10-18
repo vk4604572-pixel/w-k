@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fleet & Inventory Pro</title>
-  <!-- Barcode Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
@@ -18,7 +17,6 @@
     .form-group { margin-bottom: 11px; position: relative; }
     label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 11px; color: #4a5568; }
     
-    /* Clean Compact Single-line Inputs & Dropdowns */
     input, select { 
       width: 100%; 
       padding: 7px 9px; 
@@ -50,7 +48,6 @@
     .hidden { display: none !important; }
     #msg { margin-top: 8px; text-align: center; font-weight: 700; font-size: 12px; }
 
-    /* Tables & Cards */
     .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; background: #fff; }
     .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 6px 7px; text-align: left; }
     .custom-table th { background: #2b6cb0; color: white; font-weight: 600; font-size: 10.5px; }
@@ -69,11 +66,9 @@
     .vehicle-title { font-weight: 800; color: #2b6cb0; font-size: 11.5px; }
     .vehicle-cost { font-weight: 800; color: #2d3748; font-size: 11.5px; }
 
-    /* Auto-Refresh Status Pill */
     .refresh-indicator { font-size: 10px; color: #718096; text-align: right; margin-bottom: 4px; }
     .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #38a169; border-radius: 50%; margin-right: 4px; }
 
-    /* Modals */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
     .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
@@ -86,7 +81,7 @@
 
 <div class="container" id="mainContainer">
   <div class="refresh-indicator">
-    <span class="pulse-dot"></span>Auto-Sync Active (7s)
+    <span class="pulse-dot"></span><span id="syncText">Live Sync Active</span>
   </div>
 
   <div class="tab-header">
@@ -122,7 +117,7 @@
         </div>
       </div>
       <select id="productSelect" onchange="onProductSelect(this.value)">
-        <option value="">-- Select Item or Service --</option>
+        <option value="">-- Loading Products... --</option>
       </select>
     </div>
 
@@ -233,7 +228,7 @@
     </div>
   </div>
 
-  <!-- Supplier Ledger (Summary-First View) -->
+  <!-- Supplier Ledger -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;" id="ledgerHeadingTitle">Supplier Ledger Summary</h3>
@@ -257,7 +252,7 @@
     </div>
   </div>
 
-  <!-- Month Closing & Machine Service View -->
+  <!-- Month Closing View -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
@@ -321,7 +316,7 @@
   </div>
 </div>
 
-<!-- Modal: Security PIN (4251 Masked) -->
+<!-- Modal: Security PIN (4251) -->
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
@@ -358,7 +353,7 @@
   </div>
 </div>
 
-<!-- Modal: Create Purchase Order (PO) with Supplier-Item History -->
+<!-- Modal: Create Purchase Order (PO) -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
@@ -376,7 +371,6 @@
       </div>
       <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
 
-      <!-- Add Extra Other Product to this PO -->
       <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
         <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product (Is PO me jodein):</label>
         <div style="display:flex; gap:6px; margin-top:4px;">
@@ -400,11 +394,63 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
+  // Hard fallback buffer: Agar backend slow ho tab bhi dropdown khali nahi rahega
+  const DEFAULT_FALLBACK_PRODUCTS = [
+    { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710" },
+    { name: "Gear Oil 80W90", unit: "L", rate: 360, hsn: "2710" },
+    { name: "Chassis Grease (18 Kg Bucket)", unit: "Nos", rate: 5500, hsn: "2710" },
+    { name: "Special Ring Grease", unit: "Nos", rate: 1200, hsn: "2710" },
+    { name: "SUPER-210 Diesel Filter", unit: "Nos", rate: 650, hsn: "8421" },
+    { name: "SUPER-210 Mobil Filter", unit: "Nos", rate: 1300, hsn: "8421" },
+    { name: "SUPER-210 Air Filter Set", unit: "Set", rate: 2050, hsn: "8421" },
+    { name: "SUPER-210 Hydraulic Return Filter", unit: "Nos", rate: 3200, hsn: "8421" },
+    { name: "SUPER-210 Pilot Filter", unit: "Nos", rate: 950, hsn: "8421" },
+    { name: "SUPER-210 Suction Strainer", unit: "Nos", rate: 1100, hsn: "8421" },
+    { name: "Washing Kapda (Cotton Waste)", unit: "Kg", rate: 80, hsn: "5202" },
+    { name: "ZAXIS-220 Diesel Filter", unit: "Nos", rate: 750, hsn: "8421" },
+    { name: "ZAXIS-220 Mobil Filter", unit: "Nos", rate: 1450, hsn: "8421" },
+    { name: "ZAXIS-220 Air Filter Set", unit: "Set", rate: 2450, hsn: "8421" },
+    { name: "ZAXIS-220 Hydraulic Return Filter", unit: "Nos", rate: 3600, hsn: "8421" },
+    { name: "SANY-215 Diesel Filter", unit: "Nos", rate: 700, hsn: "8421" },
+    { name: "SANY-215 Mobil Filter", unit: "Nos", rate: 1400, hsn: "8421" },
+    { name: "SANY-215 Air Filter Set", unit: "Set", rate: 2300, hsn: "8421" },
+    { name: "SANY-215 Hydraulic Return Filter", unit: "Nos", rate: 3400, hsn: "8421" }
+  ];
+
+  const DEFAULT_FALLBACK_KITS = {
+    "SUPER-210 (500 Hrs Service)": [
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "SUPER-210 Diesel Filter", qty: 1, rate: 650 },
+      { itemName: "SUPER-210 Mobil Filter", qty: 1, rate: 1300 },
+      { itemName: "SUPER-210 Air Filter Set", qty: 1, rate: 2050 },
+      { itemName: "Washing Kapda (Cotton Waste)", qty: 1, rate: 80 }
+    ],
+    "SUPER-210 (1000 Hrs Service)": [
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 },
+      { itemName: "Chassis Grease (18 Kg Bucket)", qty: 1, rate: 5500 },
+      { itemName: "Special Ring Grease", qty: 1, rate: 1200 },
+      { itemName: "SUPER-210 Diesel Filter", qty: 1, rate: 650 },
+      { itemName: "SUPER-210 Mobil Filter", qty: 1, rate: 1300 },
+      { itemName: "SUPER-210 Air Filter Set", qty: 1, rate: 2050 },
+      { itemName: "SUPER-210 Hydraulic Return Filter", qty: 1, rate: 3200 },
+      { itemName: "SUPER-210 Pilot Filter", qty: 1, rate: 950 },
+      { itemName: "SUPER-210 Suction Strainer", qty: 1, rate: 1100 },
+      { itemName: "Washing Kapda (Cotton Waste)", qty: 2, rate: 80 }
+    ]
+  };
+
+  const DEFAULT_FALLBACK_VEHICLES = [
+    { vehicleNo: "SUPER-210", company: "GOKULESHWAR RD PVT. LTD" },
+    { vehicleNo: "ZAXIS-220", company: "GOKULESHWAR RD PVT. LTD" },
+    { vehicleNo: "SANY-215", company: "COMRAO PVT. LTD" }
+  ];
+
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
   let kitsMap = {};
-  let supplierSet = new Set();
+  let supplierSet = new Set(["MAHAVIR DIESELS", "SAI ENGINEERING", "TIRUPATI SPARES"]);
   let supplierItemsMap = {};
   let summaryData = [];
   let closingData = [];
@@ -421,33 +467,33 @@
   let lastPoSubmitTime = 0;
   let autoRefreshTimer = null;
 
-  // 1. Safe & Fast Dropdown Rendering Engine
+  // 1. Instant Rendering with Pre-Loaded Fallback
   function renderProductDropdown() {
     const sel = document.getElementById("productSelect");
     const extraSel = document.getElementById("extraPartSelect");
     const poOtherSel = document.getElementById("poOtherProductSelect");
 
+    const itemsToUse = (productList && productList.length > 0) ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const kitsToUse = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
+
     let mainHtml = '<option value="">-- Select Item or Service --</option>';
     let extraHtml = '<option value="">-- Choose Extra Item --</option>';
     let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
 
-    const kitNames = Object.keys(kitsMap);
+    const kitNames = Object.keys(kitsToUse);
     if (kitNames.length > 0) {
       mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
       kitNames.forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
       mainHtml += '</optgroup>';
     }
 
-    if (productList && productList.length > 0) {
-      mainHtml += '<optgroup label="📦 PARTS & OILS">';
-      productList.forEach(p => {
-        const itemOpt = `<option value="${p.name}">${p.name}</option>`;
-        mainHtml += itemOpt;
-        extraHtml += itemOpt;
-        poOtherHtml += itemOpt;
-      });
-      mainHtml += '</optgroup>';
-    }
+    mainHtml += '<optgroup label="📦 PARTS & OILS">';
+    itemsToUse.forEach(p => {
+      mainHtml += `<option value="${p.name}">${p.name}</option>`;
+      extraHtml += `<option value="${p.name}">${p.name}</option>`;
+      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
+    });
+    mainHtml += '</optgroup>';
 
     if (sel) sel.innerHTML = mainHtml;
     if (extraSel) extraSel.innerHTML = extraHtml;
@@ -458,6 +504,10 @@
     const vSel = document.getElementById("vehicleSelect");
     const fSel = document.getElementById("closingVehFilter");
     if (!vSel || !fSel) return;
+
+    if (vehicleMap.size === 0) {
+      DEFAULT_FALLBACK_VEHICLES.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+    }
 
     let html = '<option value="">-- Select Machine --</option>';
     let fHtml = '<option value="">-- All Machines --</option>';
@@ -618,14 +668,15 @@
   }
 
   function matchProductByBarcode(code) {
-    const prod = productList.find(p => p.barcode === code);
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.barcode === code);
     if (prod) {
       document.getElementById("productSelect").value = prod.name;
       onProductSelect(prod.name);
     }
   }
 
-  // 5. Form Interactions
+  // 5. Form Select Handlers
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
@@ -647,14 +698,16 @@
   function onProductSelect(val) {
     if (!val) return;
 
-    if (kitsMap[val] && currentTab === "OUT") {
+    const kitsToUse = Object.keys(kitsMap).length > 0 ? kitsMap : DEFAULT_FALLBACK_KITS;
+    if (kitsToUse[val] && currentTab === "OUT") {
       activeServiceName = val;
-      activeServiceParts = JSON.parse(JSON.stringify(kitsMap[val]));
+      activeServiceParts = JSON.parse(JSON.stringify(kitsToUse[val]));
       openServiceModal();
       return;
     }
 
-    const prod = productList.find(p => p.name === val);
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === val);
     if (prod) {
       document.getElementById("barcodeInput").value = prod.barcode || "";
       document.getElementById("hsnInput").value = prod.hsn || "";
@@ -712,7 +765,8 @@
     const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
     if (!sel.value) return;
 
-    const prod = productList.find(p => p.name === sel.value);
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === sel.value);
     activeServiceParts.push({
       itemName: sel.value,
       qty: qty,
@@ -910,7 +964,7 @@
   // 8. Purchase Order (PO) with Supplier Item History & WhatsApp
   function openCreateOrderModal() {
     populateSupplierDropdowns();
-    renderProductDropdown(); // Populates poOtherProductSelect safely
+    renderProductDropdown();
     document.getElementById("poSupplierSelect").value = "";
     document.getElementById("poSupplierItemsSection").classList.add("hidden");
     document.getElementById("poItemList").innerHTML = "";
@@ -931,7 +985,7 @@
     }
 
     section.classList.remove("hidden");
-    renderProductDropdown(); // Ensure other products dropdown is full
+    renderProductDropdown();
 
     const pastItems = supplierItemsMap[supplier] || {};
     const itemNames = Object.keys(pastItems);
@@ -962,7 +1016,8 @@
     if (!sel || !sel.value) return alert("Pehle item select karein!");
 
     const itm = sel.value;
-    const prod = productList.find(p => p.name === itm);
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === itm);
     const rate = prod ? prod.rate : 0;
     const curStock = summaryData.find(s => s.item === itm);
     const left = curStock ? curStock.balance : 0;
@@ -1227,19 +1282,17 @@
   function startAutoRefreshLoop() {
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(async () => {
-      // Don't disturb user if a modal is open or user is actively typing in inputs
       const activeEl = document.activeElement;
       const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "SELECT");
       const isModalOpen = Array.from(document.querySelectorAll('.modal')).some(m => m.style.display === "flex");
 
       if (isTyping || isModalOpen) return;
 
-      // Silent background fetch
       if (currentTab === "SUMMARY") await loadSummary(true);
       else if (currentTab === "LEDGER") await loadLedger(true);
       else if (currentTab === "CLOSING") await loadClosing(true);
       else if (currentTab === "ORDER") await loadOrders();
-    }, 7500); // Exactly every 7.5 seconds
+    }, 7500);
   }
 
   // 11. Initial Master Data Fetch
@@ -1247,15 +1300,23 @@
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
       const data = await res.json();
-      if (data.status === "success") {
-        productList = data.products || [];
-        kitsMap = data.kits || {};
-        (data.vehicles || []).forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+      if (data && data.status === "success") {
+        if (data.products && data.products.length > 0) productList = data.products;
+        if (data.kits && Object.keys(data.kits).length > 0) kitsMap = data.kits;
+        if (data.vehicles && data.vehicles.length > 0) {
+          data.vehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+        }
 
         renderProductDropdown();
         renderVehicleDropdown();
+        document.getElementById("syncText").innerText = "Sheets Synced Online";
       }
-    } catch (e) { console.log(e); }
+    } catch (e) {
+      console.warn("Using offline fallback items:", e);
+      renderProductDropdown();
+      renderVehicleDropdown();
+      document.getElementById("syncText").innerText = "Running (Cached)";
+    }
   }
 
   // 12. Calculations & Save Entry
@@ -1319,16 +1380,20 @@
     }
   });
 
-  // Startup Orchestration
-  window.addEventListener("DOMContentLoaded", async () => {
+  // Startup Orchestration: Instant Fallback Render + Background Sync
+  window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     
-    // Fast initial load of master data and dropdowns
-    await fetchMasterData();
+    // Instant initial render so dropdown is NEVER blank
+    renderProductDropdown();
+    renderVehicleDropdown();
+    populateSupplierDropdowns();
+
+    // Fetch live data in parallel
+    fetchMasterData();
     loadSummary(true);
     loadLedger(true);
 
-    // Start the 7.5-second background auto-refresh
     startAutoRefreshLoop();
   });
 </script>
