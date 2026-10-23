@@ -82,7 +82,7 @@
 
 <div class="container" id="mainContainer">
   <div class="refresh-indicator">
-    <span class="pulse-dot"></span><span id="syncText">Live Sync Active</span>
+    <span class="pulse-dot"></span><span id="syncText">Instant LocalStorage Cache Ready</span>
   </div>
 
   <div class="tab-header">
@@ -118,7 +118,7 @@
         </div>
       </div>
       
-      <!-- Fuzzy Filter Box -->
+      <!-- Fuzzy Search Filter -->
       <input type="text" id="prodSearchInput" placeholder="🔍 Type 2-3 letters to filter (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="filterProductList(this.value)" style="margin-bottom:5px; background:#fffdf5;">
       
       <div style="display:flex; gap:6px;">
@@ -474,7 +474,7 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // Master Standard List (Ordered by Machine Codes)
+  // Master Standard Fallback List (All 7 Machines with Cheat Codes)
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
     { name: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
@@ -531,7 +531,7 @@
     { name: "Washing Kapda (Cotton Waste)", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Service Kits Popups
+  // Upgraded Service Kits Popups with Pilot & Breather
   const DEFAULT_FALLBACK_KITS = {
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
@@ -795,7 +795,7 @@
     setTimeout(() => { printWin.print(); printWin.close(); }, 350);
   }
 
-  // 4. Barcode Scanner
+  // 4. Barcode Camera Scanner
   function openScannerModal(targetId = "barcodeInput") {
     currentScanTargetId = targetId;
     document.getElementById("scannerModal").style.display = "flex";
