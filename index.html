@@ -497,56 +497,56 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // EXACT CLEAN CHEAT CODES (Zero extra text, no rates in names)
+  // EXACT CLEAN CHEAT CODES (Pilot & Breather with Rate = 0)
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
     { name: "S210-500-ENG-DSL", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
     { name: "S210-500-AIR-FLT", unit: "Set", rate: 2050, hsn: "8421", barcode: "S210-500-AIR-FLT" },
     { name: "S210-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
-    { name: "S-210-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
-    { name: "S-210-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
+    { name: "S-210-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
+    { name: "S-210-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
 
     // Super-200
     { name: "S200-500-ENG-DSL", unit: "Set", rate: 1150, hsn: "8421", barcode: "S200-500-ENG-DSL" },
     { name: "S200-500-AIR-FLT", unit: "Set", rate: 2050, hsn: "8421", barcode: "S200-500-AIR-FLT" },
     { name: "S200-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
-    { name: "S200-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "S200-500-HYD-PLT" },
-    { name: "S200-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
+    { name: "S200-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "S200-500-HYD-PLT" },
+    { name: "S200-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
 
     // ZAXIS-220
     { name: "Z220-500-ENG-DSL", unit: "Set", rate: 2800, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
     { name: "Z220-500-AIR-FLT", unit: "Set", rate: 2900, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
     { name: "Z220-1000-HYD-KIT", unit: "Set", rate: 5750, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
-    { name: "Z220-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
-    { name: "Z220-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
+    { name: "Z220-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
+    { name: "Z220-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
 
     // SANY-215
     { name: "S215-500-ENG-DSL", unit: "Set", rate: 2300, hsn: "8421", barcode: "S215-500-ENG-DSL" },
     { name: "S215-500-AIR-FLT", unit: "Set", rate: 4300, hsn: "8421", barcode: "S215-500-AIR-FLT" },
     { name: "S215-1000-HYD-KIT", unit: "Set", rate: 4600, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
-    { name: "S215-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "S215-500-HYD-PLT" },
-    { name: "S215-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
+    { name: "S215-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "S215-500-HYD-PLT" },
+    { name: "S215-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
 
     // JCB-215
     { name: "JCB215-500-ENG-DSL", unit: "Set", rate: 1780, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
     { name: "JCB215-500-AIR-FLT", unit: "Set", rate: 2300, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
     { name: "JCB215-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
-    { name: "JCB215-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
-    { name: "JCB215-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
+    { name: "JCB215-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
+    { name: "JCB215-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
 
     // XCMG-230
     { name: "XCMG230-500-ENG-DSL", unit: "Set", rate: 2450, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
     { name: "XCMG230-500-AIR-FLT", unit: "Set", rate: 3200, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
     { name: "XCMG230-1000-HYD-KIT", unit: "Set", rate: 4800, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
-    { name: "XCMG230-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
-    { name: "XCMG230-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
+    { name: "XCMG230-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
+    { name: "XCMG230-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
 
     // ZAXIS-140
     { name: "Z140-500-ENG-DSL", unit: "Set", rate: 1950, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
     { name: "Z140-500-AIR-FLT", unit: "Set", rate: 1200, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
     { name: "Z140-1000-HYD-KIT", unit: "Set", rate: 2950, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
-    { name: "Z-140-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
-    { name: "Z-140-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
+    { name: "Z-140-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
+    { name: "Z-140-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
 
     // Common Spares & Oils
     { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710", barcode: "MOBIL-15W40" },
@@ -556,22 +556,22 @@
     { name: "Washing Kapda", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Upgraded Service Kits Popups for ALL 7 Machines with Pilot & Breather Auto Included
-  const DEFAULT_FALLBACK_KITS = {
+  // Force Master Service Kits for ALL 7 Machines
+  const MASTER_SERVICE_KITS = {
     // 1. SUPER-210 PRIME
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 1950 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2050 },
-      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "SUPER-210 (1000 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 1950 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2050 },
       { itemName: "S210-1000-HYD-KIT", qty: 1, rate: 3300 },
-      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
@@ -580,16 +580,16 @@
     "SUPER-200 (500 Hrs Service)": [
       { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1150 },
       { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2050 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "SUPER-200 (1000 Hrs Service)": [
       { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1150 },
       { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2050 },
       { itemName: "S200-1000-HYD-KIT", qty: 1, rate: 3300 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
@@ -598,16 +598,16 @@
     "ZAXIS-220 (500 Hrs Service)": [
       { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 2900 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0000 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "ZAXIS-220 (1000 Hrs Service)": [
       { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 2900 },
       { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 5750 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0000 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
@@ -616,16 +616,16 @@
     "SANY-215 (500 Hrs Service)": [
       { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2300 },
       { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4300 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "SANY-215 (1000 Hrs Service)": [
       { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2300 },
       { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4300 },
       { itemName: "S215-1000-HYD-KIT", qty: 1, rate: 4600 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
@@ -634,16 +634,16 @@
     "JCB-215 (500 Hrs Service)": [
       { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 1780 },
       { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2300 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "JCB-215 (1000 Hrs Service)": [
       { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 1780 },
       { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2300 },
       { itemName: "JCB215-1000-HYD-KIT", qty: 1, rate: 3300 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
@@ -652,16 +652,16 @@
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2450 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3200 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "XCMG-230 (1000 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2450 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3200 },
       { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 4800 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
@@ -670,16 +670,16 @@
     "ZAXIS-140 (500 Hrs Service)": [
       { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 1950 },
       { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1200 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "ZAXIS-140 (1000 Hrs Service)": [
       { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 1950 },
       { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1200 },
       { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 2950 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 000 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 000 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ]
@@ -698,7 +698,7 @@
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
-  let kitsMap = {};
+  let kitsMap = MASTER_SERVICE_KITS; // Permanently locked to MASTER_SERVICE_KITS
   let supplierSet = new Set();
   let supplierItemsMap = {};
   let summaryData = [];
@@ -719,25 +719,21 @@
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
-  // 1. Instant Dropdown Population (CLEAN Cheat Codes Only, No Rates in Name)
+  // 1. Instant Dropdown Population
   function renderProductDropdown() {
     const sel = document.getElementById("productSelect");
     const extraSel = document.getElementById("extraPartSelect");
     const poOtherSel = document.getElementById("poOtherProductSelect");
 
     const itemsToUse = (productList.length > 0) ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const kitsToUse = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
 
     let mainHtml = '<option value="">-- All Products & Kits --</option>';
     let extraHtml = '<option value="">-- Choose Extra Item --</option>';
     let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
 
-    const kitNames = Object.keys(kitsToUse);
-    if (kitNames.length > 0) {
-      mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
-      kitNames.forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
-      mainHtml += '</optgroup>';
-    }
+    mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
+    Object.keys(MASTER_SERVICE_KITS).forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
+    mainHtml += '</optgroup>';
 
     mainHtml += '<optgroup label="📦 PARTS & OILS">';
     itemsToUse.forEach(p => {
@@ -763,12 +759,10 @@
     }
 
     const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const kits = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
-
     let matches = [];
 
     // Match Kits
-    Object.keys(kits).forEach(k => {
+    Object.keys(MASTER_SERVICE_KITS).forEach(k => {
       if (k.toLowerCase().includes(q)) {
         matches.push({ name: k, type: "KIT" });
       }
@@ -807,7 +801,6 @@
     onProductSelect(val);
   }
 
-  // Hide recommendations on click outside
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".search-container")) {
       const box = document.getElementById("recommendationsBox");
@@ -1074,10 +1067,10 @@
   function onProductSelect(val) {
     if (!val) return;
 
-    const kitsToUse = Object.keys(kitsMap).length > 0 ? kitsMap : DEFAULT_FALLBACK_KITS;
-    if (kitsToUse[val] && currentTab === "OUT") {
+    // Direct check from MASTER_SERVICE_KITS (Guaranteed Pop-up Trigger)
+    if (MASTER_SERVICE_KITS[val] && currentTab === "OUT") {
       activeServiceName = val;
-      activeServiceParts = JSON.parse(JSON.stringify(kitsToUse[val]));
+      activeServiceParts = JSON.parse(JSON.stringify(MASTER_SERVICE_KITS[val]));
       openServiceModal();
       return;
     }
@@ -1759,7 +1752,7 @@
     setTimeout(() => { notify.innerText = ""; }, 2000);
   }
 
-  // 13. Initial Master Data Fetch
+  // 13. Initial Master Data Fetch (LOCKED: Kits overwrite blocked)
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -1769,7 +1762,10 @@
           productList = data.products;
           saveLocal("CACHED_PROD_LIST", productList);
         }
-        if (data.kits && Object.keys(data.kits).length > 0) kitsMap = data.kits;
+        
+        // Permanent fix: Master kits will not be overwritten by old Google Sheet data
+        kitsMap = MASTER_SERVICE_KITS;
+
         if (data.vehicles && data.vehicles.length > 0) {
           data.vehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
         }
@@ -1779,6 +1775,7 @@
         document.getElementById("syncText").innerText = "Sheets Synced Online";
       }
     } catch (e) {
+      kitsMap = MASTER_SERVICE_KITS;
       renderProductDropdown();
       renderVehicleDropdown();
       document.getElementById("syncText").innerText = "Running (Cached)";
@@ -1823,6 +1820,7 @@
     const cached = getLocal("CACHED_PROD_LIST");
     if (cached && cached.length > 0) productList = cached;
 
+    kitsMap = MASTER_SERVICE_KITS;
     renderProductDropdown();
     renderVehicleDropdown();
     populateSupplierDropdowns();
