@@ -70,6 +70,41 @@
     .refresh-indicator { font-size: 10px; color: #718096; text-align: right; margin-bottom: 4px; }
     .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #38a169; border-radius: 50%; margin-right: 4px; }
 
+    /* Auto Recommendation Dropdown Styling */
+    .search-container { position: relative; width: 100%; }
+    .recommendations-box {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1.5px solid #3182ce;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      display: none;
+    }
+    .recommendation-item {
+      padding: 8px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      border-bottom: 1px solid #edf2f7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .recommendation-item:hover {
+      background: #ebf8ff;
+      color: #2b6cb0;
+      font-weight: 600;
+    }
+    .rec-tag { font-size: 9.5px; padding: 1px 5px; border-radius: 4px; font-weight: bold; }
+    .rec-tag-kit { background: #feebc8; color: #7b341e; }
+    .rec-tag-part { background: #e2e8f0; color: #2d3748; }
+
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
     .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
@@ -82,7 +117,7 @@
 
 <div class="container" id="mainContainer">
   <div class="refresh-indicator">
-    <span class="pulse-dot"></span><span id="syncText">Instant LocalStorage Cache Ready</span>
+    <span class="pulse-dot"></span><span id="syncText">Instant LocalStorage Memory Active</span>
   </div>
 
   <div class="tab-header">
@@ -109,7 +144,7 @@
       </div>
     </div>
 
-    <!-- Product / Service Selection -->
+    <!-- Product / Service Selection with Live Recommendations -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -118,15 +153,20 @@
         </div>
       </div>
       
-      <!-- Fuzzy Search Filter -->
-      <input type="text" id="prodSearchInput" placeholder="🔍 Type 2-3 letters to filter (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="filterProductList(this.value)" style="margin-bottom:5px; background:#fffdf5;">
-      
-      <div style="display:flex; gap:6px;">
-        <select id="productSelect" onchange="onProductSelect(this.value)" style="flex:1;">
-          <option value="">-- Loading Products... --</option>
-        </select>
-        <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
+      <!-- Live Search + Recommendation Wrapper -->
+      <div class="search-container">
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="prodSearchInput" placeholder="🔍 Type 2-3 letters (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="handleSearchInput(this.value)" autocomplete="off" style="flex:1; background:#fffdf5; border-color:#3182ce;">
+          <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
+        </div>
+        <!-- Dropdown Recommendation List -->
+        <div id="recommendationsBox" class="recommendations-box"></div>
       </div>
+
+      <!-- Quick Master Selector (Instant Dropdown) -->
+      <select id="productSelect" onchange="onProductSelect(this.value)" style="margin-top:5px;">
+        <option value="">-- All Products & Kits --</option>
+      </select>
     </div>
 
     <div class="form-group">
@@ -414,10 +454,13 @@
     <div id="serviceItemsList"></div>
 
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
-      <label style="font-size:10px;">➕ Add Extra Part / Oil to this service:</label>
+      <label style="font-size:10px; font-weight:bold;">➕ Add Extra Part / Oil to this service:</label>
       
-      <!-- Mini Search for Service Modal -->
-      <input type="text" id="serviceFilterInput" placeholder="🔍 Type to filter parts..." oninput="filterExtraPartDropdown(this.value)" style="margin-bottom:4px; padding:4px 6px; font-size:10.5px;">
+      <!-- Mini Search with Live Suggestions for Popup -->
+      <div class="search-container" style="margin-bottom:4px;">
+        <input type="text" id="serviceFilterInput" placeholder="🔍 Type extra part name or code..." oninput="handleServiceExtraSearch(this.value)" autocomplete="off" style="font-size:10.5px; padding:4px 6px;">
+        <div id="serviceExtraRecBox" class="recommendations-box"></div>
+      </div>
 
       <div style="display:flex; gap:6px;">
         <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
@@ -474,7 +517,7 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // Master Standard Fallback List (All 7 Machines with Cheat Codes)
+  // Master Standard List (Ordered by Machine Codes)
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
     { name: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
@@ -487,6 +530,8 @@
     { name: "S200-500-ENG-DSL (Super-200 Diesel+Mobil Kit)", unit: "Set", rate: 1150, hsn: "8421", barcode: "S200-500-ENG-DSL" },
     { name: "S200-500-AIR-FLT (Super-200 Air Filter Set)", unit: "Set", rate: 2050, hsn: "8421", barcode: "S200-500-AIR-FLT" },
     { name: "S200-1000-HYD-KIT (Super-200 1000H Hyd Kit)", unit: "Set", rate: 3300, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
+    { name: "S200-500-HYD-PLT (Super-200 Hydraulic Pilot Filter)", unit: "Nos", rate: 950, hsn: "8421", barcode: "S200-500-HYD-PLT" },
+    { name: "S200-500-AIR-BRTH (Super-200 Air Breather)", unit: "Nos", rate: 650, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
 
     // ZAXIS-220
     { name: "Z220-500-ENG-DSL (Zaxis-220 Diesel+Mobil Kit)", unit: "Set", rate: 2800, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
@@ -531,8 +576,9 @@
     { name: "Washing Kapda (Cotton Waste)", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Upgraded Service Kits Popups with Pilot & Breather
+  // Upgraded Service Kits Popups for ALL 7 Machines with Pilot & Breather Auto Included
   const DEFAULT_FALLBACK_KITS = {
+    // 1. SUPER-210 PRIME
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
       { itemName: "S210-500-AIR-FLT (Super-210 Air Filter Set)", qty: 1, rate: 2050 },
@@ -549,6 +595,80 @@
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
+
+    // 2. SUPER-200
+    "SUPER-200 (500 Hrs Service)": [
+      { itemName: "S200-500-ENG-DSL (Super-200 Diesel+Mobil Kit)", qty: 1, rate: 1150 },
+      { itemName: "S200-500-AIR-FLT (Super-200 Air Filter Set)", qty: 1, rate: 2050 },
+      { itemName: "S200-500-HYD-PLT (Super-200 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
+      { itemName: "S200-500-AIR-BRTH (Super-200 Air Breather)", qty: 1, rate: 650 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+    ],
+    "SUPER-200 (1000 Hrs Service)": [
+      { itemName: "S200-500-ENG-DSL (Super-200 Diesel+Mobil Kit)", qty: 1, rate: 1150 },
+      { itemName: "S200-500-AIR-FLT (Super-200 Air Filter Set)", qty: 1, rate: 2050 },
+      { itemName: "S200-1000-HYD-KIT (Super-200 1000H Hyd Kit)", qty: 1, rate: 3300 },
+      { itemName: "S200-500-HYD-PLT (Super-200 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
+      { itemName: "S200-500-AIR-BRTH (Super-200 Air Breather)", qty: 1, rate: 650 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+    ],
+
+    // 3. ZAXIS-220
+    "ZAXIS-220 (500 Hrs Service)": [
+      { itemName: "Z220-500-ENG-DSL (Zaxis-220 Diesel+Mobil Kit)", qty: 1, rate: 2800 },
+      { itemName: "Z220-500-AIR-FLT (Zaxis-220 Air Filter Set)", qty: 1, rate: 2900 },
+      { itemName: "Z220-500-HYD-PLT (Zaxis-220 Hydraulic Pilot Filter)", qty: 1, rate: 1100 },
+      { itemName: "Z220-500-AIR-BRTH (Zaxis-220 Air Breather)", qty: 1, rate: 700 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+    ],
+    "ZAXIS-220 (1000 Hrs Service)": [
+      { itemName: "Z220-500-ENG-DSL (Zaxis-220 Diesel+Mobil Kit)", qty: 1, rate: 2800 },
+      { itemName: "Z220-500-AIR-FLT (Zaxis-220 Air Filter Set)", qty: 1, rate: 2900 },
+      { itemName: "Z220-1000-HYD-KIT (Zaxis-220 1000H Hyd Kit)", qty: 1, rate: 5750 },
+      { itemName: "Z220-500-HYD-PLT (Zaxis-220 Hydraulic Pilot Filter)", qty: 1, rate: 1100 },
+      { itemName: "Z220-500-AIR-BRTH (Zaxis-220 Air Breather)", qty: 1, rate: 700 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+    ],
+
+    // 4. SANY-215
+    "SANY-215 (500 Hrs Service)": [
+      { itemName: "S215-500-ENG-DSL (Sany-215 Diesel+Mobil Kit)", qty: 1, rate: 2300 },
+      { itemName: "S215-500-AIR-FLT (Sany-215 Air Filter Set)", qty: 1, rate: 4300 },
+      { itemName: "S215-500-HYD-PLT (Sany-215 Hydraulic Pilot Filter)", qty: 1, rate: 1050 },
+      { itemName: "S215-500-AIR-BRTH (Sany-215 Air Breather)", qty: 1, rate: 680 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+    ],
+    "SANY-215 (1000 Hrs Service)": [
+      { itemName: "S215-500-ENG-DSL (Sany-215 Diesel+Mobil Kit)", qty: 1, rate: 2300 },
+      { itemName: "S215-500-AIR-FLT (Sany-215 Air Filter Set)", qty: 1, rate: 4300 },
+      { itemName: "S215-1000-HYD-KIT (Sany-215 1000H Hyd Kit)", qty: 1, rate: 4600 },
+      { itemName: "S215-500-HYD-PLT (Sany-215 Hydraulic Pilot Filter)", qty: 1, rate: 1050 },
+      { itemName: "S215-500-AIR-BRTH (Sany-215 Air Breather)", qty: 1, rate: 680 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+    ],
+
+    // 5. JCB-215
+    "JCB-215 (500 Hrs Service)": [
+      { itemName: "JCB215-500-ENG-DSL (JCB-215 Diesel+Mobil Kit)", qty: 1, rate: 1780 },
+      { itemName: "JCB215-500-AIR-FLT (JCB-215 Air Filter Set)", qty: 1, rate: 2300 },
+      { itemName: "JCB215-500-HYD-PLT (JCB-215 Hydraulic Pilot Filter)", qty: 1, rate: 980 },
+      { itemName: "JCB215-500-AIR-BRTH (JCB-215 Air Breather)", qty: 1, rate: 600 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+    ],
+    "JCB-215 (1000 Hrs Service)": [
+      { itemName: "JCB215-500-ENG-DSL (JCB-215 Diesel+Mobil Kit)", qty: 1, rate: 1780 },
+      { itemName: "JCB215-500-AIR-FLT (JCB-215 Air Filter Set)", qty: 1, rate: 2300 },
+      { itemName: "JCB215-1000-HYD-KIT (JCB-215 1000H Hyd Kit)", qty: 1, rate: 3300 },
+      { itemName: "JCB215-500-HYD-PLT (JCB-215 Hydraulic Pilot Filter)", qty: 1, rate: 980 },
+      { itemName: "JCB215-500-AIR-BRTH (JCB-215 Air Breather)", qty: 1, rate: 600 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+    ],
+
+    // 6. XCMG-230
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL (XCMG-230 Diesel+Mobil Kit)", qty: 1, rate: 2450 },
       { itemName: "XCMG230-500-AIR-FLT (XCMG-230 Air Filter Set)", qty: 1, rate: 3200 },
@@ -562,6 +682,24 @@
       { itemName: "XCMG230-1000-HYD-KIT (XCMG-230 1000H Hyd Kit)", qty: 1, rate: 4800 },
       { itemName: "XCMG230-500-HYD-PLT (XCMG-230 Hydraulic Pilot Filter)", qty: 1, rate: 1150 },
       { itemName: "XCMG230-500-AIR-BRTH (XCMG-230 Air Breather)", qty: 1, rate: 750 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+    ],
+
+    // 7. ZAXIS-140
+    "ZAXIS-140 (500 Hrs Service)": [
+      { itemName: "Z140-500-ENG-DSL (Zaxis-140 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
+      { itemName: "Z140-500-AIR-FLT (Zaxis-140 Air Filter Set)", qty: 1, rate: 1200 },
+      { itemName: "Z-140-500-HYD-PLT (Zaxis-140 Hydraulic Pilot Filter)", qty: 1, rate: 900 },
+      { itemName: "Z-140-500-AIR-BRTH (Zaxis-140 Air Breather)", qty: 1, rate: 580 },
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+    ],
+    "ZAXIS-140 (1000 Hrs Service)": [
+      { itemName: "Z140-500-ENG-DSL (Zaxis-140 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
+      { itemName: "Z140-500-AIR-FLT (Zaxis-140 Air Filter Set)", qty: 1, rate: 1200 },
+      { itemName: "Z140-1000-HYD-KIT (Zaxis-140 1000H Hyd Kit)", qty: 1, rate: 2950 },
+      { itemName: "Z-140-500-HYD-PLT (Zaxis-140 Hydraulic Pilot Filter)", qty: 1, rate: 900 },
+      { itemName: "Z-140-500-AIR-BRTH (Zaxis-140 Air Breather)", qty: 1, rate: 580 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ]
@@ -601,33 +739,31 @@
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
-  // 1. Product Rendering with Fuzzy Filtering
-  function renderProductDropdown(itemsList = null) {
+  // 1. Instant Dropdown Population (0ms, Never Blank)
+  function renderProductDropdown() {
     const sel = document.getElementById("productSelect");
     const extraSel = document.getElementById("extraPartSelect");
     const poOtherSel = document.getElementById("poOtherProductSelect");
 
-    const itemsToUse = itemsList || (productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS);
+    const itemsToUse = (productList.length > 0) ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const kitsToUse = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
 
     let mainHtml = '<option value="">-- Select Item or Service --</option>';
     let extraHtml = '<option value="">-- Choose Extra Item --</option>';
     let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
 
-    if (!itemsList) {
-      const kitNames = Object.keys(kitsToUse);
-      if (kitNames.length > 0) {
-        mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
-        kitNames.forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
-        mainHtml += '</optgroup>';
-      }
+    const kitNames = Object.keys(kitsToUse);
+    if (kitNames.length > 0) {
+      mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
+      kitNames.forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
+      mainHtml += '</optgroup>';
     }
 
     mainHtml += '<optgroup label="📦 PARTS & OILS">';
     itemsToUse.forEach(p => {
-      mainHtml += `<option value="${p.name}">${p.name}</option>`;
-      extraHtml += `<option value="${p.name}">${p.name}</option>`;
-      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
+      mainHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
+      extraHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
+      poOtherHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
     });
     mainHtml += '</optgroup>';
 
@@ -636,31 +772,109 @@
     if (poOtherSel) poOtherSel.innerHTML = poOtherHtml;
   }
 
-  function filterProductList(query) {
+  // 2. Real-Time Fuzzy Search & Recommendation List
+  function handleSearchInput(query) {
     const q = (query || "").toLowerCase().trim();
-    const source = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    if (!q) {
-      renderProductDropdown();
+    const box = document.getElementById("recommendationsBox");
+    if (!q || q.length < 2) {
+      box.style.display = "none";
+      box.innerHTML = "";
       return;
     }
-    const matched = source.filter(p => p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.toLowerCase().includes(q)));
-    renderProductDropdown(matched);
 
-    if (matched.length === 1) {
-      document.getElementById("productSelect").value = matched[0].name;
-      onProductSelect(matched[0].name);
+    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const kits = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
+
+    let matches = [];
+
+    // Match Kits
+    Object.keys(kits).forEach(k => {
+      if (k.toLowerCase().includes(q)) {
+        matches.push({ name: k, type: "KIT", rate: "-" });
+      }
+    });
+
+    // Match Spare Parts & Oils
+    items.forEach(p => {
+      if (p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.toLowerCase().includes(q))) {
+        matches.push({ name: p.name, type: "PART", rate: "₹" + p.rate });
+      }
+    });
+
+    if (matches.length === 0) {
+      box.innerHTML = `<div style="padding:8px 10px; font-size:11px; color:#718096;">Koi match nahi mila...</div>`;
+      box.style.display = "block";
+      return;
     }
+
+    let html = "";
+    matches.slice(0, 10).forEach(m => {
+      html += `
+        <div class="recommendation-item" onclick="selectFromRecommendation('${m.name.replace(/'/g, "\\'")}')">
+          <span><b>${m.name}</b></span>
+          <div>
+            <span class="rec-tag ${m.type==='KIT'?'rec-tag-kit':'rec-tag-part'}">${m.type}</span>
+            <span style="font-weight:bold; margin-left:4px;">${m.rate}</span>
+          </div>
+        </div>`;
+    });
+
+    box.innerHTML = html;
+    box.style.display = "block";
   }
 
-  function filterExtraPartDropdown(query) {
-    const q = (query || "").toLowerCase().trim();
-    const source = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const extraSel = document.getElementById("extraPartSelect");
-    const matched = source.filter(p => p.name.toLowerCase().includes(q));
+  function selectFromRecommendation(val) {
+    document.getElementById("prodSearchInput").value = val;
+    document.getElementById("recommendationsBox").style.display = "none";
+    document.getElementById("productSelect").value = val;
+    onProductSelect(val);
+  }
 
-    let html = '<option value="">-- Choose Extra Item --</option>';
-    matched.forEach(p => { html += `<option value="${p.name}">${p.name}</option>`; });
-    extraSel.innerHTML = html;
+  // Hide recommendations on outside click
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".search-container")) {
+      const box = document.getElementById("recommendationsBox");
+      if (box) box.style.display = "none";
+      const sBox = document.getElementById("serviceExtraRecBox");
+      if (sBox) sBox.style.display = "none";
+    }
+  });
+
+  // Service Popup Extra Search Recommendations
+  function handleServiceExtraSearch(query) {
+    const q = (query || "").toLowerCase().trim();
+    const box = document.getElementById("serviceExtraRecBox");
+    if (!q || q.length < 2) {
+      box.style.display = "none";
+      box.innerHTML = "";
+      return;
+    }
+
+    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const matches = items.filter(p => p.name.toLowerCase().includes(q));
+
+    if (matches.length === 0) {
+      box.innerHTML = `<div style="padding:6px 8px; font-size:10.5px; color:#718096;">No part found...</div>`;
+      box.style.display = "block";
+      return;
+    }
+
+    let html = "";
+    matches.slice(0, 8).forEach(p => {
+      html += `
+        <div class="recommendation-item" onclick="selectExtraFromRecommendation('${p.name.replace(/'/g, "\\'")}')">
+          <span><b>${p.name}</b></span>
+          <span style="font-weight:bold;">₹${p.rate}</span>
+        </div>`;
+    });
+    box.innerHTML = html;
+    box.style.display = "block";
+  }
+
+  function selectExtraFromRecommendation(val) {
+    document.getElementById("serviceFilterInput").value = val;
+    document.getElementById("serviceExtraRecBox").style.display = "none";
+    document.getElementById("extraPartSelect").value = val;
   }
 
   function renderVehicleDropdown() {
@@ -704,7 +918,7 @@
     if (ledSup) ledSup.innerHTML = ledSupHtml;
   }
 
-  // 2. Tab Switching & Masked PIN Verification
+  // 3. Tab Switching & PIN
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -762,37 +976,6 @@
   function closePinModal() {
     document.getElementById("pinModal").style.display = "none";
     document.getElementById("pinInput").value = "";
-  }
-
-  // 3. Isolated Clean Print
-  function printTargetSection(targetId, title) {
-    const el = document.getElementById(targetId);
-    if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
-
-    const printWin = window.open('', '', 'width=850,height=700');
-    printWin.document.write(`
-      <html>
-        <head>
-          <title>${title}</title>
-          <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
-            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
-            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
-            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
-            th { background: #edf2f7; font-weight: bold; }
-          </style>
-        </head>
-        <body>
-          <h2>${title}</h2>
-          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
-          ${el.innerHTML}
-        </body>
-      </html>
-    `);
-    printWin.document.close();
-    printWin.focus();
-    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
   }
 
   // 4. Barcode Camera Scanner
@@ -948,11 +1131,11 @@
     calculateTotal();
   }
 
-  // 7. Service Hours Modal
+  // 7. Service Hours Modal with Pilot / Breather
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     document.getElementById("serviceFilterInput").value = "";
-    filterExtraPartDropdown("");
+    document.getElementById("serviceExtraRecBox").style.display = "none";
     renderServiceItems();
     document.getElementById("serviceHoursModal").style.display = "flex";
   }
@@ -982,7 +1165,7 @@
   function addExtraItemToService() {
     const sel = document.getElementById("extraPartSelect");
     const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
-    if (!sel.value) return;
+    if (!sel.value) return alert("Pehle Extra Part select karein!");
 
     const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const prod = itemsToSearch.find(p => p.name === sel.value);
@@ -1626,7 +1809,38 @@
     }
   }
 
-  // 14. Startup Execution
+  // 14. Clean Isolated Print
+  function printTargetSection(targetId, title) {
+    const el = document.getElementById(targetId);
+    if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
+
+    const printWin = window.open('', '', 'width=850,height=700');
+    printWin.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
+            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
+            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
+            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
+            th { background: #edf2f7; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h2>${title}</h2>
+          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
+          ${el.innerHTML}
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
+  }
+
+  // 15. Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     
