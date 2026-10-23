@@ -118,7 +118,7 @@
         </div>
       </div>
       
-      <!-- Fuzzy Search Helper Input -->
+      <!-- Fuzzy Filter Box -->
       <input type="text" id="prodSearchInput" placeholder="🔍 Type 2-3 letters to filter (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="filterProductList(this.value)" style="margin-bottom:5px; background:#fffdf5;">
       
       <div style="display:flex; gap:6px;">
@@ -214,7 +214,7 @@
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
-  <!-- Restored: Recent Entries Log Table -->
+  <!-- Recent Entries Table -->
   <div id="recentEntriesSection" style="margin-top:16px; border-top:1.5px dashed #cbd5e0; padding-top:10px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
       <span style="font-weight:bold; font-size:11.5px; color:#2b6cb0;">📋 Recent Entries</span>
@@ -337,7 +337,7 @@
   <div id="msg"></div>
 </div>
 
-<!-- Modal: Quick Add Product Modal -->
+<!-- Modal: Quick Add Product -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:380px;">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add New Product / Spare Part</h3>
@@ -405,7 +405,7 @@
   </div>
 </div>
 
-<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) with Pilot/Breather & Search -->
+<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
@@ -474,7 +474,7 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // Master Standard Fallback List (Cleanly Arranged by Machine Codes)
+  // Master Standard List (Ordered by Machine Codes)
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
     { name: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
@@ -523,7 +523,7 @@
     { name: "Z-140-500-HYD-PLT (Zaxis-140 Hydraulic Pilot Filter)", unit: "Nos", rate: 900, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
     { name: "Z-140-500-AIR-BRTH (Zaxis-140 Air Breather)", unit: "Nos", rate: 580, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
 
-    // Oils & Lubricants
+    // Oils & Grease
     { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710", barcode: "MOBIL-15W40" },
     { name: "Gear Oil 80W90", unit: "L", rate: 360, hsn: "2710", barcode: "GEAR-80W90" },
     { name: "Chassis Grease (18 Kg Bucket)", unit: "Nos", rate: 5500, hsn: "2710", barcode: "GREASE-18KG" },
@@ -531,7 +531,7 @@
     { name: "Washing Kapda (Cotton Waste)", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Service Kits Popups with Hydraulic Pilot & Air Breather Added
+  // Service Kits Popups
   const DEFAULT_FALLBACK_KITS = {
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
@@ -597,9 +597,7 @@
   let html5QrScanner = null;
   let currentScanTargetId = "barcodeInput";
   let lastPoSubmitTime = 0;
-  let autoRefreshTimer = null;
 
-  // Local Storage Helpers
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
@@ -783,10 +781,6 @@
             table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
             th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
             th { background: #edf2f7; font-weight: bold; }
-            .company-block { border: 1px solid #a0aec0; margin-bottom: 14px; page-break-inside: avoid; }
-            .company-header { background: #edf2f7; font-weight: bold; padding: 6px 8px; border-bottom: 1px solid #a0aec0; }
-            .vehicle-card { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
-            .vehicle-title { font-weight: bold; color: #2b6cb0; }
           </style>
         </head>
         <body>
@@ -801,7 +795,7 @@
     setTimeout(() => { printWin.print(); printWin.close(); }, 350);
   }
 
-  // 4. Barcode Camera Scanner (Dynamic for Main or Add Product)
+  // 4. Barcode Scanner
   function openScannerModal(targetId = "barcodeInput") {
     currentScanTargetId = targetId;
     document.getElementById("scannerModal").style.display = "flex";
@@ -899,7 +893,7 @@
     }
   }
 
-  // 6. Form Select Handlers
+  // 6. Form Handlers & Next Service Calculation
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
@@ -1046,7 +1040,7 @@
     }
   }
 
-  // 8. Recent Entries Local Log
+  // 8. Recent Entries Logger
   function addRecentEntry(type, target, item, qty, amt) {
     let list = getLocal("RECENT_LOGS") || [];
     list.unshift({ type, target, item, qty, amt });
@@ -1148,7 +1142,124 @@
     }
   });
 
-  // 10. Ledger, Orders & Summary Handlers
+  // 10. Ledger, Orders, Closing & Summary Logic
+  async function loadSummary(silent = false) {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        summaryData = data.data;
+        document.getElementById("kpiItems").innerText = summaryData.length;
+        document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0);
+        document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
+        if (currentTab === "SUMMARY" || !silent) renderSummaryTable();
+      }
+    } catch(e){}
+  }
+
+  function renderSummaryTable() {
+    const q = (document.getElementById("summarySearch").value || "").toLowerCase();
+    const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
+    let html = `<table class="custom-table">
+      <thead><tr><th>Spare Part</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
+    filtered.forEach(s => {
+      html += `<tr>
+        <td><b>${s.item}</b></td>
+        <td>${s.totalIn}</td>
+        <td>${s.totalOut}</td>
+        <td style="font-weight:bold; color:${s.balance<=2?'#c53030':'#2f855a'};">${s.balance}</td>
+        <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("summaryTableContent").innerHTML = html;
+  }
+
+  async function loadClosing(silent = false) {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        closingData = data.data;
+        if (currentTab === "CLOSING" || !silent) renderClosingReport();
+      }
+    } catch(e){}
+  }
+
+  function renderClosingReport() {
+    const sDate = document.getElementById("closingSDate").value;
+    const eDate = document.getElementById("closingEDate").value;
+    const compFilter = document.getElementById("closingCompFilter").value;
+    const vehFilter = document.getElementById("closingVehFilter").value;
+    const serviceOnly = document.getElementById("serviceOnlyToggle").checked;
+
+    const filtered = closingData.filter(c => {
+      if (sDate && c.date < sDate) return false;
+      if (eDate && c.date > eDate) return false;
+      if (compFilter && c.company !== compFilter) return false;
+      if (vehFilter && c.vehicle !== vehFilter) return false;
+      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
+      return true;
+    });
+
+    const uniqueVehs = new Set(filtered.map(f => f.vehicle));
+    const totalCost = filtered.reduce((a,b) => a + (b.amount||0), 0);
+    document.getElementById("closingTotalVehs").innerText = uniqueVehs.size;
+    document.getElementById("closingTotalItems").innerText = filtered.length;
+    document.getElementById("closingTotalCost").innerText = "₹" + totalCost.toLocaleString('en-IN');
+
+    const grouped = {};
+    filtered.forEach(item => {
+      const comp = item.company || "OTHER";
+      const veh = item.vehicle || "UNKNOWN";
+      if (!grouped[comp]) grouped[comp] = {};
+      if (!grouped[comp][veh]) grouped[comp][veh] = [];
+      grouped[comp][veh].push(item);
+    });
+
+    const container = document.getElementById("closingContent");
+    if (Object.keys(grouped).length === 0) {
+      container.innerHTML = "<p style='text-align:center; color:#718096;'>No records found.</p>";
+      return;
+    }
+
+    let html = "";
+    for (const [company, vehs] of Object.entries(grouped)) {
+      html += `<div class="company-block">
+        <div class="company-header">
+          <span>🏢 ${company}</span>
+          <span>Machines: ${Object.keys(vehs).length}</span>
+        </div>`;
+
+      for (const [vehicle, items] of Object.entries(vehs)) {
+        const vCost = items.reduce((a,b) => a + (b.amount||0), 0);
+        html += `
+          <div class="vehicle-card">
+            <div class="vehicle-head-row">
+              <span class="vehicle-title">🚜 ${vehicle}</span>
+              <span class="vehicle-cost">Total: ₹${vCost.toLocaleString('en-IN')}</span>
+            </div>
+            <table class="custom-table" style="margin-top:6px;">
+              <thead>
+                <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
+              </thead>
+              <tbody>`;
+        items.forEach(it => {
+          html += `<tr>
+            <td>${it.displayDate || it.date}</td>
+            <td>${it.item} ${it.remarks ? `<br><small style="color:#718096;">${it.remarks}</small>` : ''}</td>
+            <td>${it.qty} ${it.unit}</td>
+            <td>${it.km || '-'}</td>
+            <td>₹${it.amount.toLocaleString('en-IN')}</td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+      html += `</div>`;
+    }
+    container.innerHTML = html;
+  }
+
   async function loadLedger(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
@@ -1289,7 +1400,207 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  // 11. Initial Master Data Fetch
+  // 11. Purchase Order
+  function openCreateOrderModal() {
+    populateSupplierDropdowns();
+    renderProductDropdown();
+    document.getElementById("poSupplierSelect").value = "";
+    document.getElementById("poSupplierItemsSection").classList.add("hidden");
+    document.getElementById("poItemList").innerHTML = "";
+    document.getElementById("createOrderModal").style.display = "flex";
+  }
+
+  function closeCreateOrderModal() {
+    document.getElementById("createOrderModal").style.display = "none";
+  }
+
+  function onPoSupplierSelected(supplier) {
+    const section = document.getElementById("poSupplierItemsSection");
+    const container = document.getElementById("poItemList");
+    if (!supplier) {
+      section.classList.add("hidden");
+      container.innerHTML = "";
+      return;
+    }
+
+    section.classList.remove("hidden");
+    renderProductDropdown();
+
+    const pastItems = supplierItemsMap[supplier] || {};
+    const itemNames = Object.keys(pastItems);
+
+    let html = "";
+    if (itemNames.length === 0) {
+      html = `<p style="font-size:10.5px; color:#718096; margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se product add karein.</p>`;
+    } else {
+      itemNames.forEach(itm => {
+        const rate = pastItems[itm] || 0;
+        const curStock = summaryData.find(s => s.item === itm);
+        const left = curStock ? curStock.balance : 0;
+        const isLow = left <= 2;
+
+        html += `
+          <div class="po-item-row" style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;">
+            <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" ${isLow ? 'checked' : ''}> <b>${itm}</b> (${left} left)</label>
+            <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:50px; padding:2px; font-size:10.5px;">
+          </div>`;
+      });
+    }
+    container.innerHTML = html;
+  }
+
+  function addOtherItemToPo() {
+    const sel = document.getElementById("poOtherProductSelect");
+    const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
+    if (!sel || !sel.value) return alert("Pehle item select karein!");
+
+    const itm = sel.value;
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === itm);
+    const rate = prod ? prod.rate : 0;
+    const curStock = summaryData.find(s => s.item === itm);
+    const left = curStock ? curStock.balance : 0;
+
+    const container = document.getElementById("poItemList");
+    const newRow = document.createElement("div");
+    newRow.className = "po-item-row";
+    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;";
+    newRow.innerHTML = `
+      <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" checked> <b>${itm}</b> (${left} left)</label>
+      <input type="number" class="po-qty" value="${qty}" style="width:50px; padding:2px; font-size:10.5px;">
+    `;
+    container.appendChild(newRow);
+    sel.value = "";
+  }
+
+  async function submitPurchaseOrder() {
+    const party = document.getElementById("poSupplierSelect").value.trim();
+    if (!party) return alert("Kripya Supplier select karein!");
+
+    const now = Date.now();
+    if (now - lastPoSubmitTime < 10000) {
+      return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
+    }
+
+    const chks = document.querySelectorAll(".po-chk:checked");
+    const items = [];
+    chks.forEach(c => {
+      const itemRow = c.closest(".po-item-row");
+      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
+      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
+    });
+
+    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
+
+    const btn = document.getElementById("poSubmitBtn");
+    btn.disabled = true;
+    btn.innerText = "Placing PO...";
+    lastPoSubmitTime = now;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        closeCreateOrderModal();
+        loadOrders();
+
+        let waText = `*PURCHASE ORDER: ${data.orderNo || ''}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
+        items.forEach((it, i) => {
+          waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
+        });
+        waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!`;
+
+        if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
+        }
+      }
+    } catch(e) { alert("Order error: " + e.message); }
+    finally {
+      btn.disabled = false;
+      btn.innerText = "Save PO";
+    }
+  }
+
+  async function loadOrders() {
+    const container = document.getElementById("orderListContent");
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        poData = data.data;
+        let html = `<table class="custom-table">
+          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+        poData.forEach(o => {
+          html += `<tr>
+            <td>${o.orderNo}</td>
+            <td><b>${o.party}</b></td>
+            <td>${o.item}</td>
+            <td>${o.qty} ${o.unit}</td>
+            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
+            <td style="display:flex; gap:4px;">
+              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
+              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
+            </td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      }
+    } catch(e) { container.innerHTML = "Error loading orders."; }
+  }
+
+  function shareSinglePoWhatsApp(ordNo, party, item, qty, unit) {
+    const text = `*PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
+    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          type: "IN",
+          itemName: item,
+          qty: qty,
+          unit: unit,
+          rate: rate,
+          totalAmount: qty * rate,
+          partyName: party,
+          orderNo: ordNo,
+          remarks: "Received from " + ordNo
+        })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        alert("Stock Inward Complete!");
+        loadOrders();
+      }
+    } catch(e) { alert(e.message); }
+  }
+
+  // 12. Manual Refresh
+  async function hardRefreshData(section) {
+    const notify = document.getElementById("msg");
+    notify.innerText = `🔄 Reloading fresh ${section} data...`;
+    notify.style.color = "#3182ce";
+
+    await fetchMasterData();
+    if (section === 'Stock') await loadSummary();
+    if (section === 'Ledger') await loadLedger();
+    if (section === 'Closing') await loadClosing();
+    if (section === 'Orders') await loadOrders();
+
+    notify.innerText = `✅ ${section} Refreshed Live!`;
+    notify.style.color = "#2f855a";
+    setTimeout(() => { notify.innerText = ""; }, 2000);
+  }
+
+  // 13. Initial Master Data Fetch
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -1315,8 +1626,22 @@
     }
   }
 
-  // 12. Startup Orchestration
+  // 14. Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     
-    const cached = getLocal("CACHED
+    const cached = getLocal("CACHED_PROD_LIST");
+    if (cached && cached.length > 0) productList = cached;
+
+    renderProductDropdown();
+    renderVehicleDropdown();
+    populateSupplierDropdowns();
+    renderRecentEntries();
+
+    fetchMasterData();
+    loadSummary(true);
+    loadLedger(true);
+  });
+</script>
+</body>
+</html>
