@@ -3,1399 +3,1603 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fleet & Inventory Pro</title>
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <title>Gokuleshwar RD / Comrao Store - Excavator Spare Parts & Service Manager</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
-    body { background: #f0f4f8; margin: 0; padding: 12px; color: #2d3748; }
-    .container { max-width: 760px; margin: auto; background: #ffffff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
     
-    .tab-header { display: flex; gap: 5px; margin-bottom: 14px; background: #edf2f7; padding: 5px; border-radius: 12px; overflow-x: auto; }
-    .tab-btn { flex: 1; min-width: 72px; padding: 8px 3px; text-align: center; border: none; background: transparent; color: #4a5568; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; transition: 0.2s all; white-space: nowrap; }
-    .tab-btn.active { background: #2b6cb0; color: #ffffff; box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); }
-
-    .form-group { margin-bottom: 11px; position: relative; }
-    label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 11px; color: #4a5568; }
-    
-    input, select { 
-      width: 100%; 
-      padding: 7px 9px; 
-      border: 1.5px solid #cbd5e0; 
-      border-radius: 7px; 
-      font-size: 11px !important; 
-      background: #fff; 
-      white-space: nowrap; 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
+    * {
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
     }
-    select option { font-size: 11px !important; }
-    input:focus, select:focus { outline: none; border-color: #3182ce; }
 
-    .barcode-row { display: flex; gap: 8px; }
-    .btn-scan { background: #319795; color: white; border: none; padding: 0 12px; border-radius: 7px; font-weight: bold; font-size: 11px; cursor: pointer; }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-    .qty-stepper-row { display: flex; gap: 6px; }
-    .stepper-btn { width: 38px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 7px; font-weight: bold; font-size: 14px; cursor: pointer; }
-    .unit-select { width: 90px; flex-shrink: 0; font-weight: bold; background: #f7fafc; font-size: 11px !important; }
+    /* Single-line compact font styling for dropdown items (12px, nowrap, ellipsis) */
+    select.compact-select {
+      font-size: 12px !important;
+      line-height: 1.3;
+      padding: 6px 10px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-    .stock-badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; margin-left: 6px; }
-    .stock-in-hand { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
-    .stock-low { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
+    select.compact-select option {
+      font-size: 12px !important;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 6px 8px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
 
-    .service-alert-banner { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 7px 10px; margin-bottom: 10px; font-size: 11px; color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
 
-    .btn-submit { width: 100%; padding: 11px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 8px; }
-    .hidden { display: none !important; }
-    #msg { margin-top: 8px; text-align: center; font-weight: 700; font-size: 12px; }
-
-    .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; background: #fff; }
-    .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 6px 7px; text-align: left; }
-    .custom-table th { background: #2b6cb0; color: white; font-weight: 600; font-size: 10.5px; }
-    .view-box { display: none; }
-
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
-    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 7px 5px; text-align: center; }
-    .kpi-title { font-size: 9px; font-weight: 700; color: #718096; text-transform: uppercase; }
-    .kpi-val { font-size: 13px; font-weight: 800; color: #2b6cb0; }
-
-    .company-block { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 9px; margin-bottom: 12px; overflow: hidden; }
-    .company-header { background: #2d3748; color: #fff; padding: 7px 10px; font-weight: bold; font-size: 11.5px; display: flex; justify-content: space-between; }
-    .vehicle-card { border-bottom: 1px solid #e2e8f0; padding: 8px 10px; }
-    .vehicle-card:last-child { border-bottom: none; }
-    .vehicle-head-row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .vehicle-title { font-weight: 800; color: #2b6cb0; font-size: 11.5px; }
-    .vehicle-cost { font-weight: 800; color: #2d3748; font-size: 11.5px; }
-
-    .refresh-indicator { font-size: 10px; color: #718096; text-align: right; margin-bottom: 4px; }
-    .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #38a169; border-radius: 50%; margin-right: 4px; }
-
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
-    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
-
-    #scannerModalBox { max-width: 380px; text-align: center; }
-    #reader { width: 100%; min-height: 240px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(2px);
+    }
   </style>
 </head>
-<body>
-
-<div class="container" id="mainContainer">
-  <div class="refresh-indicator">
-    <span class="pulse-dot"></span><span id="syncText">Live Sync Active</span>
-  </div>
-
-  <div class="tab-header">
-    <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">📥 Stock In</button>
-    <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">📤 Stock Out</button>
-    <button class="tab-btn" id="tabSummaryBtn" onclick="switchTab('SUMMARY')">📊 Stock</button>
-    <button class="tab-btn" id="tabLedgerBtn" onclick="switchTab('LEDGER')">📑 Ledger</button>
-    <button class="tab-btn" id="tabClosingBtn" onclick="switchTab('CLOSING')">🔒 Closing</button>
-    <button class="tab-btn" id="tabOrderBtn" onclick="switchTab('ORDER')">📝 Order (PO)</button>
-  </div>
-
-  <!-- Main Entry Form -->
-  <form id="stockForm">
-    <div class="form-group">
-      <label>Date & Time</label>
-      <input type="text" id="dateTimeDisplay" readonly style="background:#edf2f7;">
-    </div>
-
-    <div class="form-group">
-      <label>Barcode / Scanner</label>
-      <div class="barcode-row">
-        <input type="text" id="barcodeInput" placeholder="Scan or type barcode...">
-        <button type="button" class="btn-scan" onclick="openScannerModal()">📷 Scan</button>
-      </div>
-    </div>
-
-    <!-- Product / Service Selection -->
-    <div class="form-group">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <label style="display:inline-block;">Product / Service Hour Kit</label>
-          <span id="stockInHandBadge" class="stock-badge hidden"></span>
-        </div>
-      </div>
-      <select id="productSelect" onchange="onProductSelect(this.value)">
-        <option value="">-- Loading Products... --</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>HSN Code</label>
-      <input type="text" id="hsnInput" placeholder="Auto filled">
-    </div>
-
-    <!-- Quantity & Units -->
-    <div class="form-group">
-      <label>Quantity & Unit</label>
-      <div class="qty-stepper-row">
-        <button type="button" class="stepper-btn" onclick="stepQty(-1)">-</button>
-        <input type="number" id="qtyInput" min="0.1" step="any" value="1" required oninput="calculateTotal()">
-        <button type="button" class="stepper-btn" onclick="stepQty(1)">+</button>
-        <select id="unitSelect" class="unit-select">
-          <option value="Nos">Nos</option>
-          <option value="L">L (Litre)</option>
-          <option value="Set">Set</option>
-          <option value="Kg">Kg</option>
-          <option value="Mtr">Mtr</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Rate (per unit)</label>
-      <input type="number" id="rateInput" step="0.01" oninput="calculateTotal()">
-    </div>
-
-    <div class="form-group">
-      <label>Total Amount (₹)</label>
-      <input type="number" id="totalAmountInput" readonly style="background:#edf2f7; font-weight:bold;">
-    </div>
-
-    <!-- Stock In Specific -->
-    <div id="paymentGroup" class="form-group">
-      <label>Payment Tracking (Ledger)</label>
-      <div style="display:flex; gap:8px;">
-        <input type="number" id="paidAmountInput" placeholder="Paid (₹)" oninput="calculateDue()">
-        <input type="number" id="dueAmountInput" readonly placeholder="Due (₹)" style="background:#edf2f7; color:#c53030; font-weight:bold;">
-      </div>
-    </div>
-
-    <div class="form-group" id="partyGroup">
-      <label>Supplier / Party Name</label>
-      <select id="partySelectInput">
-        <option value="">-- Select Supplier --</option>
-      </select>
-    </div>
-
-    <!-- Stock Out Specific -->
-    <div class="form-group hidden" id="vehicleGroup">
-      <label>Vehicle / Machine Number</label>
-      <select id="vehicleSelect" onchange="onVehicleSelect(this.value)">
-        <option value="">-- Select Machine --</option>
-      </select>
-      <div id="nextServiceBanner" class="service-alert-banner hidden" style="margin-top:6px;">
-        <span>⏳ Next Service Due At: <b id="nextServiceReading">0 Hrs</b></span>
-      </div>
-    </div>
-
-    <div class="form-group hidden" id="companyGroup">
-      <label>Company</label>
-      <select id="companyInput">
-        <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
-        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
-      </select>
-    </div>
-
-    <div class="form-group hidden" id="kmGroup">
-      <label>Current Engine Hours / KM</label>
-      <input type="text" id="kmInput" placeholder="e.g. 3200 Hrs">
-    </div>
-
-    <div class="form-group hidden" id="driverGroup">
-      <label>Driver / Operator Name</label>
-      <input type="text" id="driverInput">
-    </div>
-
-    <div class="form-group">
-      <label>Remarks / Bill No</label>
-      <input type="text" id="remarksInput">
-    </div>
-
-    <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
-  </form>
-
-  <!-- Stock Summary View -->
-  <div class="view-box" id="summaryView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
-      </div>
-    </div>
-
-    <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-title">Items</div><div class="kpi-val" id="kpiItems">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Total Units</div><div class="kpi-val" id="kpiStock">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
-    </div>
-
-    <input type="text" id="summarySearch" placeholder="🔍 Search spare parts or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
-    <div id="summaryPrintTarget">
-      <div id="summaryTableContent">Loading stock...</div>
-    </div>
-  </div>
-
-  <!-- Supplier Ledger -->
-  <div class="view-box" id="ledgerView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:13.5px;" id="ledgerHeadingTitle">Supplier Ledger Summary</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" id="ledgerBackBtn" class="hidden" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10.5px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">⬅ All Suppliers</button>
-        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" onclick="hardRefreshData('Ledger')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
-      </div>
-    </div>
-
-    <div id="ledgerDateFilters" style="display:flex; gap:6px; margin-bottom:8px;">
-      <input type="date" id="ledgerSDate" onchange="renderActiveLedgerView()" style="flex:1;">
-      <input type="date" id="ledgerEDate" onchange="renderActiveLedgerView()" style="flex:1;">
-      <select id="ledgerPartyFilter" onchange="onLedgerPartyDropdownChange(this.value)" style="flex:1.5;">
-        <option value="">-- All Suppliers (Summary) --</option>
-      </select>
-    </div>
-    
-    <div id="ledgerPrintTarget">
-      <div id="ledgerContent">Loading ledger...</div>
-    </div>
-  </div>
-
-  <!-- Month Closing View -->
-  <div class="view-box" id="closingView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
-      </div>
-    </div>
-
-    <div id="closingFiltersRow" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
-      <input type="date" id="closingSDate" onchange="renderClosingReport()">
-      <input type="date" id="closingEDate" onchange="renderClosingReport()">
-      <select id="closingCompFilter" onchange="renderClosingReport()">
-        <option value="">-- All Companies --</option>
-        <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
-        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
-      </select>
-      <select id="closingVehFilter" onchange="renderClosingReport()">
-        <option value="">-- All Machines --</option>
-      </select>
-    </div>
-
-    <div style="margin-bottom:10px; display:flex; gap:8px;">
-      <label style="font-size:11px; font-weight:normal; display:flex; align-items:center; gap:4px;">
-        <input type="checkbox" id="serviceOnlyToggle" onchange="renderClosingReport()"> ⚙️ Show Only 500/1000 Hrs Service Records
-      </label>
-    </div>
-
-    <div id="closingSummaryBanner" class="kpi-grid" style="margin-bottom:10px;">
-      <div class="kpi-card"><div class="kpi-title">Machines</div><div class="kpi-val" id="closingTotalVehs">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Issued Items</div><div class="kpi-val" id="closingTotalItems">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Cost</div><div class="kpi-val" id="closingTotalCost">₹0</div></div>
-    </div>
-
-    <div id="closingPrintTarget">
-      <div id="closingContent">Loading closing data...</div>
-    </div>
-  </div>
-
-  <!-- Purchase Order (PO) Tab -->
-  <div class="view-box" id="orderView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:13.5px;">Purchase Order (PO) & Re-Order</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" onclick="openCreateOrderModal()" style="padding:5px 9px; background:#38a169; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:10.5px;">➕ New Order</button>
-        <button type="button" onclick="hardRefreshData('Orders')" style="padding:5px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
-      </div>
-    </div>
-    <div id="orderListContent">Loading orders...</div>
-  </div>
-
-  <div id="msg"></div>
-</div>
-
-<!-- Modal: Barcode Camera Scanner -->
-<div class="modal" id="scannerModal">
-  <div class="modal-content" id="scannerModalBox">
-    <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
-    <div id="reader"></div>
-    <button type="button" onclick="closeScannerModal()" style="background:#e53e3e; color:white; border:none; padding:7px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Stop Camera</button>
-  </div>
-</div>
-
-<!-- Modal: Security PIN (4251) -->
-<div class="modal" id="pinModal">
-  <div class="modal-content" style="max-width:290px; text-align:center;">
-    <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
-    <p style="font-size:11px; color:#718096;">Is section ko access karne ke liye PIN daalein:</p>
-    <input type="password" id="pinInput" maxlength="6" placeholder="Enter PIN" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;">
-    <div style="display:flex; gap:8px;">
-      <button type="button" onclick="verifyPin()" style="flex:1; background:#2b6cb0; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Unlock</button>
-      <button type="button" onclick="closePinModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) -->
-<div class="modal" id="serviceHoursModal">
-  <div class="modal-content">
-    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
-    <p style="font-size:11px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
-    
-    <div id="serviceItemsList"></div>
-
-    <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
-      <label style="font-size:10px;">➕ Add Extra Part / Oil to this service:</label>
-      <div style="display:flex; gap:6px;">
-        <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
-        <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
-        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 9px; border-radius:6px; cursor:pointer; font-size:11px;">Add</button>
-      </div>
-    </div>
-
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Confirm & Issue All</button>
-      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Create Purchase Order (PO) -->
-<div class="modal" id="createOrderModal">
-  <div class="modal-content">
-    <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
-    <div class="form-group">
-      <label>Select Supplier / Vendor</label>
-      <select id="poSupplierSelect" onchange="onPoSupplierSelected(this.value)" style="font-size:11px;">
-        <option value="">-- Choose Supplier --</option>
-      </select>
-    </div>
-
-    <div id="poSupplierItemsSection" class="hidden">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <span style="font-weight:bold; font-size:11px;">Supplier History Items:</span>
-        <small style="color:#718096; font-size:10px;">(Pehle khareede gaye)</small>
-      </div>
-      <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
-
-      <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
-        <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product (Is PO me jodein):</label>
-        <div style="display:flex; gap:6px; margin-top:4px;">
-          <select id="poOtherProductSelect" style="flex:2; font-size:11px;">
-            <option value="">-- Choose Any Product --</option>
-          </select>
-          <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
-          <button type="button" onclick="addOtherItemToPo()" style="background:#3182ce; color:white; border:none; padding:0 8px; border-radius:6px; font-size:11px; cursor:pointer;">Add</button>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
-      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
-  const APP_PIN = "4251"; 
-
-  // Hard fallback buffer: Agar backend slow ho tab bhi dropdown khali nahi rahega
-  const DEFAULT_FALLBACK_PRODUCTS = [
-    { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710" },
-    { name: "Gear Oil 80W90", unit: "L", rate: 360, hsn: "2710" },
-    { name: "Chassis Grease (18 Kg Bucket)", unit: "Nos", rate: 5500, hsn: "2710" },
-    { name: "Special Ring Grease", unit: "Nos", rate: 1200, hsn: "2710" },
-    { name: "SUPER-210 Diesel Filter", unit: "Nos", rate: 650, hsn: "8421" },
-    { name: "SUPER-210 Mobil Filter", unit: "Nos", rate: 1300, hsn: "8421" },
-    { name: "SUPER-210 Air Filter Set", unit: "Set", rate: 2050, hsn: "8421" },
-    { name: "SUPER-210 Hydraulic Return Filter", unit: "Nos", rate: 3200, hsn: "8421" },
-    { name: "SUPER-210 Pilot Filter", unit: "Nos", rate: 950, hsn: "8421" },
-    { name: "SUPER-210 Suction Strainer", unit: "Nos", rate: 1100, hsn: "8421" },
-    { name: "Washing Kapda (Cotton Waste)", unit: "Kg", rate: 80, hsn: "5202" },
-    { name: "ZAXIS-220 Diesel Filter", unit: "Nos", rate: 750, hsn: "8421" },
-    { name: "ZAXIS-220 Mobil Filter", unit: "Nos", rate: 1450, hsn: "8421" },
-    { name: "ZAXIS-220 Air Filter Set", unit: "Set", rate: 2450, hsn: "8421" },
-    { name: "ZAXIS-220 Hydraulic Return Filter", unit: "Nos", rate: 3600, hsn: "8421" },
-    { name: "SANY-215 Diesel Filter", unit: "Nos", rate: 700, hsn: "8421" },
-    { name: "SANY-215 Mobil Filter", unit: "Nos", rate: 1400, hsn: "8421" },
-    { name: "SANY-215 Air Filter Set", unit: "Set", rate: 2300, hsn: "8421" },
-    { name: "SANY-215 Hydraulic Return Filter", unit: "Nos", rate: 3400, hsn: "8421" }
-  ];
-
-  const DEFAULT_FALLBACK_KITS = {
-    "SUPER-210 (500 Hrs Service)": [
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "SUPER-210 Diesel Filter", qty: 1, rate: 650 },
-      { itemName: "SUPER-210 Mobil Filter", qty: 1, rate: 1300 },
-      { itemName: "SUPER-210 Air Filter Set", qty: 1, rate: 2050 },
-      { itemName: "Washing Kapda (Cotton Waste)", qty: 1, rate: 80 }
-    ],
-    "SUPER-210 (1000 Hrs Service)": [
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 },
-      { itemName: "Chassis Grease (18 Kg Bucket)", qty: 1, rate: 5500 },
-      { itemName: "Special Ring Grease", qty: 1, rate: 1200 },
-      { itemName: "SUPER-210 Diesel Filter", qty: 1, rate: 650 },
-      { itemName: "SUPER-210 Mobil Filter", qty: 1, rate: 1300 },
-      { itemName: "SUPER-210 Air Filter Set", qty: 1, rate: 2050 },
-      { itemName: "SUPER-210 Hydraulic Return Filter", qty: 1, rate: 3200 },
-      { itemName: "SUPER-210 Pilot Filter", qty: 1, rate: 950 },
-      { itemName: "SUPER-210 Suction Strainer", qty: 1, rate: 1100 },
-      { itemName: "Washing Kapda (Cotton Waste)", qty: 2, rate: 80 }
-    ]
-  };
-
-  const DEFAULT_FALLBACK_VEHICLES = [
-    { vehicleNo: "SUPER-210", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "ZAXIS-220", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "SANY-215", company: "COMRAO PVT. LTD" }
-  ];
-
-  let currentTab = "IN";
-  let productList = [];
-  let vehicleMap = new Map();
-  let kitsMap = {};
-  let supplierSet = new Set();
-  let supplierItemsMap = {};
-  let summaryData = [];
-  let closingData = [];
-  let ledgerData = [];
-  let poData = [];
-
-  let pendingTab = "";
-  let isAuthenticated = false;
-  let activeSelectedLedgerParty = "";
-
-  let activeServiceParts = [];
-  let activeServiceName = "";
-  let html5QrScanner = null;
-  let lastPoSubmitTime = 0;
-  let autoRefreshTimer = null;
-
-  // 1. Instant Rendering with Pre-Loaded Fallback
-  function renderProductDropdown() {
-    const sel = document.getElementById("productSelect");
-    const extraSel = document.getElementById("extraPartSelect");
-    const poOtherSel = document.getElementById("poOtherProductSelect");
-
-    const itemsToUse = (productList && productList.length > 0) ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const kitsToUse = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
-
-    let mainHtml = '<option value="">-- Select Item or Service --</option>';
-    let extraHtml = '<option value="">-- Choose Extra Item --</option>';
-    let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
-
-    const kitNames = Object.keys(kitsToUse);
-    if (kitNames.length > 0) {
-      mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
-      kitNames.forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
-      mainHtml += '</optgroup>';
-    }
-
-    mainHtml += '<optgroup label="📦 PARTS & OILS">';
-    itemsToUse.forEach(p => {
-      mainHtml += `<option value="${p.name}">${p.name}</option>`;
-      extraHtml += `<option value="${p.name}">${p.name}</option>`;
-      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
-    });
-    mainHtml += '</optgroup>';
-
-    if (sel) sel.innerHTML = mainHtml;
-    if (extraSel) extraSel.innerHTML = extraHtml;
-    if (poOtherSel) poOtherSel.innerHTML = poOtherHtml;
-  }
-
-  function renderVehicleDropdown() {
-    const vSel = document.getElementById("vehicleSelect");
-    const fSel = document.getElementById("closingVehFilter");
-    if (!vSel || !fSel) return;
-
-    if (vehicleMap.size === 0) {
-      DEFAULT_FALLBACK_VEHICLES.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
-    }
-
-    let html = '<option value="">-- Select Machine --</option>';
-    let fHtml = '<option value="">-- All Machines --</option>';
-
-    Array.from(vehicleMap.keys()).sort().forEach(v => {
-      html += `<option value="${v}">${v}</option>`;
-      fHtml += `<option value="${v}">${v}</option>`;
-    });
-
-    vSel.innerHTML = html;
-    fSel.innerHTML = fHtml;
-  }
-
-  function populateSupplierDropdowns() {
-    const pIn = document.getElementById("partySelectInput");
-    const poSup = document.getElementById("poSupplierSelect");
-    const ledSup = document.getElementById("ledgerPartyFilter");
-
-    let pInHtml = '<option value="">-- Select Supplier --</option>';
-    let poSupHtml = '<option value="">-- Choose Supplier --</option>';
-    let ledSupHtml = '<option value="">-- All Suppliers (Summary) --</option>';
-
-    Array.from(supplierSet).sort().forEach(s => {
-      pInHtml += `<option value="${s}">${s}</option>`;
-      poSupHtml += `<option value="${s}">${s}</option>`;
-      ledSupHtml += `<option value="${s}">${s}</option>`;
-    });
-
-    if (pIn) pIn.innerHTML = pInHtml;
-    if (poSup) poSup.innerHTML = poSupHtml;
-    if (ledSup) ledSup.innerHTML = ledSupHtml;
-  }
-
-  // 2. Tab Switching & Masked PIN Verification
-  function switchTab(type) {
-    if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
-      pendingTab = type;
-      document.getElementById("pinModal").style.display = "flex";
-      document.getElementById("pinInput").focus();
-      return;
-    }
-
-    currentTab = type;
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".view-box").forEach(v => v.style.display = "none");
-    document.getElementById("stockForm").style.display = "none";
-
-    if (type === "IN" || type === "OUT") {
-      document.getElementById("stockForm").style.display = "block";
-      document.getElementById(type === "IN" ? "tabInBtn" : "tabOutBtn").classList.add("active");
-      document.getElementById("paymentGroup").classList.toggle("hidden", type === "OUT");
-      document.getElementById("partyGroup").classList.toggle("hidden", type === "OUT");
-      document.getElementById("vehicleGroup").classList.toggle("hidden", type === "IN");
-      document.getElementById("companyGroup").classList.toggle("hidden", type === "IN");
-      document.getElementById("kmGroup").classList.toggle("hidden", type === "IN");
-      document.getElementById("driverGroup").classList.toggle("hidden", type === "IN");
-    } else if (type === "SUMMARY") {
-      document.getElementById("summaryView").style.display = "block";
-      document.getElementById("tabSummaryBtn").classList.add("active");
-      loadSummary();
-    } else if (type === "LEDGER") {
-      document.getElementById("ledgerView").style.display = "block";
-      document.getElementById("tabLedgerBtn").classList.add("active");
-      loadLedger();
-    } else if (type === "CLOSING") {
-      document.getElementById("closingView").style.display = "block";
-      document.getElementById("tabClosingBtn").classList.add("active");
-      loadClosing();
-    } else if (type === "ORDER") {
-      document.getElementById("orderView").style.display = "block";
-      document.getElementById("tabOrderBtn").classList.add("active");
-      loadOrders();
-    }
-  }
-
-  function verifyPin() {
-    const p = document.getElementById("pinInput").value;
-    if (p === APP_PIN) {
-      isAuthenticated = true;
-      closePinModal();
-      switchTab(pendingTab);
-    } else {
-      alert("❌ Galat PIN! Kripya dobara koshish karein.");
-      document.getElementById("pinInput").value = "";
-    }
-  }
-
-  function closePinModal() {
-    document.getElementById("pinModal").style.display = "none";
-    document.getElementById("pinInput").value = "";
-  }
-
-  // 3. Isolated Clean Print
-  function printTargetSection(targetId, title) {
-    const el = document.getElementById(targetId);
-    if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
-
-    const printWin = window.open('', '', 'width=850,height=700');
-    printWin.document.write(`
-      <html>
-        <head>
-          <title>${title}</title>
-          <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
-            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
-            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
-            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
-            th { background: #edf2f7; font-weight: bold; }
-            .company-block { border: 1px solid #a0aec0; margin-bottom: 14px; page-break-inside: avoid; }
-            .company-header { background: #edf2f7; font-weight: bold; padding: 6px 8px; border-bottom: 1px solid #a0aec0; }
-            .vehicle-card { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
-            .vehicle-title { font-weight: bold; color: #2b6cb0; }
-          </style>
-        </head>
-        <body>
-          <h2>${title}</h2>
-          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
-          ${el.innerHTML}
-        </body>
-      </html>
-    `);
-    printWin.document.close();
-    printWin.focus();
-    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
-  }
-
-  // 4. Barcode Camera Scanner
-  function openScannerModal() {
-    document.getElementById("scannerModal").style.display = "flex";
-    html5QrScanner = new Html5Qrcode("reader");
-    html5QrScanner.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 250, height: 160 } },
-      (decodedText) => {
-        document.getElementById("barcodeInput").value = decodedText;
-        matchProductByBarcode(decodedText);
-        closeScannerModal();
-      },
-      () => {}
-    ).catch(err => {
-      alert("Camera error: " + err);
-      closeScannerModal();
-    });
-  }
-
-  function closeScannerModal() {
-    if (html5QrScanner) {
-      html5QrScanner.stop().then(() => {
-        html5QrScanner.clear();
-        document.getElementById("scannerModal").style.display = "none";
-      }).catch(() => {
-        document.getElementById("scannerModal").style.display = "none";
-      });
-    } else {
-      document.getElementById("scannerModal").style.display = "none";
-    }
-  }
-
-  function matchProductByBarcode(code) {
-    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const prod = itemsToSearch.find(p => p.barcode === code);
-    if (prod) {
-      document.getElementById("productSelect").value = prod.name;
-      onProductSelect(prod.name);
-    }
-  }
-
-  // 5. Form Select Handlers
-  function onVehicleSelect(vNo) {
-    if (!vNo) return;
-    const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
-    document.getElementById("companyInput").value = comp;
-
-    const banner = document.getElementById("nextServiceBanner");
-    const pastEntries = closingData.filter(c => c.vehicle === vNo && (c.km.includes("Hrs") || !isNaN(parseFloat(c.km))));
-    if (pastEntries.length > 0) {
-      const lastKm = parseFloat(pastEntries[pastEntries.length - 1].km) || 0;
-      if (lastKm > 0) {
-        document.getElementById("nextServiceReading").innerText = (lastKm + 500) + " Hrs";
-        banner.classList.remove("hidden");
-      }
-    } else {
-      banner.classList.add("hidden");
-    }
-  }
-
-  function onProductSelect(val) {
-    if (!val) return;
-
-    const kitsToUse = Object.keys(kitsMap).length > 0 ? kitsMap : DEFAULT_FALLBACK_KITS;
-    if (kitsToUse[val] && currentTab === "OUT") {
-      activeServiceName = val;
-      activeServiceParts = JSON.parse(JSON.stringify(kitsToUse[val]));
-      openServiceModal();
-      return;
-    }
-
-    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const prod = itemsToSearch.find(p => p.name === val);
-    if (prod) {
-      document.getElementById("barcodeInput").value = prod.barcode || "";
-      document.getElementById("hsnInput").value = prod.hsn || "";
-      document.getElementById("rateInput").value = prod.rate || "";
-      document.getElementById("unitSelect").value = prod.unit || "Nos";
-
-      const itemStock = summaryData.find(s => s.item === val);
-      const badge = document.getElementById("stockInHandBadge");
-      if (itemStock && currentTab === "OUT") {
-        badge.classList.remove("hidden");
-        badge.innerText = `Left: ${itemStock.balance} ${prod.unit || 'Nos'}`;
-        badge.className = itemStock.balance <= 2 ? "stock-badge stock-low" : "stock-badge stock-in-hand";
-
-        if (itemStock.balance <= 0) {
-          alert(`⚠️ Warning: ${val} godown mein 0 bacha hai!`);
-        }
-      } else {
-        badge.classList.add("hidden");
-      }
-    }
-    calculateTotal();
-  }
-
-  // 6. Service Hours Modal
-  function openServiceModal() {
-    document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
-    renderServiceItems();
-    document.getElementById("serviceHoursModal").style.display = "flex";
-  }
-
-  function renderServiceItems() {
-    const container = document.getElementById("serviceItemsList");
-    let html = "";
-    activeServiceParts.forEach((p, idx) => {
-      const st = summaryData.find(s => s.item === p.itemName);
-      const left = st ? st.balance : 0;
-      const isLow = left < p.qty;
-
-      html += `
-        <div class="service-item-row">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased">
+
+  <!-- Top Fixed Header -->
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo & Branding -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center text-slate-950 font-black text-xl shadow">
+            <i class="fa-solid fa-truck-monster"></i>
+          </div>
           <div>
-            <b>${p.itemName}</b>
-            <div style="font-size:10.5px; color:${isLow ? '#c53030' : '#2f855a'};">
-              Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:42px; padding:2px; font-size:10.5px;">
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-bold tracking-tight text-white uppercase">Gokuleshwar RD / Comrao Store</h1>
+              <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded font-mono font-bold">7-FLEET PRO</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Excavator Spare Parts & Service Interval System</p>
+          </div>
+        </div>
+
+        <!-- Top Quick Buttons -->
+        <div class="flex items-center gap-2">
+          <button onclick="openAddProductModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow transition">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span class="hidden sm:inline">Add Product (+)</span>
+          </button>
+          <button onclick="exportToCSV()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition">
+            <i class="fa-solid fa-file-excel text-emerald-400"></i>
+            <span class="hidden sm:inline">Export Excel</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Bar -->
+      <nav class="flex space-x-2 border-t border-slate-800 py-2 overflow-x-auto text-xs font-medium">
+        <button id="navBtn-voucher" onclick="switchNavTab('voucher')" class="px-3.5 py-1.5 rounded-md bg-amber-500 text-slate-950 font-bold transition flex items-center gap-1.5 whitespace-nowrap shadow">
+          <i class="fa-solid fa-file-invoice"></i> Stock In / Out Voucher
+        </button>
+        <button id="navBtn-servicekits" onclick="switchNavTab('servicekits')" class="px-3.5 py-1.5 rounded-md text-slate-300 hover:bg-slate-800 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-toolbox"></i> Machine Service Outward (500 / 1000H)
+        </button>
+        <button id="navBtn-tracker" onclick="switchNavTab('tracker')" class="px-3.5 py-1.5 rounded-md text-slate-300 hover:bg-slate-800 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-gauge-high"></i> 7 Machine Hours Status
+        </button>
+        <button id="navBtn-cheat" onclick="switchNavTab('cheat')" class="px-3.5 py-1.5 rounded-md text-slate-300 hover:bg-slate-800 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-table-list"></i> Kit Codes Cheat Sheet
+        </button>
+        <button id="navBtn-ledger" onclick="switchNavTab('ledger')" class="px-3.5 py-1.5 rounded-md text-slate-300 hover:bg-slate-800 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-boxes-stacked"></i> Stock Inventory Ledger
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-2xl text-xs font-semibold flex items-center gap-3 transition-all duration-300 max-w-sm">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-base"></i>
+    <span id="toastMsg">Action completed successfully</span>
+  </div>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-6">
+
+    <!-- ==================== TAB 1: STOCK IN / OUT VOUCHER ==================== -->
+    <section id="view-voucher" class="space-y-6">
+
+      <!-- Dynamic Engine Hours Next Service Alert Banner -->
+      <div id="nextServiceBanner" class="hidden bg-gradient-to-r from-blue-900 to-indigo-950 text-white rounded-xl p-4 shadow border-l-4 border-amber-400 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center font-bold text-lg shadow">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-amber-300 font-bold">Automatic Maintenance Schedule</div>
+            <div class="text-sm sm:text-base font-semibold">
+              Machine <span id="bannerMachineName" class="underline font-bold text-amber-200">SUPER-210 PRIME</span>
+              : Next Service Due at <b id="nextServiceReading" class="text-amber-300 text-lg font-mono-code">0 Hrs</b>
             </div>
           </div>
-          <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
-        </div>`;
+        </div>
+        <div class="text-xs bg-slate-800/90 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300">
+          Last Recorded Service: <span id="lastRecordedReading" class="font-bold text-white font-mono-code">0 Hrs</span>
+        </div>
+      </div>
+
+      <!-- Main Voucher Form -->
+      <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+        <!-- Voucher Header & Mode Selector -->
+        <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Daily Store Transaction Entry</h2>
+          </div>
+          <div class="inline-flex rounded-lg border border-slate-300 p-0.5 bg-slate-200 text-xs font-semibold">
+            <button type="button" id="typeBtn-OUT" onclick="setTxType('OUT')" class="px-4 py-1.5 rounded-md bg-rose-600 text-white shadow transition">
+              <i class="fa-solid fa-arrow-up-from-bracket mr-1"></i> Stock OUT (Issue to Machine)
+            </button>
+            <button type="button" id="typeBtn-IN" onclick="setTxType('IN')" class="px-4 py-1.5 rounded-md text-slate-700 hover:text-slate-900 transition">
+              <i class="fa-solid fa-arrow-down-to-bracket mr-1"></i> Stock IN (Purchase Inward)
+            </button>
+          </div>
+        </div>
+
+        <form id="voucherForm" onsubmit="handleVoucherSubmit(event)" class="p-5 space-y-4">
+          <input type="hidden" id="txType" value="OUT">
+
+          <!-- Row 1: Date, Machine / Party, Hours Meter, Receiver -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Transaction Date</label>
+              <input type="date" id="txDate" required class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-amber-500">
+            </div>
+
+            <div>
+              <label id="targetLabel" class="block text-xs font-semibold text-slate-600 mb-1">Assigned Excavator / Machine <span class="text-rose-500">*</span></label>
+              <select id="machineSelect" onchange="onMachineSelectChange(this.value)" class="w-full compact-select rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-white">
+                <option value="">-- Choose 7-Fleet Machine --</option>
+                <option value="SUPER-210 PRIME">SUPER-210 PRIME (Tata Hitachi)</option>
+                <option value="SUPER-200">SUPER-200 (Tata Hitachi)</option>
+                <option value="ZAXIS-220">ZAXIS-220 (Tata Hitachi)</option>
+                <option value="SANY-215">SANY-215 (Sany Heavy)</option>
+                <option value="JCB-215">JCB-215 (JCB Excavator)</option>
+                <option value="XCMG-230">XCMG-230 (XCMG)</option>
+                <option value="ZAXIS-140">ZAXIS-140 (Tata Hitachi)</option>
+                <option value="WORKSHOP / COMMON">WORKSHOP / SITE COMMON</option>
+              </select>
+            </div>
+
+            <div id="engineHoursGroup">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Current Engine Hours <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <input type="number" step="0.5" id="engineHoursInput" placeholder="e.g. 3200" class="w-full text-xs rounded-lg border border-slate-300 pl-3 pr-10 py-2 font-mono-code focus:ring-2 focus:ring-amber-500 outline-none">
+                <span class="absolute right-3 top-2 text-xs font-bold text-slate-400">Hrs</span>
+              </div>
+            </div>
+
+            <div>
+              <label id="personLabel" class="block text-xs font-semibold text-slate-600 mb-1">Operator / Driver / Receiver</label>
+              <input type="text" id="personInput" placeholder="e.g. Pradyuman / Munshi" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-amber-500">
+            </div>
+          </div>
+
+          <!-- Row 2: Live Fuzzy Search & Single-Line Compact Dropdown + Add Button -->
+          <div class="bg-amber-50/70 p-3.5 rounded-xl border border-amber-200/80 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                <i class="fa-solid fa-magnifying-glass text-amber-600"></i> Smart Fast Item Selector
+              </span>
+              <span class="text-[11px] text-slate-500">
+                Type 2-3 letters anywhere (e.g. <span class="font-mono bg-white px-1 border rounded text-amber-700">210</span>, <span class="font-mono bg-white px-1 border rounded text-amber-700">DSL</span>, <span class="font-mono bg-white px-1 border rounded text-amber-700">AIR</span>, <span class="font-mono bg-white px-1 border rounded text-amber-700">PLT</span>)
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end">
+              <!-- Fuzzy Search Box -->
+              <div class="md:col-span-5">
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Live Fuzzy Search</label>
+                <div class="relative">
+                  <input type="text" id="itemSearchInput" oninput="handleFuzzySearch(this.value)" placeholder="Type item code or name..." class="w-full text-xs rounded-lg border border-amber-300 bg-white px-3 py-2 pl-8 outline-none focus:ring-2 focus:ring-amber-500">
+                  <i class="fa-solid fa-search absolute left-2.5 top-2.5 text-xs text-amber-500"></i>
+                  <button type="button" onclick="clearFuzzySearch()" class="absolute right-2.5 top-2 text-xs text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Compact 12px Single-Line Dropdown -->
+              <div class="md:col-span-6">
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-[11px] font-semibold text-slate-600">
+                    Select Part / Kit (Compact 12px) <span class="text-rose-500">*</span>
+                  </label>
+                  <span id="dropdownCountBadge" class="text-[10px] text-slate-400 font-mono">0 loaded</span>
+                </div>
+                <select id="itemSelect" onchange="onItemSelectChange(this.value)" class="w-full compact-select rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+                  <!-- Populated instantly from localStorage -->
+                </select>
+              </div>
+
+              <!-- Quick Add Product '+' Button -->
+              <div class="md:col-span-1">
+                <button type="button" onclick="openAddProductModal()" title="Add New Product / Barcode Scanner" class="w-full h-[34px] rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center text-sm shadow transition">
+                  <i class="fa-solid fa-plus font-bold"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Service Kit Quick Bundle Notice -->
+            <div id="serviceKitNotice" class="hidden p-2.5 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between text-xs text-blue-900">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-toolbox text-blue-600"></i>
+                <span>Selected item belongs to a <b>Pre-Configured Service Kit</b>. You can customize filter checklist or add extra items.</span>
+              </div>
+              <button type="button" onclick="openKitBuilderFromVoucher()" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs shadow">
+                Open Kit Builder
+              </button>
+            </div>
+          </div>
+
+          <!-- Row 3: Unit, Rate, Qty, Total -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Unit</label>
+              <input type="text" id="unitInput" readonly class="w-full text-xs rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-600 font-mono-code outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Rate (₹)</label>
+              <input type="number" step="any" id="rateInput" oninput="recalcVoucherTotal()" required class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 font-mono-code focus:ring-2 focus:ring-amber-500 outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Quantity</label>
+              <input type="number" step="any" min="0.1" value="1" id="qtyInput" oninput="recalcVoucherTotal()" required class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 font-mono-code focus:ring-2 focus:ring-amber-500 outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Total Amount (₹)</label>
+              <input type="number" step="any" id="totalInput" readonly class="w-full text-xs rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 font-bold font-mono-code text-slate-900 outline-none">
+            </div>
+          </div>
+
+          <!-- Remarks / Bill Reference -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Remarks / Invoice Ref</label>
+            <input type="text" id="notesInput" placeholder="e.g. Sai Engineering Invoice / Routine 500H Service / Choke Replace" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-amber-500">
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="resetVoucherForm()" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-xs font-semibold hover:bg-slate-50">
+              Reset
+            </button>
+            <button type="submit" class="px-6 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md flex items-center gap-2">
+              <i class="fa-solid fa-floppy-disk text-amber-400"></i> Save Transaction Entry
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Live Recent Entries Table at the Bottom of Main Screen -->
+      <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+        <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-amber-500"></i>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">Live Recent Transactions Log</h3>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span id="logRecordCount" class="text-slate-500 font-mono">0 records</span>
+            <button onclick="clearRecentEntriesPrompt()" class="text-rose-600 hover:text-rose-800 font-semibold ml-2">Clear History</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3">Date</th>
+                <th class="py-2.5 px-2">Type</th>
+                <th class="py-2.5 px-3">Machine / Vendor</th>
+                <th class="py-2.5 px-2">Meter (Hrs)</th>
+                <th class="py-2.5 px-3">Item Code & Name</th>
+                <th class="py-2.5 px-2 text-right">Qty</th>
+                <th class="py-2.5 px-3 text-right">Rate</th>
+                <th class="py-2.5 px-3 text-right">Total (₹)</th>
+                <th class="py-2.5 px-3">Driver / Operator</th>
+                <th class="py-2.5 px-2 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="recentEntriesBody" class="divide-y divide-slate-100 font-mono-code text-[11.5px]">
+              <!-- Injected by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB 2: MACHINE SERVICE OUTWARD (500 / 1000H) ==================== -->
+    <section id="view-servicekits" class="hidden space-y-6">
+      <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-slate-900">Pre-Configured Machine Service Outward</h2>
+          <p class="text-xs text-slate-500">Select excavator machine and service interval to issue verified filter packages instantly without manual piece counting.</p>
+        </div>
+
+        <!-- Machine Card Grid for Quick Outward -->
+        <div id="serviceKitsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: 7 MACHINE HOURS STATUS ==================== -->
+    <section id="view-tracker" class="hidden space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl shadow border border-slate-200">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">7 Excavators - Engine Hours & Next Service Schedule</h2>
+          <p class="text-xs text-slate-500">System automatically reads past records and calculates next periodic service at +500 Hrs.</p>
+        </div>
+        <button onclick="renderMachineHoursStatus()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-300 font-bold">
+          <i class="fa-solid fa-rotate mr-1"></i> Refresh Status
+        </button>
+      </div>
+
+      <div id="machineStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: KIT CODES CHEAT SHEET ==================== -->
+    <section id="view-cheat" class="hidden space-y-4">
+      <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">7 Machines Master Kit Cheat Code Reference</h2>
+            <p class="text-xs text-slate-500">Official codes including HYD-PLT (Pilot Filter) and AIR-BRTH (Air Breather) as configured for store physical labeling.</p>
+          </div>
+          <button onclick="window.print()" class="px-3 py-1.5 bg-slate-900 text-amber-300 rounded-lg text-xs font-bold hover:bg-slate-800 shadow">
+            <i class="fa-solid fa-print mr-1"></i> Print Cheat Sheet
+          </button>
+        </div>
+
+        <!-- Cheat Code Dictionary -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono-code bg-slate-50 p-3 rounded-lg border border-slate-200">
+          <div><b class="text-amber-800">ENG-DSL:</b> Engine + Diesel Kit</div>
+          <div><b class="text-blue-800">AIR-FLT:</b> Air Filter Set</div>
+          <div><b class="text-emerald-800">HYD-KIT:</b> 4-in-1 Hydraulic Kit</div>
+          <div><b class="text-purple-800">HYD-PLT:</b> Hydraulic Pilot Filter</div>
+          <div><b class="text-indigo-800">AIR-BRTH:</b> Air Breather Filter</div>
+          <div><b class="text-rose-800">MOBIL:</b> 15W40 Engine Oil</div>
+          <div><b class="text-cyan-800">GEAR:</b> 80W90 Gearbox Oil</div>
+          <div><b class="text-slate-800">GRS:</b> Chassis/Ring Grease</div>
+        </div>
+
+        <div class="overflow-x-auto border rounded-lg">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-900 text-white font-semibold text-[11px]">
+              <tr>
+                <th class="p-3 border-r border-slate-800">Excavator Model</th>
+                <th class="p-3 border-r border-slate-800 text-amber-300">500H Engine+DSL</th>
+                <th class="p-3 border-r border-slate-800 text-blue-300">Air Filter</th>
+                <th class="p-3 border-r border-slate-800 text-emerald-300">1000H Hyd Kit</th>
+                <th class="p-3 border-r border-slate-800 text-purple-300">Hyd Pilot (HYD-PLT)</th>
+                <th class="p-3 text-indigo-300">Air Breather (AIR-BRTH)</th>
+              </tr>
+            </thead>
+            <tbody id="cheatSheetTableBody" class="divide-y divide-slate-200 font-mono-code text-[11.5px]">
+              <!-- Injected by script -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: STOCK INVENTORY LEDGER ==================== -->
+    <section id="view-ledger" class="hidden space-y-4">
+      <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Current Stock Inventory Balance</h2>
+            <p class="text-xs text-slate-500">Total inward purchase vs outward issued balance per SKU code.</p>
+          </div>
+          <button onclick="renderStockLedger()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg border font-bold">
+            <i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh Ledger
+          </button>
+        </div>
+
+        <div class="overflow-x-auto border rounded-lg">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-semibold text-[11px] border-b">
+              <tr>
+                <th class="p-3">SKU Code</th>
+                <th class="p-3">Item Description</th>
+                <th class="p-3">Category</th>
+                <th class="p-3 text-right">Inward</th>
+                <th class="p-3 text-right">Outward</th>
+                <th class="p-3 text-right">Balance</th>
+                <th class="p-3 text-right">Unit Rate</th>
+                <th class="p-3 text-right">Stock Valuation</th>
+              </tr>
+            </thead>
+            <tbody id="stockLedgerBody" class="divide-y divide-slate-100 font-mono-code text-[11.5px]">
+              <!-- Injected by script -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL 1: ADD PRODUCT & LIVE BARCODE SCANNER ==================== -->
+  <div id="addProductModal" class="hidden fixed inset-0 z-50 overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-barcode text-amber-400 text-lg"></i>
+          <h3 class="font-bold text-sm">Add New Product / Barcode Scanner</h3>
+        </div>
+        <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="newProductForm" onsubmit="handleSaveNewProduct(event)" class="p-5 space-y-4">
+        
+        <!-- Live Barcode Camera Stream -->
+        <div class="bg-slate-950 rounded-xl p-3 text-white text-center border border-slate-800">
+          <div class="flex items-center justify-between mb-2 text-xs">
+            <span class="font-semibold text-slate-300"><i class="fa-solid fa-camera mr-1"></i> Camera Barcode Scanner</span>
+            <span id="cameraStatus" class="text-[10px] text-amber-400 font-mono">Standby</span>
+          </div>
+          
+          <div class="relative w-full h-36 bg-black rounded-lg overflow-hidden flex items-center justify-center border border-slate-700">
+            <video id="scannerVideo" class="w-full h-full object-cover hidden" playsinline></video>
+            <div id="scannerOverlay" class="absolute inset-0 border-2 border-dashed border-amber-400/80 m-4 rounded pointer-events-none hidden animate-pulse"></div>
+            
+            <div id="cameraPlaceholder" class="text-xs text-slate-400 space-y-2 p-3">
+              <i class="fa-solid fa-barcode text-3xl text-slate-600 block"></i>
+              <span>Align barcode label to scan</span>
+              <div class="flex items-center justify-center gap-2">
+                <button type="button" onclick="startCameraScanner()" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded text-xs shadow">
+                  Turn On Camera
+                </button>
+                <button type="button" onclick="simulateBarcodeScan()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs border border-slate-700">
+                  Simulate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="col-span-2">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Barcode / Item Code <span class="text-rose-500">*</span></label>
+            <input type="text" id="newProdCode" required placeholder="e.g. S-210-500-HYD-PLT" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 font-mono-code focus:ring-2 focus:ring-amber-500 outline-none uppercase">
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Product Name / Description <span class="text-rose-500">*</span></label>
+            <input type="text" id="newProdName" required placeholder="e.g. Super-210 Hydraulic Pilot Filter" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-amber-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Unit</label>
+            <select id="newProdUnit" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 outline-none">
+              <option value="Set">Set</option>
+              <option value="Nos">Nos</option>
+              <option value="Litre">Litre</option>
+              <option value="Kg">Kg</option>
+              <option value="Bucket">Bucket</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Purchase Rate (₹)</label>
+            <input type="number" step="any" id="newProdRate" required placeholder="1950" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 font-mono-code focus:ring-2 focus:ring-amber-500 outline-none">
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Machine / Category Group</label>
+            <select id="newProdCategory" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 outline-none">
+              <option value="500 Hrs Routine Kit">500 Hrs Routine Kit</option>
+              <option value="Air Filter">Air Filter</option>
+              <option value="1000 Hrs Hydraulic Kit">1000 Hrs Hydraulic Kit</option>
+              <option value="Hydraulic Pilot Filter">Hydraulic Pilot Filter (HYD-PLT)</option>
+              <option value="Air Breather Filter">Air Breather Filter (AIR-BRTH)</option>
+              <option value="Oils & Lubricants">Oils & Lubricants</option>
+              <option value="General Spare Parts">General Spare Parts</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+          <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow">
+            Save Product to Store
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: SERVICE KIT BUNDLE BUILDER WITH SEARCHABLE DROPDOWN ==================== -->
+  <div id="serviceKitModal" class="hidden fixed inset-0 z-50 overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white px-5 py-4 flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-toolbox text-amber-400"></i>
+            <h3 id="modalKitTitle" class="font-bold text-sm">Service Kit Bundle Builder</h3>
+          </div>
+          <p id="modalKitSubtitle" class="text-[11px] text-slate-300">Preset filters verified for this service interval</p>
+        </div>
+        <button onclick="closeServiceKitModal()" class="text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <!-- Checklist of Included Filters -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Preset Included Filters (Auto Checked)</label>
+          <div id="kitChecklist" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <!-- Dynamically populated checklist -->
+          </div>
+        </div>
+
+        <!-- Add Extra Item Section with Searchable Mini Dropdown -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-cart-plus text-emerald-600"></i> Add Extra Item to this Service
+            </label>
+            <span class="text-[10px] text-slate-400">Searchable dropdown</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+            <!-- Search input for modal -->
+            <div class="sm:col-span-5">
+              <input type="text" id="modalExtraSearch" oninput="filterModalExtras(this.value)" placeholder="Type 1-2 words (grease, gear, hose)..." class="w-full text-xs rounded-lg border border-slate-300 px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-amber-500">
+            </div>
+
+            <!-- Filtered select -->
+            <div class="sm:col-span-5">
+              <select id="modalExtraSelect" class="w-full compact-select rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none bg-white font-mono-code">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+
+            <div class="sm:col-span-2">
+              <button type="button" onclick="addExtraItemToKit()" class="w-full h-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow flex items-center justify-center gap-1">
+                <i class="fa-solid fa-plus text-[10px]"></i> Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kit Total Price Summary -->
+        <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 flex items-center justify-between font-mono-code">
+          <span class="text-xs font-bold text-amber-900">Total Bundle Valuation:</span>
+          <span id="modalKitTotalAmount" class="text-base font-extrabold text-amber-950">₹0</span>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+          <button type="button" onclick="closeServiceKitModal()" class="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="button" onclick="confirmServiceKitSelection()" class="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-amber-400"></i> Apply to Voucher
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION JAVASCRIPT ENGINE -->
+  <script>
+    /**
+     * Complete Master Catalog - Preloaded with 7 Excavators
+     * Including newly specified HYD-PLT and AIR-BRTH codes
+     */
+    const INITIAL_MASTER_PRODUCTS = [
+      // 1. Super-210 Prime
+      { code: "S210-500-ENG-DSL", name: "Super-210 Prime 500H Engine+Diesel Kit", unit: "Set", rate: 1950, cat: "500 Hrs Routine Kit", machine: "SUPER-210 PRIME" },
+      { code: "S210-500-AIR-FLT", name: "Super-210 Prime Air Filter Set", unit: "Set", rate: 2050, cat: "Air Filter", machine: "SUPER-210 PRIME" },
+      { code: "S210-1000-HYD-KIT", name: "Super-210 Prime 1000H Hydraulic 4-in-1 Kit", unit: "Set", rate: 3300, cat: "1000 Hrs Hydraulic Kit", machine: "SUPER-210 PRIME" },
+      { code: "S-210-500-HYD-PLT", name: "Super-210 Prime Hydraulic Pilot Filter", unit: "Nos", rate: 650, cat: "Hydraulic Pilot Filter", machine: "SUPER-210 PRIME" },
+      { code: "S-210-500-AIR-BRTH", name: "Super-210 Prime Hydraulic Air Breather", unit: "Nos", rate: 450, cat: "Air Breather Filter", machine: "SUPER-210 PRIME" },
+
+      // 2. Super-200
+      { code: "S200-500-ENG-DSL", name: "Super-200 500H Engine+Diesel Kit (Fleetguard)", unit: "Set", rate: 1150, cat: "500 Hrs Routine Kit", machine: "SUPER-200" },
+      { code: "S200-500-AIR-FLT", name: "Super-200 Air Filter Set", unit: "Set", rate: 2050, cat: "Air Filter", machine: "SUPER-200" },
+      { code: "S200-1000-HYD-KIT", name: "Super-200 1000H Hydraulic 4-in-1 Kit", unit: "Set", rate: 3300, cat: "1000 Hrs Hydraulic Kit", machine: "SUPER-200" },
+
+      // 3. ZAXIS-220
+      { code: "Z220-500-ENG-DSL", name: "Zaxis-220 500H Engine+Diesel Kit", unit: "Set", rate: 2800, cat: "500 Hrs Routine Kit", machine: "ZAXIS-220" },
+      { code: "Z220-500-AIR-FLT", name: "Zaxis-220 Air Filter Set", unit: "Set", rate: 2900, cat: "Air Filter", machine: "ZAXIS-220" },
+      { code: "Z220-1000-HYD-KIT", name: "Zaxis-220 1000H Hydraulic 4-in-1 Kit", unit: "Set", rate: 5750, cat: "1000 Hrs Hydraulic Kit", machine: "ZAXIS-220" },
+      { code: "Z220-500-HYD-PLT", name: "Zaxis-220 Hydraulic Pilot Filter", unit: "Nos", rate: 700, cat: "Hydraulic Pilot Filter", machine: "ZAXIS-220" },
+      { code: "Z220-500-AIR-BRTH", name: "Zaxis-220 Hydraulic Air Breather", unit: "Nos", rate: 500, cat: "Air Breather Filter", machine: "ZAXIS-220" },
+
+      // 4. SANY-215
+      { code: "S215-500-ENG-DSL", name: "Sany-215 500H Engine+Diesel Kit", unit: "Set", rate: 2300, cat: "500 Hrs Routine Kit", machine: "SANY-215" },
+      { code: "S215-500-AIR-FLT", name: "Sany-215 Air Filter Set", unit: "Set", rate: 4300, cat: "Air Filter", machine: "SANY-215" },
+      { code: "S215-1000-HYD-KIT", name: "Sany-215 1000H Hydraulic 4-in-1 Kit", unit: "Set", rate: 4600, cat: "1000 Hrs Hydraulic Kit", machine: "SANY-215" },
+      { code: "S215-500-HYD-PLT", name: "Sany-215 Hydraulic Pilot Filter", unit: "Nos", rate: 750, cat: "Hydraulic Pilot Filter", machine: "SANY-215" },
+      { code: "S215-500-AIR-BRTH", name: "Sany-215 Hydraulic Air Breather", unit: "Nos", rate: 550, cat: "Air Breather Filter", machine: "SANY-215" },
+
+      // 5. JCB-215
+      { code: "JCB215-500-ENG-DSL", name: "JCB-215 500H Engine+Diesel Kit", unit: "Set", rate: 1780, cat: "500 Hrs Routine Kit", machine: "JCB-215" },
+      { code: "JCB215-500-AIR-FLT", name: "JCB-215 Air Filter Set", unit: "Set", rate: 2300, cat: "Air Filter", machine: "JCB-215" },
+      { code: "JCB215-1000-HYD-KIT", name: "JCB-215 1000H Hydraulic 4-in-1 Kit", unit: "Set", rate: 3300, cat: "1000 Hrs Hydraulic Kit", machine: "JCB-215" },
+      { code: "JCB215-500-HYD-PLT", name: "JCB-215 Hydraulic Pilot Filter", unit: "Nos", rate: 680, cat: "Hydraulic Pilot Filter", machine: "JCB-215" },
+      { code: "JCB215-500-AIR-BRTH", name: "JCB-215 Hydraulic Air Breather", unit: "Nos", rate: 450, cat: "Air Breather Filter", machine: "JCB-215" },
+
+      // 6. XCMG-230
+      { code: "XCMG230-500-ENG-DSL", name: "XCMG-230 500H Engine+Diesel Kit", unit: "Set", rate: 2450, cat: "500 Hrs Routine Kit", machine: "XCMG-230" },
+      { code: "XCMG230-500-AIR-FLT", name: "XCMG-230 Air Filter Set", unit: "Set", rate: 3200, cat: "Air Filter", machine: "XCMG-230" },
+      { code: "XCMG230-1000-HYD-KIT", name: "XCMG-230 1000H Hydraulic 4-in-1 Kit", unit: "Set", rate: 4800, cat: "1000 Hrs Hydraulic Kit", machine: "XCMG-230" },
+      { code: "XCMG230-500-HYD-PLT", name: "XCMG-230 Hydraulic Pilot Filter", unit: "Nos", rate: 720, cat: "Hydraulic Pilot Filter", machine: "XCMG-230" },
+      { code: "XCMG230-500-AIR-BRTH", name: "XCMG-230 Hydraulic Air Breather", unit: "Nos", rate: 480, cat: "Air Breather Filter", machine: "XCMG-230" },
+
+      // 7. ZAXIS-140
+      { code: "Z140-500-ENG-DSL", name: "Zaxis-140 500H Engine+Diesel Kit", unit: "Set", rate: 1950, cat: "500 Hrs Routine Kit", machine: "ZAXIS-140" },
+      { code: "Z140-500-AIR-FLT", name: "Zaxis-140 Air Filter Set", unit: "Set", rate: 1200, cat: "Air Filter", machine: "ZAXIS-140" },
+      { code: "Z140-1000-HYD-KIT", name: "Zaxis-140 1000H Hydraulic 4-in-1 Kit", unit: "Set", rate: 2950, cat: "1000 Hrs Hydraulic Kit", machine: "ZAXIS-140" },
+      { code: "Z-140-500-HYD-PLT", name: "Zaxis-140 Hydraulic Pilot Filter", unit: "Nos", rate: 600, cat: "Hydraulic Pilot Filter", machine: "ZAXIS-140" },
+      { code: "Z-140-500-AIR-BRTH", name: "Zaxis-140 Hydraulic Air Breather", unit: "Nos", rate: 400, cat: "Air Breather Filter", machine: "ZAXIS-140" },
+
+      // Common Lubricants & General Spare Parts
+      { code: "LUB-MOBIL-15W40", name: "Mobil Oil 15W40 Engine Oil (20L Can)", unit: "Nos", rate: 6400, cat: "Oils & Lubricants", machine: "COMMON" },
+      { code: "LUB-GEAR-80W90", name: "Gear Oil 80W90 Swing/Track (20L Can)", unit: "Nos", rate: 5800, cat: "Oils & Lubricants", machine: "COMMON" },
+      { code: "LUB-GREASE-18KG", name: "Chassis Grease Gun Bucket (18 Kg)", unit: "Bucket", rate: 4200, cat: "Oils & Lubricants", machine: "COMMON" },
+      { code: "LUB-RING-GREASE", name: "Special Swing Ring Grease (5 Kg)", unit: "Nos", rate: 2100, cat: "Oils & Lubricants", machine: "COMMON" },
+      { code: "GEN-WASTE-COTTON", name: "Cleaning Cotton Waste Kapda", unit: "Kg", rate: 85, cat: "General Spare Parts", machine: "COMMON" }
+    ];
+
+    const MACHINES_FLEET = [
+      { id: "SUPER-210 PRIME", name: "Super-210 Prime", make: "Tata Hitachi", defaultHours: 3200 },
+      { id: "SUPER-200", name: "Super-200", make: "Tata Hitachi", defaultHours: 4100 },
+      { id: "ZAXIS-220", name: "Zaxis-220", make: "Tata Hitachi", defaultHours: 2850 },
+      { id: "SANY-215", name: "Sany-215", make: "Sany Heavy", defaultHours: 1950 },
+      { id: "JCB-215", name: "JCB-215", make: "JCB Excavator", defaultHours: 3450 },
+      { id: "XCMG-230", name: "XCMG-230", make: "XCMG", defaultHours: 1600 },
+      { id: "ZAXIS-140", name: "Zaxis-140", make: "Tata Hitachi", defaultHours: 5200 }
+    ];
+
+    const STORAGE_KEY_PRODUCTS = "comrao_master_products_v3";
+    const STORAGE_KEY_ENTRIES = "comrao_recent_entries_v3";
+
+    let masterProducts = [];
+    let recentEntries = [];
+    let activeKitModalItems = [];
+    let scannerStream = null;
+
+    // Initialization
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
+
+      // Instant LocalStorage Cache Loading (0ms)
+      initLocalStorageProducts();
+      initLocalStorageEntries();
+
+      // Render Dropdowns & Views
+      renderProductDropdown(masterProducts);
+      renderRecentEntriesTable();
+      renderServiceKitsOutward();
+      renderMachineHoursStatus();
+      renderCheatSheet();
+      renderStockLedger();
     });
-    container.innerHTML = html;
-  }
 
-  function addExtraItemToService() {
-    const sel = document.getElementById("extraPartSelect");
-    const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
-    if (!sel.value) return;
-
-    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const prod = itemsToSearch.find(p => p.name === sel.value);
-    activeServiceParts.push({
-      itemName: sel.value,
-      qty: qty,
-      rate: prod ? prod.rate : 0,
-      unit: prod ? prod.unit : "Nos"
-    });
-    sel.value = "";
-    renderServiceItems();
-  }
-
-  function removeServiceItem(idx) {
-    activeServiceParts.splice(idx, 1);
-    renderServiceItems();
-  }
-
-  function closeServiceModal() {
-    document.getElementById("serviceHoursModal").style.display = "none";
-  }
-
-  async function confirmServiceOutward() {
-    const vNo = document.getElementById("vehicleSelect").value;
-    if (!vNo) return alert("Pehle Machine select karein!");
-
-    const payload = {
-      type: "OUT",
-      serviceName: activeServiceName,
-      vehicleNo: vNo,
-      companyName: document.getElementById("companyInput").value,
-      kmReading: document.getElementById("kmInput").value,
-      driverName: document.getElementById("driverInput").value,
-      remarks: document.getElementById("remarksInput").value,
-      items: activeServiceParts
-    };
-
-    closeServiceModal();
-    const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.innerText = "Deducting...";
-
-    try {
-      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-      const data = await res.json();
-      if (data.status === "success") {
-        alert("✅ " + data.message);
-        document.getElementById("stockForm").reset();
+    /**
+     * LocalStorage Products Caching
+     */
+    function initLocalStorageProducts() {
+      try {
+        const cached = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+        if (cached) {
+          masterProducts = JSON.parse(cached);
+          // Auto-merge newly added codes if cache is from older version
+          INITIAL_MASTER_PRODUCTS.forEach(initP => {
+            if (!masterProducts.some(p => p.code === initP.code)) {
+              masterProducts.push(initP);
+            }
+          });
+          saveProductsCache();
+        } else {
+          masterProducts = [...INITIAL_MASTER_PRODUCTS];
+          saveProductsCache();
+        }
+      } catch (e) {
+        masterProducts = [...INITIAL_MASTER_PRODUCTS];
       }
-    } catch(e) { alert("Error: " + e.message); }
-    finally {
-      btn.disabled = false;
-      btn.innerText = "Save Entry";
     }
-  }
 
-  // 7. Supplier Ledger
-  async function loadLedger(silent = false) {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        ledgerData = data.data;
-        supplierItemsMap = data.supplierItemsMap || {};
-        ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
-        populateSupplierDropdowns();
-        if (currentTab === "LEDGER" || !silent) renderActiveLedgerView();
+    function saveProductsCache() {
+      try {
+        localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(masterProducts));
+      } catch (e) {
+        console.error("LocalStorage write error", e);
       }
-    } catch(e){}
-  }
-
-  function onLedgerPartyDropdownChange(party) {
-    activeSelectedLedgerParty = party;
-    renderActiveLedgerView();
-  }
-
-  function showAllSupplierSummary() {
-    activeSelectedLedgerParty = "";
-    document.getElementById("ledgerPartyFilter").value = "";
-    renderActiveLedgerView();
-  }
-
-  function openSinglePartyLedger(party) {
-    activeSelectedLedgerParty = party;
-    document.getElementById("ledgerPartyFilter").value = party;
-    renderActiveLedgerView();
-  }
-
-  function renderActiveLedgerView() {
-    if (activeSelectedLedgerParty) {
-      renderSinglePartyDetailedLedger(activeSelectedLedgerParty);
-    } else {
-      renderAllSuppliersSummary();
     }
-  }
 
-  function renderAllSuppliersSummary() {
-    document.getElementById("ledgerHeadingTitle").innerText = "Supplier Balances Summary";
-    document.getElementById("ledgerBackBtn").classList.add("hidden");
-
-    const sDate = document.getElementById("ledgerSDate").value;
-    const eDate = document.getElementById("ledgerEDate").value;
-
-    const filtered = ledgerData.filter(l => {
-      if (sDate && l.date < sDate) return false;
-      if (eDate && l.date > eDate) return false;
-      return true;
-    });
-
-    const summaryMap = {};
-    filtered.forEach(l => {
-      const p = l.party || "UNKNOWN";
-      if (!summaryMap[p]) summaryMap[p] = { totalDr: 0, totalCr: 0, balance: 0 };
-      summaryMap[p].totalDr += (l.dr || 0);
-      summaryMap[p].totalCr += (l.cr || 0);
-      summaryMap[p].balance = summaryMap[p].totalDr - summaryMap[p].totalCr;
-    });
-
-    let html = `<table class="custom-table">
-      <thead>
-        <tr>
-          <th>Supplier Name</th>
-          <th>Total Purchases (Dr)</th>
-          <th>Total Paid (Cr)</th>
-          <th>Balance Due</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>`;
-
-    const partyNames = Object.keys(summaryMap).sort();
-    if (partyNames.length === 0) {
-      html += `<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>`;
-    } else {
-      let totDr = 0, totCr = 0, totBal = 0;
-      partyNames.forEach(name => {
-        const item = summaryMap[name];
-        totDr += item.totalDr;
-        totCr += item.totalCr;
-        totBal += item.balance;
-
-        html += `<tr>
-          <td><b>${name}</b></td>
-          <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
-          <td style="color:#2f855a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
-          <td style="font-weight:bold; color:${item.balance > 0 ? '#c53030' : '#2f855a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
-          <td><button onclick="openSinglePartyLedger('${name}')" style="background:#2b6cb0; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">View Statement</button></td>
-        </tr>`;
-      });
-      html += `<tr style="background:#edf2f7; font-weight:bold;">
-        <td>TOTAL:</td>
-        <td>₹${totDr.toLocaleString('en-IN')}</td>
-        <td style="color:#2f855a;">₹${totCr.toLocaleString('en-IN')}</td>
-        <td style="color:#c53030;">₹${totBal.toLocaleString('en-IN')} Dr</td>
-        <td>-</td>
-      </tr>`;
+    /**
+     * LocalStorage Recent Entries Caching
+     */
+    function initLocalStorageEntries() {
+      try {
+        const cached = localStorage.getItem(STORAGE_KEY_ENTRIES);
+        if (cached) {
+          recentEntries = JSON.parse(cached);
+        } else {
+          recentEntries = [
+            {
+              id: "TX-901",
+              date: "2026-10-22",
+              type: "OUT",
+              machine: "SUPER-210 PRIME",
+              engineHours: 3200,
+              itemCode: "S210-500-ENG-DSL",
+              itemName: "Super-210 Prime 500H Engine+Diesel Kit",
+              qty: 1,
+              rate: 1950,
+              total: 1950,
+              receiver: "Pradyuman (Operator)",
+              notes: "Routine 500H Periodic"
+            },
+            {
+              id: "TX-902",
+              date: "2026-10-22",
+              type: "OUT",
+              machine: "SUPER-210 PRIME",
+              engineHours: 3200,
+              itemCode: "S210-500-AIR-FLT",
+              itemName: "Super-210 Prime Air Filter Set",
+              qty: 1,
+              rate: 2050,
+              total: 2050,
+              receiver: "Pradyuman (Operator)",
+              notes: "Routine 500H Periodic"
+            },
+            {
+              id: "TX-903",
+              date: "2026-10-20",
+              type: "IN",
+              machine: "SAI ENGINEERING (BIHTA)",
+              engineHours: null,
+              itemCode: "S210-500-ENG-DSL",
+              itemName: "Super-210 Prime 500H Engine+Diesel Kit",
+              qty: 10,
+              rate: 1950,
+              total: 19500,
+              receiver: "Store Godown Inward",
+              notes: "Purchase Invoice Stock In"
+            }
+          ];
+          saveEntriesCache();
+        }
+      } catch (e) {
+        recentEntries = [];
+      }
     }
-    html += `</tbody></table>`;
-    document.getElementById("ledgerContent").innerHTML = html;
-  }
 
-  function renderSinglePartyDetailedLedger(party) {
-    document.getElementById("ledgerHeadingTitle").innerText = `Statement: ${party}`;
-    document.getElementById("ledgerBackBtn").classList.remove("hidden");
+    function saveEntriesCache() {
+      try {
+        localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(recentEntries));
+      } catch (e) {
+        console.error("LocalStorage write error", e);
+      }
+    }
 
-    const sDate = document.getElementById("ledgerSDate").value;
-    const eDate = document.getElementById("ledgerEDate").value;
+    /**
+     * Render Single-Line Compact Dropdown
+     */
+    function renderProductDropdown(itemsList) {
+      const select = document.getElementById("itemSelect");
+      const badge = document.getElementById("dropdownCountBadge");
+      select.innerHTML = '<option value="">-- Select Code / Part (12px Compact) --</option>';
 
-    const filtered = ledgerData.filter(l => {
-      if (l.party !== party) return false;
-      if (sDate && l.date < sDate) return false;
-      if (eDate && l.date > eDate) return false;
-      return true;
-    });
+      badge.textContent = `${itemsList.length} items`;
 
-    let running = 0;
-    let html = `<table class="custom-table">
-      <thead><tr><th>Date</th><th>Particulars</th><th>Dr (Purchases)</th><th>Cr (Payments)</th><th>Balance Due</th></tr></thead><tbody>`;
-    
-    if (filtered.length === 0) {
-      html += `<tr><td colspan="5" style="text-align:center;">No records for this party.</td></tr>`;
-    } else {
-      filtered.forEach(l => {
-        running += ((l.dr || 0) - (l.cr || 0));
-        html += `<tr>
-          <td>${l.displayDate || l.date}</td>
-          <td>${l.particulars}</td>
-          <td style="color:#2d3748;">${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
-          <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
-          <td style="font-weight:bold; color:${running > 0 ? '#c53030' : '#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
-        </tr>`;
+      if (itemsList.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No matching items found";
+        select.appendChild(opt);
+        return;
+      }
+
+      itemsList.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.code;
+        // Strictly formatted single line
+        opt.textContent = `[${item.code}] ${item.name} | Rate: ₹${item.rate}`;
+        select.appendChild(opt);
       });
     }
-    html += `</tbody></table>`;
-    document.getElementById("ledgerContent").innerHTML = html;
-  }
 
-  // 8. Purchase Order (PO) with Supplier Item History & WhatsApp
-  function openCreateOrderModal() {
-    populateSupplierDropdowns();
-    renderProductDropdown();
-    document.getElementById("poSupplierSelect").value = "";
-    document.getElementById("poSupplierItemsSection").classList.add("hidden");
-    document.getElementById("poItemList").innerHTML = "";
-    document.getElementById("createOrderModal").style.display = "flex";
-  }
+    /**
+     * Smart Fuzzy Search (Typing 2-3 letters matches code or name)
+     */
+    function handleFuzzySearch(val) {
+      const q = val.trim().toLowerCase();
+      if (!q) {
+        renderProductDropdown(masterProducts);
+        return;
+      }
 
-  function closeCreateOrderModal() {
-    document.getElementById("createOrderModal").style.display = "none";
-  }
-
-  function onPoSupplierSelected(supplier) {
-    const section = document.getElementById("poSupplierItemsSection");
-    const container = document.getElementById("poItemList");
-    if (!supplier) {
-      section.classList.add("hidden");
-      container.innerHTML = "";
-      return;
-    }
-
-    section.classList.remove("hidden");
-    renderProductDropdown();
-
-    const pastItems = supplierItemsMap[supplier] || {};
-    const itemNames = Object.keys(pastItems);
-
-    let html = "";
-    if (itemNames.length === 0) {
-      html = `<p style="font-size:10.5px; color:#718096; margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se product add karein.</p>`;
-    } else {
-      itemNames.forEach(itm => {
-        const rate = pastItems[itm] || 0;
-        const curStock = summaryData.find(s => s.item === itm);
-        const left = curStock ? curStock.balance : 0;
-        const isLow = left <= 2;
-
-        html += `
-          <div class="po-item-row" style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;">
-            <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" ${isLow ? 'checked' : ''}> <b>${itm}</b> (${left} left)</label>
-            <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:50px; padding:2px; font-size:10.5px;">
-          </div>`;
+      const filtered = masterProducts.filter(item => {
+        return item.code.toLowerCase().includes(q) ||
+               item.name.toLowerCase().includes(q) ||
+               item.cat.toLowerCase().includes(q) ||
+               (item.machine && item.machine.toLowerCase().includes(q));
       });
-    }
-    container.innerHTML = html;
-  }
 
-  function addOtherItemToPo() {
-    const sel = document.getElementById("poOtherProductSelect");
-    const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
-    if (!sel || !sel.value) return alert("Pehle item select karein!");
+      renderProductDropdown(filtered);
 
-    const itm = sel.value;
-    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const prod = itemsToSearch.find(p => p.name === itm);
-    const rate = prod ? prod.rate : 0;
-    const curStock = summaryData.find(s => s.item === itm);
-    const left = curStock ? curStock.balance : 0;
-
-    const container = document.getElementById("poItemList");
-    const newRow = document.createElement("div");
-    newRow.className = "po-item-row";
-    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;";
-    newRow.innerHTML = `
-      <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" checked> <b>${itm}</b> (${left} left)</label>
-      <input type="number" class="po-qty" value="${qty}" style="width:50px; padding:2px; font-size:10.5px;">
-    `;
-    container.appendChild(newRow);
-    sel.value = "";
-  }
-
-  async function submitPurchaseOrder() {
-    const party = document.getElementById("poSupplierSelect").value.trim();
-    if (!party) return alert("Kripya Supplier select karein!");
-
-    const now = Date.now();
-    if (now - lastPoSubmitTime < 10000) {
-      return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
+      // Single match auto-select
+      if (filtered.length === 1) {
+        document.getElementById("itemSelect").value = filtered[0].code;
+        onItemSelectChange(filtered[0].code);
+      }
     }
 
-    const chks = document.querySelectorAll(".po-chk:checked");
-    const items = [];
-    chks.forEach(c => {
-      const itemRow = c.closest(".po-item-row");
-      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
-      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
-    });
+    function clearFuzzySearch() {
+      document.getElementById("itemSearchInput").value = "";
+      renderProductDropdown(masterProducts);
+    }
 
-    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
+    /**
+     * Dropdown Item Selection
+     */
+    function onItemSelectChange(code) {
+      if (!code) {
+        document.getElementById("unitInput").value = "";
+        document.getElementById("rateInput").value = "";
+        document.getElementById("serviceKitNotice").classList.add("hidden");
+        recalcVoucherTotal();
+        return;
+      }
 
-    const btn = document.getElementById("poSubmitBtn");
-    btn.disabled = true;
-    btn.innerText = "Placing PO...";
-    lastPoSubmitTime = now;
+      const item = masterProducts.find(p => p.code === code);
+      if (item) {
+        document.getElementById("unitInput").value = item.unit;
+        document.getElementById("rateInput").value = item.rate;
+        recalcVoucherTotal();
 
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        closeCreateOrderModal();
-        loadOrders();
-
-        let waText = `*PURCHASE ORDER: ${data.orderNo || ''}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
-        items.forEach((it, i) => {
-          waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
-        });
-        waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!`;
-
-        if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
-          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
+        // Check if item is part of a routine or major service kit
+        if (item.cat.includes("Kit") || item.cat.includes("Filter")) {
+          document.getElementById("serviceKitNotice").classList.remove("hidden");
+        } else {
+          document.getElementById("serviceKitNotice").classList.add("hidden");
         }
       }
-    } catch(e) { alert("Order error: " + e.message); }
-    finally {
-      btn.disabled = false;
-      btn.innerText = "Save PO";
     }
-  }
 
-  async function loadOrders() {
-    const container = document.getElementById("orderListContent");
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        poData = data.data;
-        let html = `<table class="custom-table">
-          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-        poData.forEach(o => {
-          html += `<tr>
-            <td>${o.orderNo}</td>
-            <td><b>${o.party}</b></td>
-            <td>${o.item}</td>
-            <td>${o.qty} ${o.unit}</td>
-            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
-            <td style="display:flex; gap:4px;">
-              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
-              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
-            </td>
-          </tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
+    /**
+     * Next Service Due Engine Hours Calculation
+     */
+    function onMachineSelectChange(machineName) {
+      const banner = document.getElementById("nextServiceBanner");
+      if (!machineName || machineName === "WORKSHOP / COMMON") {
+        banner.classList.add("hidden");
+        return;
       }
-    } catch(e) { container.innerHTML = "Error loading orders."; }
-  }
 
-  function shareSinglePoWhatsApp(ordNo, party, item, qty, unit) {
-    const text = `*PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-  }
+      document.getElementById("bannerMachineName").textContent = machineName;
 
-  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
-    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
+      // Scan past transactions for latest recorded hours for this machine
+      const pastTx = recentEntries
+        .filter(t => t.machine === machineName && t.engineHours && !isNaN(parseFloat(t.engineHours)))
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          type: "IN",
-          itemName: item,
-          qty: qty,
+      let lastHours = 0;
+      if (pastTx.length > 0) {
+        lastHours = parseFloat(pastTx[0].engineHours);
+      } else {
+        const fleetObj = MACHINES_FLEET.find(m => m.id === machineName);
+        lastHours = fleetObj ? fleetObj.defaultHours : 0;
+      }
+
+      if (lastHours > 0) {
+        document.getElementById("lastRecordedReading").textContent = `${lastHours} Hrs`;
+        const nextDue = lastHours + 500;
+        document.getElementById("nextServiceReading").textContent = `${nextDue} Hrs`;
+        banner.classList.remove("hidden");
+
+        const hoursField = document.getElementById("engineHoursInput");
+        if (!hoursField.value) {
+          hoursField.value = lastHours;
+        }
+      } else {
+        banner.classList.add("hidden");
+      }
+    }
+
+    function recalcVoucherTotal() {
+      const qty = parseFloat(document.getElementById("qtyInput").value) || 0;
+      const rate = parseFloat(document.getElementById("rateInput").value) || 0;
+      document.getElementById("totalInput").value = (qty * rate).toFixed(2);
+    }
+
+    function setTxType(type) {
+      document.getElementById("txType").value = type;
+      const btnIn = document.getElementById("typeBtn-IN");
+      const btnOut = document.getElementById("typeBtn-OUT");
+      const targetLabel = document.getElementById("targetLabel");
+      const personLabel = document.getElementById("personLabel");
+      const hoursGroup = document.getElementById("engineHoursGroup");
+
+      if (type === "OUT") {
+        btnOut.className = "px-4 py-1.5 rounded-md bg-rose-600 text-white shadow transition";
+        btnIn.className = "px-4 py-1.5 rounded-md text-slate-700 hover:text-slate-900 transition";
+        targetLabel.innerHTML = 'Assigned Excavator / Machine <span class="text-rose-500">*</span>';
+        personLabel.textContent = "Operator / Driver / Receiver";
+        hoursGroup.style.display = "block";
+      } else {
+        btnIn.className = "px-4 py-1.5 rounded-md bg-emerald-600 text-white shadow transition";
+        btnOut.className = "px-4 py-1.5 rounded-md text-slate-700 hover:text-slate-900 transition";
+        targetLabel.innerHTML = 'Supplier / Vendor Name <span class="text-emerald-500">*</span>';
+        personLabel.textContent = "Store Munshi / Receiving Person";
+        hoursGroup.style.display = "none";
+        document.getElementById("nextServiceBanner").classList.add("hidden");
+      }
+    }
+
+    function handleVoucherSubmit(e) {
+      e.preventDefault();
+
+      const type = document.getElementById("txType").value;
+      const date = document.getElementById("txDate").value;
+      const machine = document.getElementById("machineSelect").value;
+      const engineHours = type === "OUT" ? document.getElementById("engineHoursInput").value : null;
+      const person = document.getElementById("personInput").value || "Direct Entry";
+      const productCode = document.getElementById("itemSelect").value;
+      const rate = parseFloat(document.getElementById("rateInput").value) || 0;
+      const qty = parseFloat(document.getElementById("qtyInput").value) || 1;
+      const total = parseFloat(document.getElementById("totalInput").value) || 0;
+      const notes = document.getElementById("notesInput").value || "";
+
+      if (!productCode) {
+        showToast("Please choose a part or service kit code!", "error");
+        return;
+      }
+
+      if (type === "OUT" && !machine) {
+        showToast("Please select an excavator machine!", "error");
+        return;
+      }
+
+      const product = masterProducts.find(p => p.code === productCode);
+
+      const entry = {
+        id: "TX-" + Date.now().toString().slice(-5),
+        date: date,
+        type: type,
+        machine: machine || (type === "IN" ? "SUPPLIER PURCHASE" : "COMMON STORE"),
+        engineHours: engineHours ? parseFloat(engineHours) : null,
+        itemCode: productCode,
+        itemName: product ? product.name : productCode,
+        qty: qty,
+        rate: rate,
+        total: total,
+        receiver: person,
+        notes: notes
+      };
+
+      recentEntries.unshift(entry);
+      saveEntriesCache();
+
+      showToast(`Entry Saved: ${entry.itemCode} [${type}] ₹${total.toLocaleString()}`);
+
+      renderRecentEntriesTable();
+      renderMachineHoursStatus();
+      renderStockLedger();
+
+      if (machine) {
+        onMachineSelectChange(machine);
+      }
+
+      document.getElementById("qtyInput").value = "1";
+      document.getElementById("notesInput").value = "";
+    }
+
+    function resetVoucherForm() {
+      document.getElementById("voucherForm").reset();
+      document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
+      setTxType("OUT");
+      document.getElementById("itemSelect").value = "";
+      document.getElementById("nextServiceBanner").classList.add("hidden");
+      clearFuzzySearch();
+      recalcVoucherTotal();
+    }
+
+    /**
+     * Render Bottom Recent Entries Table
+     */
+    function renderRecentEntriesTable() {
+      const tbody = document.getElementById("recentEntriesBody");
+      const countLabel = document.getElementById("logRecordCount");
+      tbody.innerHTML = "";
+
+      countLabel.textContent = `${recentEntries.length} records`;
+
+      if (recentEntries.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-slate-400">No transactions recorded yet.</td></tr>`;
+        return;
+      }
+
+      recentEntries.slice(0, 30).forEach((entry) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+        const badge = entry.type === "IN"
+          ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[10px] font-bold">IN</span>`
+          : `<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-[10px] font-bold">OUT</span>`;
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${entry.date}</td>
+          <td class="py-2.5 px-2">${badge}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800 whitespace-nowrap">${entry.machine}</td>
+          <td class="py-2.5 px-2 text-slate-600">${entry.engineHours ? entry.engineHours + " H" : "-"}</td>
+          <td class="py-2.5 px-3 text-slate-900 max-w-xs truncate" title="${entry.itemName}">
+            <b class="text-amber-800 font-mono-code">${entry.itemCode}</b> - ${entry.itemName}
+          </td>
+          <td class="py-2.5 px-2 text-right font-bold">${entry.qty}</td>
+          <td class="py-2.5 px-3 text-right text-slate-600">₹${entry.rate.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-bold text-slate-950">₹${entry.total.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap truncate max-w-[120px]">${entry.receiver || "-"}</td>
+          <td class="py-2.5 px-2 text-center">
+            <button onclick="deleteSingleEntry('${entry.id}')" class="text-slate-400 hover:text-rose-600 transition" title="Delete Entry">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteSingleEntry(id) {
+      if (!confirm("Are you sure you want to delete this record?")) return;
+      recentEntries = recentEntries.filter(e => e.id !== id);
+      saveEntriesCache();
+      renderRecentEntriesTable();
+      renderMachineHoursStatus();
+      renderStockLedger();
+      showToast("Record removed from log", "info");
+    }
+
+    function clearRecentEntriesPrompt() {
+      if (!confirm("Clear all recent entries? This cannot be undone.")) return;
+      recentEntries = [];
+      saveEntriesCache();
+      renderRecentEntriesTable();
+      renderMachineHoursStatus();
+      renderStockLedger();
+      showToast("Log cleared", "info");
+    }
+
+    /**
+     * Machine Hours Tracker Status View
+     */
+    function renderMachineHoursStatus() {
+      const container = document.getElementById("machineStatusContainer");
+      container.innerHTML = "";
+
+      MACHINES_FLEET.forEach(machine => {
+        const txList = recentEntries
+          .filter(t => t.machine === machine.id && t.engineHours)
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        const lastHours = txList.length > 0 ? parseFloat(txList[0].engineHours) : machine.defaultHours;
+        const nextDue = lastHours + 500;
+        const lastDate = txList.length > 0 ? txList[0].date : "Initial Setup";
+
+        const card = document.createElement("div");
+        card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md transition space-y-3";
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-amber-600 uppercase font-mono">${machine.make}</span>
+            <span class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold">In Fleet</span>
+          </div>
+
+          <h3 class="text-base font-extrabold text-slate-900">${machine.name}</h3>
+
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5 text-xs font-mono-code">
+            <div class="flex justify-between text-slate-600">
+              <span>Last Service Reading:</span>
+              <span class="font-bold text-slate-900">${lastHours} Hrs</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Recorded Date:</span>
+              <span class="text-slate-500">${lastDate}</span>
+            </div>
+            <div class="flex justify-between text-blue-900 pt-1 border-t border-slate-200">
+              <span class="font-bold">Next Service Due (+500H):</span>
+              <span class="font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded">${nextDue} Hrs</span>
+            </div>
+          </div>
+
+          <div class="flex gap-2 pt-1">
+            <button onclick="triggerQuickServiceKit('${machine.id}', 500)" class="flex-1 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs transition shadow-sm">
+              500H Kit
+            </button>
+            <button onclick="triggerQuickServiceKit('${machine.id}', 1000)" class="flex-1 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold rounded-lg text-xs transition shadow-sm">
+              1000H Kit
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    /**
+     * Machine Service Outward View (500 / 1000H)
+     */
+    function renderServiceKitsOutward() {
+      const container = document.getElementById("serviceKitsGrid");
+      container.innerHTML = "";
+
+      MACHINES_FLEET.forEach(machine => {
+        const card = document.createElement("div");
+        card.className = "bg-slate-50 rounded-xl border border-slate-200 p-4 space-y-3";
+
+        // Find codes for this machine
+        const engKit = masterProducts.find(p => p.machine === machine.id && p.code.includes("-500-ENG-DSL"));
+        const airKit = masterProducts.find(p => p.machine === machine.id && p.code.includes("-AIR-FLT"));
+        const hydKit = masterProducts.find(p => p.machine === machine.id && p.code.includes("-1000-HYD-KIT"));
+        const pltKit = masterProducts.find(p => p.machine === machine.id && p.code.includes("HYD-PLT"));
+        const brthKit = masterProducts.find(p => p.machine === machine.id && p.code.includes("AIR-BRTH"));
+
+        card.innerHTML = `
+          <div class="border-b pb-2 flex items-center justify-between">
+            <h4 class="font-bold text-slate-900">${machine.name}</h4>
+            <span class="text-[11px] font-mono text-slate-500">${machine.make}</span>
+          </div>
+
+          <div class="space-y-1.5 text-xs font-mono-code">
+            <div class="p-1.5 bg-white rounded border flex justify-between">
+              <span class="text-amber-800 font-bold">${engKit ? engKit.code : 'ENG-DSL'}</span>
+              <span>₹${engKit ? engKit.rate : '-'}</span>
+            </div>
+            <div class="p-1.5 bg-white rounded border flex justify-between">
+              <span class="text-blue-800 font-bold">${airKit ? airKit.code : 'AIR-FLT'}</span>
+              <span>₹${airKit ? airKit.rate : '-'}</span>
+            </div>
+            <div class="p-1.5 bg-white rounded border flex justify-between">
+              <span class="text-emerald-800 font-bold">${hydKit ? hydKit.code : 'HYD-KIT'}</span>
+              <span>₹${hydKit ? hydKit.rate : '-'}</span>
+            </div>
+            ${pltKit ? `
+            <div class="p-1.5 bg-purple-50 rounded border border-purple-200 flex justify-between">
+              <span class="text-purple-900 font-bold">${pltKit.code}</span>
+              <span>₹${pltKit.rate}</span>
+            </div>` : ''}
+            ${brthKit ? `
+            <div class="p-1.5 bg-indigo-50 rounded border border-indigo-200 flex justify-between">
+              <span class="text-indigo-900 font-bold">${brthKit.code}</span>
+              <span>₹${brthKit.rate}</span>
+            </div>` : ''}
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-2">
+            <button onclick="triggerQuickServiceKit('${machine.id}', 500)" class="py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs shadow">
+              Issue 500H Kit
+            </button>
+            <button onclick="triggerQuickServiceKit('${machine.id}', 1000)" class="py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs shadow">
+              Issue 1000H Kit
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function triggerQuickServiceKit(machineId, interval) {
+      switchNavTab("voucher");
+      document.getElementById("machineSelect").value = machineId;
+      onMachineSelectChange(machineId);
+
+      const targetTag = interval === 500 ? "-500-ENG-DSL" : "-1000-HYD-KIT";
+      const matched = masterProducts.find(p => p.machine === machineId && p.code.includes(targetTag));
+      if (matched) {
+        document.getElementById("itemSelect").value = matched.code;
+        onItemSelectChange(matched.code);
+        openServiceKitModalForMachine(machineId, interval);
+      }
+    }
+
+    /**
+     * Service Kit Bundle Modal with Searchable Mini Dropdown
+     */
+    function openKitBuilderFromVoucher() {
+      const code = document.getElementById("itemSelect").value;
+      const machine = document.getElementById("machineSelect").value || "SUPER-210 PRIME";
+      const interval = code.includes("1000") ? 1000 : 500;
+      openServiceKitModalForMachine(machine, interval);
+    }
+
+    function openServiceKitModalForMachine(machineId, interval) {
+      document.getElementById("modalKitTitle").textContent = `${machineId} - ${interval} Hrs Service Bundle`;
+      document.getElementById("modalKitSubtitle").textContent = `Preset filters configured for ${machineId}`;
+
+      // Assemble preset checklist based on machine and interval
+      activeKitModalItems = [];
+
+      const engKit = masterProducts.find(p => p.machine === machineId && p.code.includes("-500-ENG-DSL"));
+      const airKit = masterProducts.find(p => p.machine === machineId && p.code.includes("-AIR-FLT"));
+      const hydKit = masterProducts.find(p => p.machine === machineId && p.code.includes("-1000-HYD-KIT"));
+      const pltKit = masterProducts.find(p => p.machine === machineId && p.code.includes("HYD-PLT"));
+      const brthKit = masterProducts.find(p => p.machine === machineId && p.code.includes("AIR-BRTH"));
+
+      if (engKit) activeKitModalItems.push({ name: `[${engKit.code}] Diesel + Mobil Filter Kit`, rate: engKit.rate, checked: true });
+      if (airKit) activeKitModalItems.push({ name: `[${airKit.code}] Air Filter Outer+Inner Set`, rate: airKit.rate, checked: true });
+
+      if (interval === 1000) {
+        if (hydKit) activeKitModalItems.push({ name: `[${hydKit.code}] Hydraulic 4-in-1 Kit (Return/Strainer/Breather/Pilot)`, rate: hydKit.rate, checked: true });
+        if (pltKit) activeKitModalItems.push({ name: `[${pltKit.code}] Pilot Filter Cartridge`, rate: pltKit.rate, checked: true });
+        if (brthKit) activeKitModalItems.push({ name: `[${brthKit.code}] Air Breather Cap Filter`, rate: brthKit.rate, checked: true });
+      }
+
+      renderKitChecklist();
+      populateModalExtraDropdown(masterProducts);
+      document.getElementById("serviceKitModal").classList.remove("hidden");
+    }
+
+    function renderKitChecklist() {
+      const container = document.getElementById("kitChecklist");
+      container.innerHTML = "";
+      let sum = 0;
+
+      activeKitModalItems.forEach((item, index) => {
+        if (item.checked) sum += item.rate;
+
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs";
+        div.innerHTML = `
+          <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-800">
+            <input type="checkbox" ${item.checked ? "checked" : ""} onchange="toggleKitItem(${index}, this.checked)" class="rounded text-amber-600 focus:ring-amber-500">
+            <span>${item.name}</span>
+          </label>
+          <span class="font-mono-code font-bold text-slate-700">₹${item.rate.toLocaleString()}</span>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById("modalKitTotalAmount").textContent = `₹${sum.toLocaleString()}`;
+    }
+
+    function toggleKitItem(index, isChecked) {
+      activeKitModalItems[index].checked = isChecked;
+      renderKitChecklist();
+    }
+
+    function populateModalExtraDropdown(items) {
+      const select = document.getElementById("modalExtraSelect");
+      select.innerHTML = "";
+      items.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.code;
+        opt.textContent = `[${p.code}] ${p.name} - ₹${p.rate}`;
+        select.appendChild(opt);
+      });
+    }
+
+    function filterModalExtras(query) {
+      const q = query.trim().toLowerCase();
+      const filtered = masterProducts.filter(p => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q));
+      populateModalExtraDropdown(filtered);
+    }
+
+    function addExtraItemToKit() {
+      const select = document.getElementById("modalExtraSelect");
+      const code = select.value;
+      if (!code) return;
+
+      const item = masterProducts.find(p => p.code === code);
+      if (item) {
+        activeKitModalItems.push({
+          name: `[EXTRA] [${item.code}] ${item.name}`,
+          rate: item.rate,
+          checked: true
+        });
+        renderKitChecklist();
+        showToast(`Added ${item.code} to bundle`);
+      }
+    }
+
+    function confirmServiceKitSelection() {
+      let sum = 0;
+      activeKitModalItems.forEach(i => {
+        if (i.checked) sum += i.rate;
+      });
+
+      document.getElementById("rateInput").value = sum;
+      recalcVoucherTotal();
+      closeServiceKitModal();
+      showToast("Service Kit Bundle values applied to voucher");
+    }
+
+    function closeServiceKitModal() {
+      document.getElementById("serviceKitModal").classList.add("hidden");
+    }
+
+    /**
+     * Master Cheat Sheet Table
+     */
+    function renderCheatSheet() {
+      const tbody = document.getElementById("cheatSheetTableBody");
+      tbody.innerHTML = "";
+
+      const cheatRows = [
+        { model: "Super-210 Prime", eng: "S210-500-ENG-DSL", air: "S210-500-AIR-FLT", hyd: "S210-1000-HYD-KIT", plt: "S-210-500-HYD-PLT", brth: "S-210-500-AIR-BRTH" },
+        { model: "Super-200", eng: "S200-500-ENG-DSL", air: "S200-500-AIR-FLT", hyd: "S200-1000-HYD-KIT", plt: "Standard", brth: "Standard" },
+        { model: "ZAXIS-220", eng: "Z220-500-ENG-DSL", air: "Z220-500-AIR-FLT", hyd: "Z220-1000-HYD-KIT", plt: "Z220-500-HYD-PLT", brth: "Z220-500-AIR-BRTH" },
+        { model: "SANY-215", eng: "S215-500-ENG-DSL", air: "S215-500-AIR-FLT", hyd: "S215-1000-HYD-KIT", plt: "S215-500-HYD-PLT", brth: "S215-500-AIR-BRTH" },
+        { model: "JCB-215", eng: "JCB215-500-ENG-DSL", air: "JCB215-500-AIR-FLT", hyd: "JCB215-1000-HYD-KIT", plt: "JCB215-500-HYD-PLT", brth: "JCB215-500-AIR-BRTH" },
+        { model: "XCMG-230", eng: "XCMG230-500-ENG-DSL", air: "XCMG230-500-AIR-FLT", hyd: "XCMG230-1000-HYD-KIT", plt: "XCMG230-500-HYD-PLT", brth: "XCMG230-500-AIR-BRTH" },
+        { model: "ZAXIS-140", eng: "Z140-500-ENG-DSL", air: "Z140-500-AIR-FLT", hyd: "Z140-1000-HYD-KIT", plt: "Z-140-500-HYD-PLT", brth: "Z-140-500-AIR-BRTH" }
+      ];
+
+      cheatRows.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-amber-50/50";
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-slate-900 border-r border-slate-200">${row.model}</td>
+          <td class="p-3 text-amber-800 font-bold border-r border-slate-200">${row.eng}</td>
+          <td class="p-3 text-blue-800 font-bold border-r border-slate-200">${row.air}</td>
+          <td class="p-3 text-emerald-800 font-bold border-r border-slate-200">${row.hyd}</td>
+          <td class="p-3 text-purple-800 font-bold border-r border-slate-200">${row.plt}</td>
+          <td class="p-3 text-indigo-800 font-bold">${row.brth}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /**
+     * Stock Inventory Ledger Calculation
+     */
+    function renderStockLedger() {
+      const tbody = document.getElementById("stockLedgerBody");
+      tbody.innerHTML = "";
+
+      masterProducts.forEach(prod => {
+        // Compute in, out, balance from recentEntries
+        let inward = 0;
+        let outward = 0;
+
+        recentEntries.forEach(entry => {
+          if (entry.itemCode === prod.code) {
+            if (entry.type === "IN") inward += entry.qty;
+            if (entry.type === "OUT") outward += entry.qty;
+          }
+        });
+
+        const balance = inward - outward;
+        const valuation = balance > 0 ? balance * prod.rate : 0;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-amber-900">${prod.code}</td>
+          <td class="p-3 font-medium text-slate-800">${prod.name}</td>
+          <td class="p-3 text-slate-500">${prod.cat}</td>
+          <td class="p-3 text-right text-emerald-700 font-bold">${inward}</td>
+          <td class="p-3 text-right text-rose-700 font-bold">${outward}</td>
+          <td class="p-3 text-right font-black ${balance >= 0 ? 'text-slate-900' : 'text-rose-600'}">${balance}</td>
+          <td class="p-3 text-right text-slate-600">₹${prod.rate.toLocaleString()}</td>
+          <td class="p-3 text-right font-bold text-slate-900">₹${valuation.toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /**
+     * Add Product Modal & Barcode Camera
+     */
+    function openAddProductModal() {
+      document.getElementById("newProductForm").reset();
+      document.getElementById("addProductModal").classList.remove("hidden");
+    }
+
+    function closeAddProductModal() {
+      stopCameraScanner();
+      document.getElementById("addProductModal").classList.add("hidden");
+    }
+
+    function startCameraScanner() {
+      const video = document.getElementById("scannerVideo");
+      const overlay = document.getElementById("scannerOverlay");
+      const placeholder = document.getElementById("cameraPlaceholder");
+      const status = document.getElementById("cameraStatus");
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+          .then(stream => {
+            scannerStream = stream;
+            video.srcObject = stream;
+            video.classList.remove("hidden");
+            overlay.classList.remove("hidden");
+            placeholder.classList.add("hidden");
+            status.textContent = "Camera Live";
+            video.play();
+
+            setTimeout(() => {
+              simulateBarcodeScan();
+            }, 3000);
+          })
+          .catch(err => {
+            status.textContent = "Camera access unavailable";
+            simulateBarcodeScan();
+          });
+      } else {
+        simulateBarcodeScan();
+      }
+    }
+
+    function stopCameraScanner() {
+      if (scannerStream) {
+        scannerStream.getTracks().forEach(track => track.stop());
+        scannerStream = null;
+      }
+      document.getElementById("scannerVideo").classList.add("hidden");
+      document.getElementById("scannerOverlay").classList.add("hidden");
+      document.getElementById("cameraPlaceholder").classList.remove("hidden");
+      document.getElementById("cameraStatus").textContent = "Standby";
+    }
+
+    function simulateBarcodeScan() {
+      const sampleCodes = [
+        "S210-500-ENG-DSL", "S210-500-AIR-FLT", "S-210-500-HYD-PLT", 
+        "Z220-500-AIR-BRTH", "S215-1000-HYD-KIT", "LUB-MOBIL-15W40"
+      ];
+      const scanned = sampleCodes[Math.floor(Math.random() * sampleCodes.length)];
+      document.getElementById("newProdCode").value = scanned;
+      document.getElementById("newProdName").value = "Scanned Item - " + scanned;
+      showToast(`Barcode Scanned: ${scanned}`, "info");
+      stopCameraScanner();
+    }
+
+    function handleSaveNewProduct(e) {
+      e.preventDefault();
+      const code = document.getElementById("newProdCode").value.trim().toUpperCase();
+      const name = document.getElementById("newProdName").value.trim();
+      const unit = document.getElementById("newProdUnit").value;
+      const rate = parseFloat(document.getElementById("newProdRate").value) || 0;
+      const cat = document.getElementById("newProdCategory").value;
+
+      if (!code || !name) {
+        showToast("Please enter product code and name", "error");
+        return;
+      }
+
+      const existingIndex = masterProducts.findIndex(p => p.code === code);
+      if (existingIndex >= 0) {
+        masterProducts[existingIndex] = { ...masterProducts[existingIndex], name, unit, rate, cat };
+        showToast(`Updated existing SKU: ${code}`);
+      } else {
+        masterProducts.unshift({
+          code: code,
+          name: name,
           unit: unit,
           rate: rate,
-          totalAmount: qty * rate,
-          partyName: party,
-          orderNo: ordNo,
-          remarks: "Received from " + ordNo
-        })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        alert("Stock Inward Complete!");
-        loadOrders();
-      }
-    } catch(e) { alert(e.message); }
-  }
-
-  // 9. Stock Summary & Month Closing
-  async function loadSummary(silent = false) {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        summaryData = data.data;
-        document.getElementById("kpiItems").innerText = summaryData.length;
-        document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0);
-        document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
-        if (currentTab === "SUMMARY" || !silent) renderSummaryTable();
-      }
-    } catch(e){}
-  }
-
-  function renderSummaryTable() {
-    const q = (document.getElementById("summarySearch").value || "").toLowerCase();
-    const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
-    let html = `<table class="custom-table">
-      <thead><tr><th>Spare Part</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
-    filtered.forEach(s => {
-      html += `<tr>
-        <td><b>${s.item}</b></td>
-        <td>${s.totalIn}</td>
-        <td>${s.totalOut}</td>
-        <td style="font-weight:bold; color:${s.balance<=2?'#c53030':'#2f855a'};">${s.balance}</td>
-        <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
-    document.getElementById("summaryTableContent").innerHTML = html;
-  }
-
-  async function loadClosing(silent = false) {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        closingData = data.data;
-        if (currentTab === "CLOSING" || !silent) renderClosingReport();
-      }
-    } catch(e){}
-  }
-
-  function renderClosingReport() {
-    const sDate = document.getElementById("closingSDate").value;
-    const eDate = document.getElementById("closingEDate").value;
-    const compFilter = document.getElementById("closingCompFilter").value;
-    const vehFilter = document.getElementById("closingVehFilter").value;
-    const serviceOnly = document.getElementById("serviceOnlyToggle").checked;
-
-    const filtered = closingData.filter(c => {
-      if (sDate && c.date < sDate) return false;
-      if (eDate && c.date > eDate) return false;
-      if (compFilter && c.company !== compFilter) return false;
-      if (vehFilter && c.vehicle !== vehFilter) return false;
-      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
-      return true;
-    });
-
-    const uniqueVehs = new Set(filtered.map(f => f.vehicle));
-    const totalCost = filtered.reduce((a,b) => a + (b.amount||0), 0);
-    document.getElementById("closingTotalVehs").innerText = uniqueVehs.size;
-    document.getElementById("closingTotalItems").innerText = filtered.length;
-    document.getElementById("closingTotalCost").innerText = "₹" + totalCost.toLocaleString('en-IN');
-
-    const grouped = {};
-    filtered.forEach(item => {
-      const comp = item.company || "OTHER";
-      const veh = item.vehicle || "UNKNOWN";
-      if (!grouped[comp]) grouped[comp] = {};
-      if (!grouped[comp][veh]) grouped[comp][veh] = [];
-      grouped[comp][veh].push(item);
-    });
-
-    const container = document.getElementById("closingContent");
-    if (Object.keys(grouped).length === 0) {
-      container.innerHTML = "<p style='text-align:center; color:#718096;'>No records found.</p>";
-      return;
-    }
-
-    let html = "";
-    for (const [company, vehs] of Object.entries(grouped)) {
-      html += `<div class="company-block">
-        <div class="company-header">
-          <span>🏢 ${company}</span>
-          <span>Machines: ${Object.keys(vehs).length}</span>
-        </div>`;
-
-      for (const [vehicle, items] of Object.entries(vehs)) {
-        const vCost = items.reduce((a,b) => a + (b.amount||0), 0);
-        html += `
-          <div class="vehicle-card">
-            <div class="vehicle-head-row">
-              <span class="vehicle-title">🚜 ${vehicle}</span>
-              <span class="vehicle-cost">Total: ₹${vCost.toLocaleString('en-IN')}</span>
-            </div>
-            <table class="custom-table" style="margin-top:6px;">
-              <thead>
-                <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
-              </thead>
-              <tbody>`;
-        items.forEach(it => {
-          html += `<tr>
-            <td>${it.displayDate || it.date}</td>
-            <td>${it.item} ${it.remarks ? `<br><small style="color:#718096;">${it.remarks}</small>` : ''}</td>
-            <td>${it.qty} ${it.unit}</td>
-            <td>${it.km || '-'}</td>
-            <td>₹${it.amount.toLocaleString('en-IN')}</td>
-          </tr>`;
+          cat: cat,
+          machine: "COMMON"
         });
-        html += `</tbody></table></div>`;
+        showToast(`New SKU registered: ${code}`);
       }
-      html += `</div>`;
+
+      saveProductsCache();
+      renderProductDropdown(masterProducts);
+      renderStockLedger();
+      closeAddProductModal();
+
+      document.getElementById("itemSelect").value = code;
+      onItemSelectChange(code);
     }
-    container.innerHTML = html;
-  }
 
-  // 10. Manual & Auto 7-8s Silent Refresh
-  async function hardRefreshData(section) {
-    const notify = document.getElementById("msg");
-    notify.innerText = `🔄 Reloading fresh ${section} data...`;
-    notify.style.color = "#3182ce";
+    /**
+     * CSV Export
+     */
+    function exportToCSV() {
+      if (recentEntries.length === 0) {
+        showToast("No records to export!", "info");
+        return;
+      }
 
-    await fetchMasterData();
-    if (section === 'Stock') await loadSummary();
-    if (section === 'Ledger') await loadLedger();
-    if (section === 'Closing') await loadClosing();
-    if (section === 'Orders') await loadOrders();
+      const headers = ["ID", "Date", "Type", "Machine / Vendor", "Hours Meter", "Item Code", "Item Name", "Quantity", "Rate", "Total Amount", "Receiver", "Notes"];
+      const rows = recentEntries.map(e => [
+        e.id,
+        e.date,
+        e.type,
+        `"${e.machine}"`,
+        e.engineHours || "",
+        `"${e.itemCode}"`,
+        `"${e.itemName}"`,
+        e.qty,
+        e.rate,
+        e.total,
+        `"${e.receiver}"`,
+        `"${e.notes}"`
+      ]);
 
-    notify.innerText = `✅ ${section} Refreshed Live!`;
-    notify.style.color = "#2f855a";
-    setTimeout(() => { notify.innerText = ""; }, 2000);
-  }
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const encoded = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encoded);
+      link.setAttribute("download", `Store_Transactions_${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-  function startAutoRefreshLoop() {
-    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-    autoRefreshTimer = setInterval(async () => {
-      const activeEl = document.activeElement;
-      const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "SELECT");
-      const isModalOpen = Array.from(document.querySelectorAll('.modal')).some(m => m.style.display === "flex");
+      showToast("Data log exported to Excel CSV");
+    }
 
-      if (isTyping || isModalOpen) return;
-
-      if (currentTab === "SUMMARY") await loadSummary(true);
-      else if (currentTab === "LEDGER") await loadLedger(true);
-      else if (currentTab === "CLOSING") await loadClosing(true);
-      else if (currentTab === "ORDER") await loadOrders();
-    }, 7500);
-  }
-
-  // 11. Initial Master Data Fetch
-  async function fetchMasterData() {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
-      const data = await res.json();
-      if (data && data.status === "success") {
-        if (data.products && data.products.length > 0) productList = data.products;
-        if (data.kits && Object.keys(data.kits).length > 0) kitsMap = data.kits;
-        if (data.vehicles && data.vehicles.length > 0) {
-          data.vehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+    /**
+     * Navigation Tab Switcher
+     */
+    function switchNavTab(tabName) {
+      ["voucher", "servicekits", "tracker", "cheat", "ledger"].forEach(t => {
+        const sec = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`navBtn-${t}`);
+        if (t === tabName) {
+          sec.classList.remove("hidden");
+          btn.className = "px-3.5 py-1.5 rounded-md bg-amber-500 text-slate-950 font-bold transition flex items-center gap-1.5 whitespace-nowrap shadow";
+        } else {
+          sec.classList.add("hidden");
+          btn.className = "px-3.5 py-1.5 rounded-md text-slate-300 hover:bg-slate-800 transition flex items-center gap-1.5 whitespace-nowrap";
         }
+      });
+    }
 
-        renderProductDropdown();
-        renderVehicleDropdown();
-        document.getElementById("syncText").innerText = "Sheets Synced Online";
+    /**
+     * Toast System
+     */
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMsg");
+      const toastIcon = document.getElementById("toastIcon");
+
+      toastMsg.textContent = msg;
+
+      if (type === "error") {
+        toast.className = "fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-2xl text-xs font-semibold flex items-center gap-3 bg-rose-600 text-white";
+        toastIcon.className = "fa-solid fa-triangle-exclamation text-base";
+      } else if (type === "info") {
+        toast.className = "fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-2xl text-xs font-semibold flex items-center gap-3 bg-blue-600 text-white";
+        toastIcon.className = "fa-solid fa-circle-info text-base";
+      } else {
+        toast.className = "fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-2xl text-xs font-semibold flex items-center gap-3 bg-slate-900 text-amber-300 border border-amber-500/50";
+        toastIcon.className = "fa-solid fa-circle-check text-base text-amber-400";
       }
-    } catch (e) {
-      console.warn("Using offline fallback items:", e);
-      renderProductDropdown();
-      renderVehicleDropdown();
-      document.getElementById("syncText").innerText = "Running (Cached)";
+
+      toast.classList.remove("hidden");
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 3500);
     }
-  }
-
-  // 12. Calculations & Save Entry
-  function calculateTotal() {
-    const q = parseFloat(document.getElementById("qtyInput").value) || 0;
-    const r = parseFloat(document.getElementById("rateInput").value) || 0;
-    document.getElementById("totalAmountInput").value = (q * r).toFixed(2);
-    calculateDue();
-  }
-
-  function calculateDue() {
-    const tot = parseFloat(document.getElementById("totalAmountInput").value) || 0;
-    const paid = parseFloat(document.getElementById("paidAmountInput").value) || 0;
-    document.getElementById("dueAmountInput").value = (tot - paid).toFixed(2);
-  }
-
-  function stepQty(c) {
-    const q = document.getElementById("qtyInput");
-    let val = (parseFloat(q.value) || 1) + c;
-    if (val < 0.1) val = 0.1;
-    q.value = val;
-    calculateTotal();
-  }
-
-  document.getElementById("stockForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.innerText = "Saving...";
-
-    const payload = {
-      type: currentTab,
-      barcode: document.getElementById("barcodeInput").value,
-      itemName: document.getElementById("productSelect").value,
-      hsn: document.getElementById("hsnInput").value,
-      qty: document.getElementById("qtyInput").value,
-      unit: document.getElementById("unitSelect").value,
-      rate: document.getElementById("rateInput").value,
-      totalAmount: document.getElementById("totalAmountInput").value,
-      paidAmount: document.getElementById("paidAmountInput").value || 0,
-      dueAmount: document.getElementById("dueAmountInput").value || 0,
-      partyName: document.getElementById("partySelectInput").value,
-      vehicleNo: document.getElementById("vehicleSelect").value,
-      companyName: document.getElementById("companyInput").value,
-      kmReading: document.getElementById("kmInput").value,
-      driverName: document.getElementById("driverInput").value,
-      remarks: document.getElementById("remarksInput").value
-    };
-
-    try {
-      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-      const data = await res.json();
-      if (data.status === "success") {
-        alert("✅ " + data.message);
-        document.getElementById("stockForm").reset();
-      } else { alert("❌ " + data.message); }
-    } catch(err) { alert("Error: " + err.message); }
-    finally {
-      btn.disabled = false;
-      btn.innerText = "Save Entry";
-    }
-  });
-
-  // Startup Orchestration: Instant Fallback Render + Background Sync
-  window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
-    
-    // Instant initial render so dropdown is NEVER blank
-    renderProductDropdown();
-    renderVehicleDropdown();
-    populateSupplierDropdowns();
-
-    // Fetch live data in parallel
-    fetchMasterData();
-    loadSummary(true);
-    loadLedger(true);
-
-    startAutoRefreshLoop();
-  });
-</script>
+  </script>
 </body>
 </html>
