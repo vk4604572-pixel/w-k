@@ -22,18 +22,18 @@
       padding: 7px 9px; 
       border: 1.5px solid #cbd5e0; 
       border-radius: 7px; 
-      font-size: 11.5px !important; 
+      font-size: 11px !important; 
       background: #fff; 
       white-space: nowrap; 
       overflow: hidden; 
       text-overflow: ellipsis; 
     }
-    select option { font-size: 11px !important; white-space: nowrap; }
+    select option { font-size: 11px !important; }
     input:focus, select:focus { outline: none; border-color: #3182ce; }
 
-    .barcode-row { display: flex; gap: 6px; }
+    .barcode-row { display: flex; gap: 8px; }
     .btn-scan { background: #319795; color: white; border: none; padding: 0 12px; border-radius: 7px; font-weight: bold; font-size: 11px; cursor: pointer; }
-    .btn-add-prod { background: #38a169; color: white; border: none; width: 34px; border-radius: 7px; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-add-prod { background: #38a169; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
 
     .qty-stepper-row { display: flex; gap: 6px; }
     .stepper-btn { width: 38px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 7px; font-weight: bold; font-size: 14px; cursor: pointer; }
@@ -82,7 +82,7 @@
 
 <div class="container" id="mainContainer">
   <div class="refresh-indicator">
-    <span class="pulse-dot"></span><span id="syncText">Instant LocalStorage Cache Ready</span>
+    <span class="pulse-dot"></span><span id="syncText">Live Sync Active</span>
   </div>
 
   <div class="tab-header">
@@ -109,23 +109,23 @@
       </div>
     </div>
 
-    <!-- Product / Service Selection with Fuzzy Search & Add Button -->
+    <!-- Product / Service Selection -->
     <div class="form-group">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <label style="display:inline-block;">Product / Service Hour Kit</label>
           <span id="stockInHandBadge" class="stock-badge hidden"></span>
         </div>
       </div>
       
-      <!-- Fuzzy Search Helper -->
-      <input type="text" id="productSearchFilter" placeholder="🔍 Type 2-3 letters to filter (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="filterProductDropdown(this.value)" style="margin-bottom: 4px; background:#fffdf5; border-color:#cbd5e0;">
-
+      <!-- Fuzzy Search Helper Input -->
+      <input type="text" id="prodSearchInput" placeholder="🔍 Type 2-3 letters to filter (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="filterProductList(this.value)" style="margin-bottom:5px; background:#fffdf5;">
+      
       <div style="display:flex; gap:6px;">
         <select id="productSelect" onchange="onProductSelect(this.value)" style="flex:1;">
           <option value="">-- Loading Products... --</option>
         </select>
-        <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product to Sheet">➕</button>
+        <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
       </div>
     </div>
 
@@ -215,23 +215,23 @@
   </form>
 
   <!-- Restored: Recent Entries Log Table -->
-  <div id="recentEntriesSection" style="margin-top: 18px; border-top: 2px dashed #cbd5e0; padding-top: 10px;">
+  <div id="recentEntriesSection" style="margin-top:16px; border-top:1.5px dashed #cbd5e0; padding-top:10px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-      <span style="font-weight:bold; font-size:12px; color:#2b6cb0;">📋 Recent Entries (Last 5 Logs)</span>
-      <button type="button" onclick="clearRecentEntriesLocal()" style="border:none; background:none; color:#e53e3e; font-size:10px; cursor:pointer;">Clear Log</button>
+      <span style="font-weight:bold; font-size:11.5px; color:#2b6cb0;">📋 Recent Entries</span>
+      <button type="button" onclick="clearRecentEntries()" style="background:none; border:none; color:#e53e3e; font-size:10px; cursor:pointer;">Clear</button>
     </div>
-    <table class="custom-table" id="recentEntriesTable">
+    <table class="custom-table">
       <thead>
         <tr>
           <th>Type</th>
           <th>Machine / Party</th>
-          <th>Item Code / Name</th>
+          <th>Item</th>
           <th>Qty</th>
           <th>Amount (₹)</th>
         </tr>
       </thead>
       <tbody id="recentEntriesBody">
-        <tr><td colspan="5" style="text-align:center; color:#a0aec0;">Koi recent entry nahi hai.</td></tr>
+        <tr><td colspan="5" style="text-align:center; color:#718096;">No recent entries.</td></tr>
       </tbody>
     </table>
   </div>
@@ -337,14 +337,14 @@
   <div id="msg"></div>
 </div>
 
-<!-- Modal 1: Restored ➕ Quick Add Product Modal -->
+<!-- Modal: Quick Add Product Modal -->
 <div class="modal" id="addProductModal">
-  <div class="modal-content" style="max-width: 380px;">
+  <div class="modal-content" style="max-width:380px;">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add New Product / Spare Part</h3>
     
     <div class="form-group">
-      <label>Item Name / Code Format</label>
-      <input type="text" id="newProdName" placeholder="e.g. [S210-500-ENG-DSL] Super-210 Kit">
+      <label>Item Name / Cheat Code</label>
+      <input type="text" id="newProdName" placeholder="e.g. S210-500-ENG-DSL">
     </div>
 
     <div class="form-group">
@@ -359,31 +359,31 @@
     </div>
 
     <div class="form-group">
-      <label>Standard Purchase Rate (₹)</label>
+      <label>Standard Rate (₹)</label>
       <input type="number" id="newProdRate" placeholder="e.g. 1950">
     </div>
 
     <div class="form-group">
       <label>HSN Code</label>
-      <input type="text" id="newProdHsn" placeholder="8421" value="8421">
+      <input type="text" id="newProdHsn" value="8421">
     </div>
 
     <div class="form-group">
-      <label>Barcode / Cheat Code</label>
+      <label>Barcode</label>
       <div class="barcode-row">
-        <input type="text" id="newProdBarcode" placeholder="Scan or enter code">
+        <input type="text" id="newProdBarcode" placeholder="Scan or type barcode...">
         <button type="button" class="btn-scan" onclick="openScannerModal('newProdBarcode')">📷 Scan</button>
       </div>
     </div>
 
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="saveNewProdBtn" onclick="saveNewProductToSheet()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save to Sheet</button>
-      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#38a169; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save to List</button>
+      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Modal 2: Barcode Camera Scanner -->
+<!-- Modal: Barcode Camera Scanner -->
 <div class="modal" id="scannerModal">
   <div class="modal-content" id="scannerModalBox">
     <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
@@ -392,7 +392,7 @@
   </div>
 </div>
 
-<!-- Modal 3: Security PIN (4251) -->
+<!-- Modal: Security PIN (4251) -->
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
@@ -405,7 +405,7 @@
   </div>
 </div>
 
-<!-- Modal 4: Smart Service Hours Checklist with Mini Search & Added Pilot/Breather -->
+<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) with Pilot/Breather & Search -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
@@ -414,10 +414,10 @@
     <div id="serviceItemsList"></div>
 
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
-      <label style="font-size:10px; font-weight:bold;">➕ Add Extra Part / Oil (Search without scrolling):</label>
+      <label style="font-size:10px;">➕ Add Extra Part / Oil to this service:</label>
       
       <!-- Mini Search for Service Modal -->
-      <input type="text" id="serviceMiniSearch" placeholder="🔍 Type 2-3 letters to filter extra item..." oninput="filterServiceExtraDropdown(this.value)" style="margin-bottom:4px; font-size:10.5px; padding:4px 6px;">
+      <input type="text" id="serviceFilterInput" placeholder="🔍 Type to filter parts..." oninput="filterExtraPartDropdown(this.value)" style="margin-bottom:4px; padding:4px 6px; font-size:10.5px;">
 
       <div style="display:flex; gap:6px;">
         <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
@@ -433,7 +433,7 @@
   </div>
 </div>
 
-<!-- Modal 5: Create Purchase Order (PO) -->
+<!-- Modal: Create Purchase Order (PO) -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
@@ -474,93 +474,94 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // Master Cheat Code List: Complete Fallback with Pilot & Breather included
+  // Master Standard Fallback List (Cleanly Arranged by Machine Codes)
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
-    { name: "[S210-500-ENG-DSL] Super-210 Prime 500H Diesel+Mobil Kit", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
-    { name: "[S210-500-AIR-FLT] Super-210 Prime Air Filter Set", unit: "Set", rate: 2050, hsn: "8421", barcode: "S210-500-AIR-FLT" },
-    { name: "[S210-1000-HYD-KIT] Super-210 Prime 1000H Hydraulic Kit", unit: "Set", rate: 3300, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
-    { name: "[S-210-500-HYD-PLT] Super-210 Prime Hydraulic Pilot Filter", unit: "Nos", rate: 950, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
-    { name: "[S-210-500-AIR-BRTH] Super-210 Prime Air Breather Filter", unit: "Nos", rate: 650, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
+    { name: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
+    { name: "S210-500-AIR-FLT (Super-210 Air Filter Set)", unit: "Set", rate: 2050, hsn: "8421", barcode: "S210-500-AIR-FLT" },
+    { name: "S210-1000-HYD-KIT (Super-210 1000H Hyd Kit)", unit: "Set", rate: 3300, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
+    { name: "S-210-500-HYD-PLT (Super-210 Hydraulic Pilot Filter)", unit: "Nos", rate: 950, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
+    { name: "S-210-500-AIR-BRTH (Super-210 Air Breather)", unit: "Nos", rate: 650, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
 
     // Super-200
-    { name: "[S200-500-ENG-DSL] Super-200 500H Diesel+Mobil Kit", unit: "Set", rate: 1150, hsn: "8421", barcode: "S200-500-ENG-DSL" },
-    { name: "[S200-500-AIR-FLT] Super-200 Air Filter Set", unit: "Set", rate: 2050, hsn: "8421", barcode: "S200-500-AIR-FLT" },
-    { name: "[S200-1000-HYD-KIT] Super-200 1000H Hydraulic Kit", unit: "Set", rate: 3300, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
+    { name: "S200-500-ENG-DSL (Super-200 Diesel+Mobil Kit)", unit: "Set", rate: 1150, hsn: "8421", barcode: "S200-500-ENG-DSL" },
+    { name: "S200-500-AIR-FLT (Super-200 Air Filter Set)", unit: "Set", rate: 2050, hsn: "8421", barcode: "S200-500-AIR-FLT" },
+    { name: "S200-1000-HYD-KIT (Super-200 1000H Hyd Kit)", unit: "Set", rate: 3300, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
 
     // ZAXIS-220
-    { name: "[Z220-500-ENG-DSL] Zaxis-220 500H Diesel+Mobil Kit", unit: "Set", rate: 2800, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
-    { name: "[Z220-500-AIR-FLT] Zaxis-220 Air Filter Set", unit: "Set", rate: 2900, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
-    { name: "[Z220-1000-HYD-KIT] Zaxis-220 1000H Hydraulic Kit", unit: "Set", rate: 5750, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
-    { name: "[Z220-500-HYD-PLT] Zaxis-220 Hydraulic Pilot Filter", unit: "Nos", rate: 1100, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
-    { name: "[Z220-500-AIR-BRTH] Zaxis-220 Air Breather Filter", unit: "Nos", rate: 700, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
+    { name: "Z220-500-ENG-DSL (Zaxis-220 Diesel+Mobil Kit)", unit: "Set", rate: 2800, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
+    { name: "Z220-500-AIR-FLT (Zaxis-220 Air Filter Set)", unit: "Set", rate: 2900, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
+    { name: "Z220-1000-HYD-KIT (Zaxis-220 1000H Hyd Kit)", unit: "Set", rate: 5750, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
+    { name: "Z220-500-HYD-PLT (Zaxis-220 Hydraulic Pilot Filter)", unit: "Nos", rate: 1100, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
+    { name: "Z220-500-AIR-BRTH (Zaxis-220 Air Breather)", unit: "Nos", rate: 700, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
 
     // SANY-215
-    { name: "[S215-500-ENG-DSL] Sany-215 500H Diesel+Mobil Kit", unit: "Set", rate: 2300, hsn: "8421", barcode: "S215-500-ENG-DSL" },
-    { name: "[S215-500-AIR-FLT] Sany-215 Air Filter Set", unit: "Set", rate: 4300, hsn: "8421", barcode: "S215-500-AIR-FLT" },
-    { name: "[S215-1000-HYD-KIT] Sany-215 1000H Hydraulic Kit", unit: "Set", rate: 4600, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
-    { name: "[S215-500-HYD-PLT] Sany-215 Hydraulic Pilot Filter", unit: "Nos", rate: 1050, hsn: "8421", barcode: "S215-500-HYD-PLT" },
-    { name: "[S215-500-AIR-BRTH] Sany-215 Air Breather Filter", unit: "Nos", rate: 680, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
+    { name: "S215-500-ENG-DSL (Sany-215 Diesel+Mobil Kit)", unit: "Set", rate: 2300, hsn: "8421", barcode: "S215-500-ENG-DSL" },
+    { name: "S215-500-AIR-FLT (Sany-215 Air Filter Set)", unit: "Set", rate: 4300, hsn: "8421", barcode: "S215-500-AIR-FLT" },
+    { name: "S215-1000-HYD-KIT (Sany-215 1000H Hyd Kit)", unit: "Set", rate: 4600, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
+    { name: "S215-500-HYD-PLT (Sany-215 Hydraulic Pilot Filter)", unit: "Nos", rate: 1050, hsn: "8421", barcode: "S215-500-HYD-PLT" },
+    { name: "S215-500-AIR-BRTH (Sany-215 Air Breather)", unit: "Nos", rate: 680, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
 
     // JCB-215
-    { name: "[JCB215-500-ENG-DSL] JCB-215 500H Diesel+Mobil Kit", unit: "Set", rate: 1780, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
-    { name: "[JCB215-500-AIR-FLT] JCB-215 Air Filter Set", unit: "Set", rate: 2300, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
-    { name: "[JCB215-1000-HYD-KIT] JCB-215 1000H Hydraulic Kit", unit: "Set", rate: 3300, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
-    { name: "[JCB215-500-HYD-PLT] JCB-215 Hydraulic Pilot Filter", unit: "Nos", rate: 980, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
-    { name: "[JCB215-500-AIR-BRTH] JCB-215 Air Breather Filter", unit: "Nos", rate: 600, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
+    { name: "JCB215-500-ENG-DSL (JCB-215 Diesel+Mobil Kit)", unit: "Set", rate: 1780, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
+    { name: "JCB215-500-AIR-FLT (JCB-215 Air Filter Set)", unit: "Set", rate: 2300, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
+    { name: "JCB215-1000-HYD-KIT (JCB-215 1000H Hyd Kit)", unit: "Set", rate: 3300, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
+    { name: "JCB215-500-HYD-PLT (JCB-215 Hydraulic Pilot Filter)", unit: "Nos", rate: 980, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
+    { name: "JCB215-500-AIR-BRTH (JCB-215 Air Breather)", unit: "Nos", rate: 600, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
 
     // XCMG-230
-    { name: "[XCMG230-500-ENG-DSL] XCMG-230 500H Diesel+Mobil Kit", unit: "Set", rate: 2450, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
-    { name: "[XCMG230-500-AIR-FLT] XCMG-230 Air Filter Set", unit: "Set", rate: 3200, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
-    { name: "[XCMG230-1000-HYD-KIT] XCMG-230 1000H Hydraulic Kit", unit: "Set", rate: 4800, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
-    { name: "[XCMG230-500-HYD-PLT] XCMG-230 Hydraulic Pilot Filter", unit: "Nos", rate: 1150, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
-    { name: "[XCMG230-500-AIR-BRTH] XCMG-230 Air Breather Filter", unit: "Nos", rate: 750, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
+    { name: "XCMG230-500-ENG-DSL (XCMG-230 Diesel+Mobil Kit)", unit: "Set", rate: 2450, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
+    { name: "XCMG230-500-AIR-FLT (XCMG-230 Air Filter Set)", unit: "Set", rate: 3200, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
+    { name: "XCMG230-1000-HYD-KIT (XCMG-230 1000H Hyd Kit)", unit: "Set", rate: 4800, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
+    { name: "XCMG230-500-HYD-PLT (XCMG-230 Hydraulic Pilot Filter)", unit: "Nos", rate: 1150, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
+    { name: "XCMG230-500-AIR-BRTH (XCMG-230 Air Breather)", unit: "Nos", rate: 750, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
 
     // ZAXIS-140
-    { name: "[Z140-500-ENG-DSL] Zaxis-140 500H Diesel+Mobil Kit", unit: "Set", rate: 1950, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
-    { name: "[Z140-500-AIR-FLT] Zaxis-140 Air Filter Set", unit: "Set", rate: 1200, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
-    { name: "[Z140-1000-HYD-KIT] Zaxis-140 1000H Hydraulic Kit", unit: "Set", rate: 2950, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
-    { name: "[Z-140-500-HYD-PLT] Zaxis-140 Hydraulic Pilot Filter", unit: "Nos", rate: 900, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
-    { name: "[Z-140-500-AIR-BRTH] Zaxis-140 Air Breather Filter", unit: "Nos", rate: 580, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
+    { name: "Z140-500-ENG-DSL (Zaxis-140 Diesel+Mobil Kit)", unit: "Set", rate: 1950, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
+    { name: "Z140-500-AIR-FLT (Zaxis-140 Air Filter Set)", unit: "Set", rate: 1200, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
+    { name: "Z140-1000-HYD-KIT (Zaxis-140 1000H Hyd Kit)", unit: "Set", rate: 2950, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
+    { name: "Z-140-500-HYD-PLT (Zaxis-140 Hydraulic Pilot Filter)", unit: "Nos", rate: 900, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
+    { name: "Z-140-500-AIR-BRTH (Zaxis-140 Air Breather)", unit: "Nos", rate: 580, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
 
-    // Oils & Grease
+    // Oils & Lubricants
     { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710", barcode: "MOBIL-15W40" },
     { name: "Gear Oil 80W90", unit: "L", rate: 360, hsn: "2710", barcode: "GEAR-80W90" },
-    { name: "Chassis Grease (18 Kg)", unit: "Nos", rate: 5500, hsn: "2710", barcode: "GREASE-18KG" },
-    { name: "Special Ring Grease", unit: "Nos", rate: 1200, hsn: "2710", barcode: "GREASE-RING" }
+    { name: "Chassis Grease (18 Kg Bucket)", unit: "Nos", rate: 5500, hsn: "2710", barcode: "GREASE-18KG" },
+    { name: "Special Ring Grease", unit: "Nos", rate: 1200, hsn: "2710", barcode: "GREASE-RING" },
+    { name: "Washing Kapda (Cotton Waste)", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Upgraded Service Kits (Including Pilot & Breather by default)
+  // Service Kits Popups with Hydraulic Pilot & Air Breather Added
   const DEFAULT_FALLBACK_KITS = {
     "SUPER-210 (500 Hrs Service)": [
-      { itemName: "[S210-500-ENG-DSL] Super-210 Prime 500H Diesel+Mobil Kit", qty: 1, rate: 1950 },
-      { itemName: "[S210-500-AIR-FLT] Super-210 Prime Air Filter Set", qty: 1, rate: 2050 },
-      { itemName: "[S-210-500-HYD-PLT] Super-210 Prime Hydraulic Pilot Filter", qty: 1, rate: 950 },
-      { itemName: "[S-210-500-AIR-BRTH] Super-210 Prime Air Breather Filter", qty: 1, rate: 650 },
+      { itemName: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
+      { itemName: "S210-500-AIR-FLT (Super-210 Air Filter Set)", qty: 1, rate: 2050 },
+      { itemName: "S-210-500-HYD-PLT (Super-210 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
+      { itemName: "S-210-500-AIR-BRTH (Super-210 Air Breather)", qty: 1, rate: 650 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "SUPER-210 (1000 Hrs Service)": [
-      { itemName: "[S210-500-ENG-DSL] Super-210 Prime 500H Diesel+Mobil Kit", qty: 1, rate: 1950 },
-      { itemName: "[S210-500-AIR-FLT] Super-210 Prime Air Filter Set", qty: 1, rate: 2050 },
-      { itemName: "[S210-1000-HYD-KIT] Super-210 Prime 1000H Hydraulic Kit", qty: 1, rate: 3300 },
-      { itemName: "[S-210-500-HYD-PLT] Super-210 Prime Hydraulic Pilot Filter", qty: 1, rate: 950 },
-      { itemName: "[S-210-500-AIR-BRTH] Super-210 Prime Air Breather Filter", qty: 1, rate: 650 },
+      { itemName: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
+      { itemName: "S210-500-AIR-FLT (Super-210 Air Filter Set)", qty: 1, rate: 2050 },
+      { itemName: "S210-1000-HYD-KIT (Super-210 1000H Hyd Kit)", qty: 1, rate: 3300 },
+      { itemName: "S-210-500-HYD-PLT (Super-210 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
+      { itemName: "S-210-500-AIR-BRTH (Super-210 Air Breather)", qty: 1, rate: 650 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
     "XCMG-230 (500 Hrs Service)": [
-      { itemName: "[XCMG230-500-ENG-DSL] XCMG-230 500H Diesel+Mobil Kit", qty: 1, rate: 2450 },
-      { itemName: "[XCMG230-500-AIR-FLT] XCMG-230 Air Filter Set", qty: 1, rate: 3200 },
-      { itemName: "[XCMG230-500-HYD-PLT] XCMG-230 Hydraulic Pilot Filter", qty: 1, rate: 1150 },
-      { itemName: "[XCMG230-500-AIR-BRTH] XCMG-230 Air Breather Filter", qty: 1, rate: 750 },
+      { itemName: "XCMG230-500-ENG-DSL (XCMG-230 Diesel+Mobil Kit)", qty: 1, rate: 2450 },
+      { itemName: "XCMG230-500-AIR-FLT (XCMG-230 Air Filter Set)", qty: 1, rate: 3200 },
+      { itemName: "XCMG230-500-HYD-PLT (XCMG-230 Hydraulic Pilot Filter)", qty: 1, rate: 1150 },
+      { itemName: "XCMG230-500-AIR-BRTH (XCMG-230 Air Breather)", qty: 1, rate: 750 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "XCMG-230 (1000 Hrs Service)": [
-      { itemName: "[XCMG230-500-ENG-DSL] XCMG-230 500H Diesel+Mobil Kit", qty: 1, rate: 2450 },
-      { itemName: "[XCMG230-500-AIR-FLT] XCMG-230 Air Filter Set", qty: 1, rate: 3200 },
-      { itemName: "[XCMG230-1000-HYD-KIT] XCMG-230 1000H Hydraulic Kit", qty: 1, rate: 4800 },
-      { itemName: "[XCMG230-500-HYD-PLT] XCMG-230 Hydraulic Pilot Filter", qty: 1, rate: 1150 },
-      { itemName: "[XCMG230-500-AIR-BRTH] XCMG-230 Air Breather Filter", qty: 1, rate: 750 },
+      { itemName: "XCMG230-500-ENG-DSL (XCMG-230 Diesel+Mobil Kit)", qty: 1, rate: 2450 },
+      { itemName: "XCMG230-500-AIR-FLT (XCMG-230 Air Filter Set)", qty: 1, rate: 3200 },
+      { itemName: "XCMG230-1000-HYD-KIT (XCMG-230 1000H Hyd Kit)", qty: 1, rate: 4800 },
+      { itemName: "XCMG230-500-HYD-PLT (XCMG-230 Hydraulic Pilot Filter)", qty: 1, rate: 1150 },
+      { itemName: "XCMG230-500-AIR-BRTH (XCMG-230 Air Breather)", qty: 1, rate: 750 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ]
@@ -594,32 +595,28 @@
   let activeServiceParts = [];
   let activeServiceName = "";
   let html5QrScanner = null;
-  let scannerTargetInputId = "barcodeInput";
+  let currentScanTargetId = "barcodeInput";
   let lastPoSubmitTime = 0;
   let autoRefreshTimer = null;
 
-  // LocalStorage Helper: Instant 0ms Load
-  function saveToLocalStorage(key, data) {
-    try { localStorage.setItem(key, JSON.stringify(data)); } catch(e){}
-  }
-  function getFromLocalStorage(key) {
-    try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
-  }
+  // Local Storage Helpers
+  function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
+  function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
-  // 1. Dropdown Rendering with Fuzzy Filtering
-  function renderProductDropdown(filteredItems = null) {
+  // 1. Product Rendering with Fuzzy Filtering
+  function renderProductDropdown(itemsList = null) {
     const sel = document.getElementById("productSelect");
     const extraSel = document.getElementById("extraPartSelect");
     const poOtherSel = document.getElementById("poOtherProductSelect");
 
-    const itemsToUse = filteredItems || (productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS);
+    const itemsToUse = itemsList || (productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS);
     const kitsToUse = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
 
     let mainHtml = '<option value="">-- Select Item or Service --</option>';
     let extraHtml = '<option value="">-- Choose Extra Item --</option>';
     let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
 
-    if (!filteredItems) {
+    if (!itemsList) {
       const kitNames = Object.keys(kitsToUse);
       if (kitNames.length > 0) {
         mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
@@ -630,9 +627,9 @@
 
     mainHtml += '<optgroup label="📦 PARTS & OILS">';
     itemsToUse.forEach(p => {
-      mainHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
-      extraHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
-      poOtherHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
+      mainHtml += `<option value="${p.name}">${p.name}</option>`;
+      extraHtml += `<option value="${p.name}">${p.name}</option>`;
+      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
     });
     mainHtml += '</optgroup>';
 
@@ -641,31 +638,30 @@
     if (poOtherSel) poOtherSel.innerHTML = poOtherHtml;
   }
 
-  function filterProductDropdown(searchStr) {
-    const query = (searchStr || "").toLowerCase().trim();
+  function filterProductList(query) {
+    const q = (query || "").toLowerCase().trim();
     const source = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    if (!query) {
+    if (!q) {
       renderProductDropdown();
       return;
     }
-    const matched = source.filter(p => p.name.toLowerCase().includes(query) || (p.barcode && p.barcode.toLowerCase().includes(query)));
+    const matched = source.filter(p => p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.toLowerCase().includes(q)));
     renderProductDropdown(matched);
 
-    // Auto-select if exact 1 match
     if (matched.length === 1) {
       document.getElementById("productSelect").value = matched[0].name;
       onProductSelect(matched[0].name);
     }
   }
 
-  function filterServiceExtraDropdown(searchStr) {
-    const query = (searchStr || "").toLowerCase().trim();
+  function filterExtraPartDropdown(query) {
+    const q = (query || "").toLowerCase().trim();
     const source = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const extraSel = document.getElementById("extraPartSelect");
-    const matched = source.filter(p => p.name.toLowerCase().includes(query));
+    const matched = source.filter(p => p.name.toLowerCase().includes(q));
 
     let html = '<option value="">-- Choose Extra Item --</option>';
-    matched.forEach(p => { html += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`; });
+    matched.forEach(p => { html += `<option value="${p.name}">${p.name}</option>`; });
     extraSel.innerHTML = html;
   }
 
@@ -710,65 +706,7 @@
     if (ledSup) ledSup.innerHTML = ledSupHtml;
   }
 
-  // 2. Add New Product Modal with Scanner
-  function openAddProductModal() {
-    document.getElementById("newProdName").value = "";
-    document.getElementById("newProdRate").value = "";
-    document.getElementById("newProdBarcode").value = "";
-    document.getElementById("addProductModal").style.display = "flex";
-  }
-
-  function closeAddProductModal() {
-    document.getElementById("addProductModal").style.display = "none";
-  }
-
-  async function saveNewProductToSheet() {
-    const name = document.getElementById("newProdName").value.trim();
-    const unit = document.getElementById("newProdUnit").value;
-    const rate = parseFloat(document.getElementById("newProdRate").value) || 0;
-    const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
-    const barcode = document.getElementById("newProdBarcode").value.trim() || name;
-
-    if (!name) return alert("Kripya Product Name ya Code daalein!");
-
-    const btn = document.getElementById("saveNewProdBtn");
-    btn.disabled = true;
-    btn.innerText = "Saving to Sheet...";
-
-    const newProdObj = { name: name, unit: unit, rate: rate, hsn: hsn, barcode: barcode };
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ type: "ADD_PRODUCT", itemName: name, unit: unit, rate: rate, hsn: hsn, barcode: barcode })
-      });
-      const data = await res.json();
-      
-      // Update Local Memory
-      productList.unshift(newProdObj);
-      saveToLocalStorage("CACHED_PRODUCTS", productList);
-      renderProductDropdown();
-      document.getElementById("productSelect").value = name;
-      onProductSelect(name);
-
-      alert("✅ Naya Product Successfully Add Ho Gaya!");
-      closeAddProductModal();
-    } catch(err) {
-      // Local fallback in case script action is pending
-      productList.unshift(newProdObj);
-      saveToLocalStorage("CACHED_PRODUCTS", productList);
-      renderProductDropdown();
-      document.getElementById("productSelect").value = name;
-      onProductSelect(name);
-      alert("✅ Naya Product Local List me save ho gaya!");
-      closeAddProductModal();
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "Save to Sheet";
-    }
-  }
-
-  // 3. Tab Switching & Masked PIN Verification
+  // 2. Tab Switching & Masked PIN Verification
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -828,17 +766,52 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 4. Barcode Camera Scanner (Dynamic target for Main or Add Product)
+  // 3. Isolated Clean Print
+  function printTargetSection(targetId, title) {
+    const el = document.getElementById(targetId);
+    if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
+
+    const printWin = window.open('', '', 'width=850,height=700');
+    printWin.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
+            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
+            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
+            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
+            th { background: #edf2f7; font-weight: bold; }
+            .company-block { border: 1px solid #a0aec0; margin-bottom: 14px; page-break-inside: avoid; }
+            .company-header { background: #edf2f7; font-weight: bold; padding: 6px 8px; border-bottom: 1px solid #a0aec0; }
+            .vehicle-card { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
+            .vehicle-title { font-weight: bold; color: #2b6cb0; }
+          </style>
+        </head>
+        <body>
+          <h2>${title}</h2>
+          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
+          ${el.innerHTML}
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
+  }
+
+  // 4. Barcode Camera Scanner (Dynamic for Main or Add Product)
   function openScannerModal(targetId = "barcodeInput") {
-    scannerTargetInputId = targetId;
+    currentScanTargetId = targetId;
     document.getElementById("scannerModal").style.display = "flex";
     html5QrScanner = new Html5Qrcode("reader");
     html5QrScanner.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: 250, height: 160 } },
       (decodedText) => {
-        document.getElementById(scannerTargetInputId).value = decodedText;
-        if (scannerTargetInputId === "barcodeInput") {
+        document.getElementById(currentScanTargetId).value = decodedText;
+        if (currentScanTargetId === "barcodeInput") {
           matchProductByBarcode(decodedText);
         }
         closeScannerModal();
@@ -872,7 +845,61 @@
     }
   }
 
-  // 5. Form Handlers & Next Service Calculation
+  // 5. Add Product Actions
+  function openAddProductModal() {
+    document.getElementById("newProdName").value = "";
+    document.getElementById("newProdRate").value = "";
+    document.getElementById("newProdBarcode").value = "";
+    document.getElementById("addProductModal").style.display = "flex";
+  }
+
+  function closeAddProductModal() {
+    document.getElementById("addProductModal").style.display = "none";
+  }
+
+  async function saveNewProductAction() {
+    const name = document.getElementById("newProdName").value.trim();
+    const unit = document.getElementById("newProdUnit").value;
+    const rate = parseFloat(document.getElementById("newProdRate").value) || 0;
+    const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
+    const barcode = document.getElementById("newProdBarcode").value.trim() || name;
+
+    if (!name) return alert("Kripya Product Name daalein!");
+
+    const btn = document.getElementById("saveProdBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const newObj = { name: name, unit: unit, rate: rate, hsn: hsn, barcode: barcode };
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "ADD_PRODUCT", itemName: name, unit: unit, rate: rate, hsn: hsn, barcode: barcode })
+      });
+      const data = await res.json();
+      productList.unshift(newObj);
+      saveLocal("CACHED_PROD_LIST", productList);
+      renderProductDropdown();
+      document.getElementById("productSelect").value = name;
+      onProductSelect(name);
+      alert("✅ Product Add Ho Gaya!");
+      closeAddProductModal();
+    } catch(e) {
+      productList.unshift(newObj);
+      saveLocal("CACHED_PROD_LIST", productList);
+      renderProductDropdown();
+      document.getElementById("productSelect").value = name;
+      onProductSelect(name);
+      alert("✅ Product Local List Me Add Ho Gaya!");
+      closeAddProductModal();
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Save to List";
+    }
+  }
+
+  // 6. Form Select Handlers
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
@@ -906,7 +933,7 @@
     const prod = itemsToSearch.find(p => p.name === val);
     if (prod) {
       document.getElementById("barcodeInput").value = prod.barcode || "";
-      document.getElementById("hsnInput").value = prod.hsn || "8421";
+      document.getElementById("hsnInput").value = prod.hsn || "";
       document.getElementById("rateInput").value = prod.rate || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
@@ -927,11 +954,11 @@
     calculateTotal();
   }
 
-  // 6. Service Hours Modal with Pilot / Breather & Extra Search
+  // 7. Service Hours Modal
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
-    document.getElementById("serviceMiniSearch").value = "";
-    filterServiceExtraDropdown("");
+    document.getElementById("serviceFilterInput").value = "";
+    filterExtraPartDropdown("");
     renderServiceItems();
     document.getElementById("serviceHoursModal").style.display = "flex";
   }
@@ -1009,7 +1036,7 @@
       const data = await res.json();
       if (data.status === "success") {
         alert("✅ " + data.message);
-        addRecentEntryLog("OUT", vNo, activeServiceName, "1 Set", activeServiceParts.reduce((a,b)=>a+(b.rate*b.qty),0));
+        addRecentEntry("OUT", vNo, activeServiceName, "1 Kit", activeServiceParts.reduce((a,b)=>a+(b.rate*b.qty),0));
         document.getElementById("stockForm").reset();
       }
     } catch(e) { alert("Error: " + e.message); }
@@ -1019,28 +1046,28 @@
     }
   }
 
-  // 7. Recent Entries Logger
-  function addRecentEntryLog(type, target, item, qty, amt) {
-    let recent = getFromLocalStorage("RECENT_ENTRIES_LOG") || [];
-    recent.unshift({ type: type, target: target, item: item, qty: qty, amt: amt });
-    if (recent.length > 5) recent = recent.slice(0, 5);
-    saveToLocalStorage("RECENT_ENTRIES_LOG", recent);
-    renderRecentEntriesTable();
+  // 8. Recent Entries Local Log
+  function addRecentEntry(type, target, item, qty, amt) {
+    let list = getLocal("RECENT_LOGS") || [];
+    list.unshift({ type, target, item, qty, amt });
+    if (list.length > 5) list = list.slice(0, 5);
+    saveLocal("RECENT_LOGS", list);
+    renderRecentEntries();
   }
 
-  function renderRecentEntriesTable() {
-    const recent = getFromLocalStorage("RECENT_ENTRIES_LOG") || [];
+  function renderRecentEntries() {
+    const list = getLocal("RECENT_LOGS") || [];
     const tbody = document.getElementById("recentEntriesBody");
-    if (recent.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#a0aec0;">Koi recent entry nahi hai.</td></tr>`;
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#718096;">No recent entries.</td></tr>`;
       return;
     }
     let html = "";
-    recent.forEach(r => {
+    list.forEach(r => {
       html += `<tr>
         <td><b style="color:${r.type==='IN'?'#2f855a':'#c53030'};">${r.type}</b></td>
         <td>${r.target || '-'}</td>
-        <td style="max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.item}</td>
+        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.item}</td>
         <td>${r.qty}</td>
         <td>₹${parseFloat(r.amt||0).toLocaleString('en-IN')}</td>
       </tr>`;
@@ -1048,12 +1075,12 @@
     tbody.innerHTML = html;
   }
 
-  function clearRecentEntriesLocal() {
-    localStorage.removeItem("RECENT_ENTRIES_LOG");
-    renderRecentEntriesTable();
+  function clearRecentEntries() {
+    localStorage.removeItem("RECENT_LOGS");
+    renderRecentEntries();
   }
 
-  // 8. Calculations & Save Entry
+  // 9. Calculations & Save Entry
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1111,7 +1138,7 @@
       const data = await res.json();
       if (data.status === "success") {
         alert("✅ " + data.message);
-        addRecentEntryLog(currentTab, target, itm, `${qty} ${unit}`, amt);
+        addRecentEntry(currentTab, target, itm, `${qty} ${unit}`, amt);
         document.getElementById("stockForm").reset();
       } else { alert("❌ " + data.message); }
     } catch(err) { alert("Error: " + err.message); }
@@ -1121,170 +1148,7 @@
     }
   });
 
-  // 9. Startup Orchestration: LocalStorage 0ms Instant Load
-  window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
-
-    // Instant Load from Cache
-    const cachedProducts = getFromLocalStorage("CACHED_PRODUCTS");
-    if (cachedProducts && cachedProducts.length > 0) {
-      productList = cachedProducts;
-    } else {
-      productList = DEFAULT_FALLBACK_PRODUCTS;
-    }
-
-    renderProductDropdown();
-    renderVehicleDropdown();
-    populateSupplierDropdowns();
-    renderRecentEntriesTable();
-
-    // Background Silent Sync
-    fetchMasterData();
-    loadSummary(true);
-    loadLedger(true);
-  });
-
-  async function fetchMasterData() {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
-      const data = await res.json();
-      if (data && data.status === "success") {
-        if (data.products && data.products.length > 0) {
-          productList = data.products;
-          saveToLocalStorage("CACHED_PRODUCTS", productList);
-        }
-        if (data.kits && Object.keys(data.kits).length > 0) kitsMap = data.kits;
-        if (data.vehicles && data.vehicles.length > 0) {
-          data.vehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
-        }
-
-        renderProductDropdown();
-        renderVehicleDropdown();
-        document.getElementById("syncText").innerText = "Sheets Synced Online";
-      }
-    } catch(e) {
-      document.getElementById("syncText").innerText = "Running (LocalStorage)";
-    }
-  }
-
-  // Extra Tab Loading Logic (Summary, Ledger, Closing, Orders)
-  async function loadSummary(silent = false) {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        summaryData = data.data;
-        document.getElementById("kpiItems").innerText = summaryData.length;
-        document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0);
-        document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
-        if (currentTab === "SUMMARY" || !silent) renderSummaryTable();
-      }
-    } catch(e){}
-  }
-
-  function renderSummaryTable() {
-    const q = (document.getElementById("summarySearch").value || "").toLowerCase();
-    const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
-    let html = `<table class="custom-table">
-      <thead><tr><th>Spare Part</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
-    filtered.forEach(s => {
-      html += `<tr>
-        <td><b>${s.item}</b></td>
-        <td>${s.totalIn}</td>
-        <td>${s.totalOut}</td>
-        <td style="font-weight:bold; color:${s.balance<=2?'#c53030':'#2f855a'};">${s.balance}</td>
-        <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
-    document.getElementById("summaryTableContent").innerHTML = html;
-  }
-
-  async function loadClosing(silent = false) {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        closingData = data.data;
-        if (currentTab === "CLOSING" || !silent) renderClosingReport();
-      }
-    } catch(e){}
-  }
-
-  function renderClosingReport() {
-    const sDate = document.getElementById("closingSDate").value;
-    const eDate = document.getElementById("closingEDate").value;
-    const compFilter = document.getElementById("closingCompFilter").value;
-    const vehFilter = document.getElementById("closingVehFilter").value;
-    const serviceOnly = document.getElementById("serviceOnlyToggle").checked;
-
-    const filtered = closingData.filter(c => {
-      if (sDate && c.date < sDate) return false;
-      if (eDate && c.date > eDate) return false;
-      if (compFilter && c.company !== compFilter) return false;
-      if (vehFilter && c.vehicle !== vehFilter) return false;
-      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
-      return true;
-    });
-
-    const uniqueVehs = new Set(filtered.map(f => f.vehicle));
-    const totalCost = filtered.reduce((a,b) => a + (b.amount||0), 0);
-    document.getElementById("closingTotalVehs").innerText = uniqueVehs.size;
-    document.getElementById("closingTotalItems").innerText = filtered.length;
-    document.getElementById("closingTotalCost").innerText = "₹" + totalCost.toLocaleString('en-IN');
-
-    const grouped = {};
-    filtered.forEach(item => {
-      const comp = item.company || "OTHER";
-      const veh = item.vehicle || "UNKNOWN";
-      if (!grouped[comp]) grouped[comp] = {};
-      if (!grouped[comp][veh]) grouped[comp][veh] = [];
-      grouped[comp][veh].push(item);
-    });
-
-    const container = document.getElementById("closingContent");
-    if (Object.keys(grouped).length === 0) {
-      container.innerHTML = "<p style='text-align:center; color:#718096;'>No records found.</p>";
-      return;
-    }
-
-    let html = "";
-    for (const [company, vehs] of Object.entries(grouped)) {
-      html += `<div class="company-block">
-        <div class="company-header">
-          <span>🏢 ${company}</span>
-          <span>Machines: ${Object.keys(vehs).length}</span>
-        </div>`;
-
-      for (const [vehicle, items] of Object.entries(vehs)) {
-        const vCost = items.reduce((a,b) => a + (b.amount||0), 0);
-        html += `
-          <div class="vehicle-card">
-            <div class="vehicle-head-row">
-              <span class="vehicle-title">🚜 ${vehicle}</span>
-              <span class="vehicle-cost">Total: ₹${vCost.toLocaleString('en-IN')}</span>
-            </div>
-            <table class="custom-table" style="margin-top:6px;">
-              <thead>
-                <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
-              </thead>
-              <tbody>`;
-        items.forEach(it => {
-          html += `<tr>
-            <td>${it.displayDate || it.date}</td>
-            <td>${it.item} ${it.remarks ? `<br><small style="color:#718096;">${it.remarks}</small>` : ''}</td>
-            <td>${it.qty} ${it.unit}</td>
-            <td>${it.km || '-'}</td>
-            <td>₹${it.amount.toLocaleString('en-IN')}</td>
-          </tr>`;
-        });
-        html += `</tbody></table></div>`;
-      }
-      html += `</div>`;
-    }
-    container.innerHTML = html;
-  }
-
+  // 10. Ledger, Orders & Summary Handlers
   async function loadLedger(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
@@ -1299,13 +1163,105 @@
     } catch(e){}
   }
 
+  function onLedgerPartyDropdownChange(party) {
+    activeSelectedLedgerParty = party;
+    renderActiveLedgerView();
+  }
+
+  function showAllSupplierSummary() {
+    activeSelectedLedgerParty = "";
+    document.getElementById("ledgerPartyFilter").value = "";
+    renderActiveLedgerView();
+  }
+
+  function openSinglePartyLedger(party) {
+    activeSelectedLedgerParty = party;
+    document.getElementById("ledgerPartyFilter").value = party;
+    renderActiveLedgerView();
+  }
+
   function renderActiveLedgerView() {
+    if (activeSelectedLedgerParty) {
+      renderSinglePartyDetailedLedger(activeSelectedLedgerParty);
+    } else {
+      renderAllSuppliersSummary();
+    }
+  }
+
+  function renderAllSuppliersSummary() {
+    document.getElementById("ledgerHeadingTitle").innerText = "Supplier Balances Summary";
+    document.getElementById("ledgerBackBtn").classList.add("hidden");
+
     const sDate = document.getElementById("ledgerSDate").value;
     const eDate = document.getElementById("ledgerEDate").value;
-    const party = document.getElementById("ledgerPartyFilter").value;
 
     const filtered = ledgerData.filter(l => {
-      if (party && l.party !== party) return false;
+      if (sDate && l.date < sDate) return false;
+      if (eDate && l.date > eDate) return false;
+      return true;
+    });
+
+    const summaryMap = {};
+    filtered.forEach(l => {
+      const p = l.party || "UNKNOWN";
+      if (!summaryMap[p]) summaryMap[p] = { totalDr: 0, totalCr: 0, balance: 0 };
+      summaryMap[p].totalDr += (l.dr || 0);
+      summaryMap[p].totalCr += (l.cr || 0);
+      summaryMap[p].balance = summaryMap[p].totalDr - summaryMap[p].totalCr;
+    });
+
+    let html = `<table class="custom-table">
+      <thead>
+        <tr>
+          <th>Supplier Name</th>
+          <th>Total Purchases (Dr)</th>
+          <th>Total Paid (Cr)</th>
+          <th>Balance Due</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    const partyNames = Object.keys(summaryMap).sort();
+    if (partyNames.length === 0) {
+      html += `<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>`;
+    } else {
+      let totDr = 0, totCr = 0, totBal = 0;
+      partyNames.forEach(name => {
+        const item = summaryMap[name];
+        totDr += item.totalDr;
+        totCr += item.totalCr;
+        totBal += item.balance;
+
+        html += `<tr>
+          <td><b>${name}</b></td>
+          <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
+          <td style="color:#2f855a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
+          <td style="font-weight:bold; color:${item.balance > 0 ? '#c53030' : '#2f855a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
+          <td><button onclick="openSinglePartyLedger('${name}')" style="background:#2b6cb0; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">View Statement</button></td>
+        </tr>`;
+      });
+      html += `<tr style="background:#edf2f7; font-weight:bold;">
+        <td>TOTAL:</td>
+        <td>₹${totDr.toLocaleString('en-IN')}</td>
+        <td style="color:#2f855a;">₹${totCr.toLocaleString('en-IN')}</td>
+        <td style="color:#c53030;">₹${totBal.toLocaleString('en-IN')} Dr</td>
+        <td>-</td>
+      </tr>`;
+    }
+    html += `</tbody></table>`;
+    document.getElementById("ledgerContent").innerHTML = html;
+  }
+
+  function renderSinglePartyDetailedLedger(party) {
+    document.getElementById("ledgerHeadingTitle").innerText = `Statement: ${party}`;
+    document.getElementById("ledgerBackBtn").classList.remove("hidden");
+
+    const sDate = document.getElementById("ledgerSDate").value;
+    const eDate = document.getElementById("ledgerEDate").value;
+
+    const filtered = ledgerData.filter(l => {
+      if (l.party !== party) return false;
       if (sDate && l.date < sDate) return false;
       if (eDate && l.date > eDate) return false;
       return true;
@@ -1314,15 +1270,16 @@
     let running = 0;
     let html = `<table class="custom-table">
       <thead><tr><th>Date</th><th>Particulars</th><th>Dr (Purchases)</th><th>Cr (Payments)</th><th>Balance Due</th></tr></thead><tbody>`;
+    
     if (filtered.length === 0) {
-      html += `<tr><td colspan="5" style="text-align:center;">No records.</td></tr>`;
+      html += `<tr><td colspan="5" style="text-align:center;">No records for this party.</td></tr>`;
     } else {
       filtered.forEach(l => {
         running += ((l.dr || 0) - (l.cr || 0));
         html += `<tr>
           <td>${l.displayDate || l.date}</td>
           <td>${l.particulars}</td>
-          <td>${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
+          <td style="color:#2d3748;">${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
           <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
           <td style="font-weight:bold; color:${running > 0 ? '#c53030' : '#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
         </tr>`;
@@ -1332,15 +1289,34 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  function printTargetSection(targetId, title) {
-    const el = document.getElementById(targetId);
-    if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye data nahi hai!");
-    const printWin = window.open('', '', 'width=850,height=700');
-    printWin.document.write(`<html><head><title>${title}</title><style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ccc;padding:6px;text-align:left;}</style></head><body><h2>${title}</h2>${el.innerHTML}</body></html>`);
-    printWin.document.close();
-    printWin.focus();
-    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
+  // 11. Initial Master Data Fetch
+  async function fetchMasterData() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
+      const data = await res.json();
+      if (data && data.status === "success") {
+        if (data.products && data.products.length > 0) {
+          productList = data.products;
+          saveLocal("CACHED_PROD_LIST", productList);
+        }
+        if (data.kits && Object.keys(data.kits).length > 0) kitsMap = data.kits;
+        if (data.vehicles && data.vehicles.length > 0) {
+          data.vehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+        }
+
+        renderProductDropdown();
+        renderVehicleDropdown();
+        document.getElementById("syncText").innerText = "Sheets Synced Online";
+      }
+    } catch (e) {
+      renderProductDropdown();
+      renderVehicleDropdown();
+      document.getElementById("syncText").innerText = "Running (Cached)";
+    }
   }
-</script>
-</body>
-</html>
+
+  // 12. Startup Orchestration
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
+    
+    const cached = getLocal("CACHED
