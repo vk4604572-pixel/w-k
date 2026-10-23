@@ -70,7 +70,6 @@
     .refresh-indicator { font-size: 10px; color: #718096; text-align: right; margin-bottom: 4px; }
     .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #38a169; border-radius: 50%; margin-right: 4px; }
 
-    /* Auto Recommendation Dropdown Styling */
     .search-container { position: relative; width: 100%; }
     .recommendations-box {
       position: absolute;
@@ -129,7 +128,6 @@
     <button class="tab-btn" id="tabOrderBtn" onclick="switchTab('ORDER')">📝 Order (PO)</button>
   </div>
 
-  <!-- Main Entry Form -->
   <form id="stockForm">
     <div class="form-group">
       <label>Date & Time</label>
@@ -144,7 +142,6 @@
       </div>
     </div>
 
-    <!-- Product / Service Selection with Live Recommendations -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -153,17 +150,14 @@
         </div>
       </div>
       
-      <!-- Live Search + Recommendation Wrapper -->
       <div class="search-container">
         <div style="display:flex; gap:6px;">
-          <input type="text" id="prodSearchInput" placeholder="🔍 Type 2-3 letters (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="handleSearchInput(this.value)" autocomplete="off" style="flex:1; background:#fffdf5; border-color:#3182ce;">
+          <input type="text" id="prodSearchInput" placeholder="🔍 Type cheat code (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="handleSearchInput(this.value)" autocomplete="off" style="flex:1; background:#fffdf5; border-color:#3182ce;">
           <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
         </div>
-        <!-- Dropdown Recommendation List -->
         <div id="recommendationsBox" class="recommendations-box"></div>
       </div>
 
-      <!-- Quick Master Selector (Instant Dropdown) -->
       <select id="productSelect" onchange="onProductSelect(this.value)" style="margin-top:5px;">
         <option value="">-- All Products & Kits --</option>
       </select>
@@ -174,7 +168,6 @@
       <input type="text" id="hsnInput" placeholder="Auto filled">
     </div>
 
-    <!-- Quantity & Units -->
     <div class="form-group">
       <label>Quantity & Unit</label>
       <div class="qty-stepper-row">
@@ -201,7 +194,6 @@
       <input type="number" id="totalAmountInput" readonly style="background:#edf2f7; font-weight:bold;">
     </div>
 
-    <!-- Stock In Specific -->
     <div id="paymentGroup" class="form-group">
       <label>Payment Tracking (Ledger)</label>
       <div style="display:flex; gap:8px;">
@@ -217,7 +209,6 @@
       </select>
     </div>
 
-    <!-- Stock Out Specific -->
     <div class="form-group hidden" id="vehicleGroup">
       <label>Vehicle / Machine Number</label>
       <select id="vehicleSelect" onchange="onVehicleSelect(this.value)">
@@ -254,7 +245,6 @@
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
-  <!-- Recent Entries Table -->
   <div id="recentEntriesSection" style="margin-top:16px; border-top:1.5px dashed #cbd5e0; padding-top:10px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
       <span style="font-weight:bold; font-size:11.5px; color:#2b6cb0;">📋 Recent Entries</span>
@@ -265,7 +255,7 @@
         <tr>
           <th>Type</th>
           <th>Machine / Party</th>
-          <th>Item</th>
+          <th>Cheat Code / Item</th>
           <th>Qty</th>
           <th>Amount (₹)</th>
         </tr>
@@ -276,7 +266,6 @@
     </table>
   </div>
 
-  <!-- Stock Summary View -->
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock</h3>
@@ -292,13 +281,12 @@
       <div class="kpi-card"><div class="kpi-title">Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
     </div>
 
-    <input type="text" id="summarySearch" placeholder="🔍 Search spare parts or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
+    <input type="text" id="summarySearch" placeholder="🔍 Search cheat code or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
     <div id="summaryPrintTarget">
       <div id="summaryTableContent">Loading stock...</div>
     </div>
   </div>
 
-  <!-- Supplier Ledger -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;" id="ledgerHeadingTitle">Supplier Ledger Summary</h3>
@@ -322,7 +310,6 @@
     </div>
   </div>
 
-  <!-- Month Closing View -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
@@ -362,7 +349,6 @@
     </div>
   </div>
 
-  <!-- Purchase Order (PO) Tab -->
   <div class="view-box" id="orderView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Purchase Order (PO) & Re-Order</h3>
@@ -377,13 +363,12 @@
   <div id="msg"></div>
 </div>
 
-<!-- Modal: Quick Add Product -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:380px;">
-    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add New Product / Spare Part</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add New Product / Cheat Code</h3>
     
     <div class="form-group">
-      <label>Item Name / Cheat Code</label>
+      <label>Cheat Code / Item Name</label>
       <input type="text" id="newProdName" placeholder="e.g. S210-500-ENG-DSL">
     </div>
 
@@ -423,7 +408,6 @@
   </div>
 </div>
 
-<!-- Modal: Barcode Camera Scanner -->
 <div class="modal" id="scannerModal">
   <div class="modal-content" id="scannerModalBox">
     <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
@@ -432,7 +416,6 @@
   </div>
 </div>
 
-<!-- Modal: Security PIN (4251) -->
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
@@ -445,7 +428,6 @@
   </div>
 </div>
 
-<!-- Modal: Smart Service Hours Checklist (500 & 1000 Hrs) -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
@@ -456,9 +438,8 @@
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
       <label style="font-size:10px; font-weight:bold;">➕ Add Extra Part / Oil to this service:</label>
       
-      <!-- Mini Search with Live Suggestions for Popup -->
       <div class="search-container" style="margin-bottom:4px;">
-        <input type="text" id="serviceFilterInput" placeholder="🔍 Type extra part name or code..." oninput="handleServiceExtraSearch(this.value)" autocomplete="off" style="font-size:10.5px; padding:4px 6px;">
+        <input type="text" id="serviceFilterInput" placeholder="🔍 Type extra cheat code..." oninput="handleServiceExtraSearch(this.value)" autocomplete="off" style="font-size:10.5px; padding:4px 6px;">
         <div id="serviceExtraRecBox" class="recommendations-box"></div>
       </div>
 
@@ -476,7 +457,6 @@
   </div>
 </div>
 
-<!-- Modal: Create Purchase Order (PO) -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
@@ -517,189 +497,189 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // Master Standard List (Ordered by Machine Codes)
+  // EXACT CLEAN CHEAT CODES (Zero extra text, no rates in names)
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
-    { name: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
-    { name: "S210-500-AIR-FLT (Super-210 Air Filter Set)", unit: "Set", rate: 2050, hsn: "8421", barcode: "S210-500-AIR-FLT" },
-    { name: "S210-1000-HYD-KIT (Super-210 1000H Hyd Kit)", unit: "Set", rate: 3300, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
-    { name: "S-210-500-HYD-PLT (Super-210 Hydraulic Pilot Filter)", unit: "Nos", rate: 950, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
-    { name: "S-210-500-AIR-BRTH (Super-210 Air Breather)", unit: "Nos", rate: 650, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
+    { name: "S210-500-ENG-DSL", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
+    { name: "S210-500-AIR-FLT", unit: "Set", rate: 2050, hsn: "8421", barcode: "S210-500-AIR-FLT" },
+    { name: "S210-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
+    { name: "S-210-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
+    { name: "S-210-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
 
     // Super-200
-    { name: "S200-500-ENG-DSL (Super-200 Diesel+Mobil Kit)", unit: "Set", rate: 1150, hsn: "8421", barcode: "S200-500-ENG-DSL" },
-    { name: "S200-500-AIR-FLT (Super-200 Air Filter Set)", unit: "Set", rate: 2050, hsn: "8421", barcode: "S200-500-AIR-FLT" },
-    { name: "S200-1000-HYD-KIT (Super-200 1000H Hyd Kit)", unit: "Set", rate: 3300, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
-    { name: "S200-500-HYD-PLT (Super-200 Hydraulic Pilot Filter)", unit: "Nos", rate: 950, hsn: "8421", barcode: "S200-500-HYD-PLT" },
-    { name: "S200-500-AIR-BRTH (Super-200 Air Breather)", unit: "Nos", rate: 650, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
+    { name: "S200-500-ENG-DSL", unit: "Set", rate: 1150, hsn: "8421", barcode: "S200-500-ENG-DSL" },
+    { name: "S200-500-AIR-FLT", unit: "Set", rate: 2050, hsn: "8421", barcode: "S200-500-AIR-FLT" },
+    { name: "S200-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
+    { name: "S200-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "S200-500-HYD-PLT" },
+    { name: "S200-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
 
     // ZAXIS-220
-    { name: "Z220-500-ENG-DSL (Zaxis-220 Diesel+Mobil Kit)", unit: "Set", rate: 2800, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
-    { name: "Z220-500-AIR-FLT (Zaxis-220 Air Filter Set)", unit: "Set", rate: 2900, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
-    { name: "Z220-1000-HYD-KIT (Zaxis-220 1000H Hyd Kit)", unit: "Set", rate: 5750, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
-    { name: "Z220-500-HYD-PLT (Zaxis-220 Hydraulic Pilot Filter)", unit: "Nos", rate: 1100, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
-    { name: "Z220-500-AIR-BRTH (Zaxis-220 Air Breather)", unit: "Nos", rate: 700, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
+    { name: "Z220-500-ENG-DSL", unit: "Set", rate: 2800, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
+    { name: "Z220-500-AIR-FLT", unit: "Set", rate: 2900, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
+    { name: "Z220-1000-HYD-KIT", unit: "Set", rate: 5750, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
+    { name: "Z220-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
+    { name: "Z220-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
 
     // SANY-215
-    { name: "S215-500-ENG-DSL (Sany-215 Diesel+Mobil Kit)", unit: "Set", rate: 2300, hsn: "8421", barcode: "S215-500-ENG-DSL" },
-    { name: "S215-500-AIR-FLT (Sany-215 Air Filter Set)", unit: "Set", rate: 4300, hsn: "8421", barcode: "S215-500-AIR-FLT" },
-    { name: "S215-1000-HYD-KIT (Sany-215 1000H Hyd Kit)", unit: "Set", rate: 4600, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
-    { name: "S215-500-HYD-PLT (Sany-215 Hydraulic Pilot Filter)", unit: "Nos", rate: 1050, hsn: "8421", barcode: "S215-500-HYD-PLT" },
-    { name: "S215-500-AIR-BRTH (Sany-215 Air Breather)", unit: "Nos", rate: 680, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
+    { name: "S215-500-ENG-DSL", unit: "Set", rate: 2300, hsn: "8421", barcode: "S215-500-ENG-DSL" },
+    { name: "S215-500-AIR-FLT", unit: "Set", rate: 4300, hsn: "8421", barcode: "S215-500-AIR-FLT" },
+    { name: "S215-1000-HYD-KIT", unit: "Set", rate: 4600, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
+    { name: "S215-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "S215-500-HYD-PLT" },
+    { name: "S215-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
 
     // JCB-215
-    { name: "JCB215-500-ENG-DSL (JCB-215 Diesel+Mobil Kit)", unit: "Set", rate: 1780, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
-    { name: "JCB215-500-AIR-FLT (JCB-215 Air Filter Set)", unit: "Set", rate: 2300, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
-    { name: "JCB215-1000-HYD-KIT (JCB-215 1000H Hyd Kit)", unit: "Set", rate: 3300, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
-    { name: "JCB215-500-HYD-PLT (JCB-215 Hydraulic Pilot Filter)", unit: "Nos", rate: 980, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
-    { name: "JCB215-500-AIR-BRTH (JCB-215 Air Breather)", unit: "Nos", rate: 600, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
+    { name: "JCB215-500-ENG-DSL", unit: "Set", rate: 1780, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
+    { name: "JCB215-500-AIR-FLT", unit: "Set", rate: 2300, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
+    { name: "JCB215-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
+    { name: "JCB215-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
+    { name: "JCB215-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
 
     // XCMG-230
-    { name: "XCMG230-500-ENG-DSL (XCMG-230 Diesel+Mobil Kit)", unit: "Set", rate: 2450, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
-    { name: "XCMG230-500-AIR-FLT (XCMG-230 Air Filter Set)", unit: "Set", rate: 3200, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
-    { name: "XCMG230-1000-HYD-KIT (XCMG-230 1000H Hyd Kit)", unit: "Set", rate: 4800, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
-    { name: "XCMG230-500-HYD-PLT (XCMG-230 Hydraulic Pilot Filter)", unit: "Nos", rate: 1150, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
-    { name: "XCMG230-500-AIR-BRTH (XCMG-230 Air Breather)", unit: "Nos", rate: 750, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
+    { name: "XCMG230-500-ENG-DSL", unit: "Set", rate: 2450, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
+    { name: "XCMG230-500-AIR-FLT", unit: "Set", rate: 3200, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
+    { name: "XCMG230-1000-HYD-KIT", unit: "Set", rate: 4800, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
+    { name: "XCMG230-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
+    { name: "XCMG230-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
 
     // ZAXIS-140
-    { name: "Z140-500-ENG-DSL (Zaxis-140 Diesel+Mobil Kit)", unit: "Set", rate: 1950, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
-    { name: "Z140-500-AIR-FLT (Zaxis-140 Air Filter Set)", unit: "Set", rate: 1200, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
-    { name: "Z140-1000-HYD-KIT (Zaxis-140 1000H Hyd Kit)", unit: "Set", rate: 2950, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
-    { name: "Z-140-500-HYD-PLT (Zaxis-140 Hydraulic Pilot Filter)", unit: "Nos", rate: 900, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
-    { name: "Z-140-500-AIR-BRTH (Zaxis-140 Air Breather)", unit: "Nos", rate: 580, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
+    { name: "Z140-500-ENG-DSL", unit: "Set", rate: 1950, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
+    { name: "Z140-500-AIR-FLT", unit: "Set", rate: 1200, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
+    { name: "Z140-1000-HYD-KIT", unit: "Set", rate: 2950, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
+    { name: "Z-140-500-HYD-PLT", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
+    { name: "Z-140-500-AIR-BRTH", unit: "Nos", rate: 000, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
 
-    // Oils & Grease
+    // Common Spares & Oils
     { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710", barcode: "MOBIL-15W40" },
     { name: "Gear Oil 80W90", unit: "L", rate: 360, hsn: "2710", barcode: "GEAR-80W90" },
-    { name: "Chassis Grease (18 Kg Bucket)", unit: "Nos", rate: 5500, hsn: "2710", barcode: "GREASE-18KG" },
-    { name: "Special Ring Grease", unit: "Nos", rate: 1200, hsn: "2710", barcode: "GREASE-RING" },
-    { name: "Washing Kapda (Cotton Waste)", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
+    { name: "Chassis Grease (18 Kg)", unit: "Nos", rate: 5500, hsn: "2710", barcode: "GREASE-18KG" },
+    { name: "Special Bearing Grease", unit: "Nos", rate: 1200, hsn: "2710", barcode: "GREASE-RING" },
+    { name: "Washing Kapda", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
   // Upgraded Service Kits Popups for ALL 7 Machines with Pilot & Breather Auto Included
   const DEFAULT_FALLBACK_KITS = {
     // 1. SUPER-210 PRIME
     "SUPER-210 (500 Hrs Service)": [
-      { itemName: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
-      { itemName: "S210-500-AIR-FLT (Super-210 Air Filter Set)", qty: 1, rate: 2050 },
-      { itemName: "S-210-500-HYD-PLT (Super-210 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
-      { itemName: "S-210-500-AIR-BRTH (Super-210 Air Breather)", qty: 1, rate: 650 },
+      { itemName: "S210-500-ENG-DSL", qty: 1, rate: 1950 },
+      { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2050 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "SUPER-210 (1000 Hrs Service)": [
-      { itemName: "S210-500-ENG-DSL (Super-210 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
-      { itemName: "S210-500-AIR-FLT (Super-210 Air Filter Set)", qty: 1, rate: 2050 },
-      { itemName: "S210-1000-HYD-KIT (Super-210 1000H Hyd Kit)", qty: 1, rate: 3300 },
-      { itemName: "S-210-500-HYD-PLT (Super-210 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
-      { itemName: "S-210-500-AIR-BRTH (Super-210 Air Breather)", qty: 1, rate: 650 },
+      { itemName: "S210-500-ENG-DSL", qty: 1, rate: 1950 },
+      { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2050 },
+      { itemName: "S210-1000-HYD-KIT", qty: 1, rate: 3300 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
 
     // 2. SUPER-200
     "SUPER-200 (500 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL (Super-200 Diesel+Mobil Kit)", qty: 1, rate: 1150 },
-      { itemName: "S200-500-AIR-FLT (Super-200 Air Filter Set)", qty: 1, rate: 2050 },
-      { itemName: "S200-500-HYD-PLT (Super-200 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
-      { itemName: "S200-500-AIR-BRTH (Super-200 Air Breather)", qty: 1, rate: 650 },
+      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1150 },
+      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2050 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "SUPER-200 (1000 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL (Super-200 Diesel+Mobil Kit)", qty: 1, rate: 1150 },
-      { itemName: "S200-500-AIR-FLT (Super-200 Air Filter Set)", qty: 1, rate: 2050 },
-      { itemName: "S200-1000-HYD-KIT (Super-200 1000H Hyd Kit)", qty: 1, rate: 3300 },
-      { itemName: "S200-500-HYD-PLT (Super-200 Hydraulic Pilot Filter)", qty: 1, rate: 950 },
-      { itemName: "S200-500-AIR-BRTH (Super-200 Air Breather)", qty: 1, rate: 650 },
+      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1150 },
+      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2050 },
+      { itemName: "S200-1000-HYD-KIT", qty: 1, rate: 3300 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
 
     // 3. ZAXIS-220
     "ZAXIS-220 (500 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL (Zaxis-220 Diesel+Mobil Kit)", qty: 1, rate: 2800 },
-      { itemName: "Z220-500-AIR-FLT (Zaxis-220 Air Filter Set)", qty: 1, rate: 2900 },
-      { itemName: "Z220-500-HYD-PLT (Zaxis-220 Hydraulic Pilot Filter)", qty: 1, rate: 1100 },
-      { itemName: "Z220-500-AIR-BRTH (Zaxis-220 Air Breather)", qty: 1, rate: 700 },
+      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 2800 },
+      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 2900 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0000 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "ZAXIS-220 (1000 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL (Zaxis-220 Diesel+Mobil Kit)", qty: 1, rate: 2800 },
-      { itemName: "Z220-500-AIR-FLT (Zaxis-220 Air Filter Set)", qty: 1, rate: 2900 },
-      { itemName: "Z220-1000-HYD-KIT (Zaxis-220 1000H Hyd Kit)", qty: 1, rate: 5750 },
-      { itemName: "Z220-500-HYD-PLT (Zaxis-220 Hydraulic Pilot Filter)", qty: 1, rate: 1100 },
-      { itemName: "Z220-500-AIR-BRTH (Zaxis-220 Air Breather)", qty: 1, rate: 700 },
+      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 2800 },
+      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 2900 },
+      { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 5750 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0000 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
 
     // 4. SANY-215
     "SANY-215 (500 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL (Sany-215 Diesel+Mobil Kit)", qty: 1, rate: 2300 },
-      { itemName: "S215-500-AIR-FLT (Sany-215 Air Filter Set)", qty: 1, rate: 4300 },
-      { itemName: "S215-500-HYD-PLT (Sany-215 Hydraulic Pilot Filter)", qty: 1, rate: 1050 },
-      { itemName: "S215-500-AIR-BRTH (Sany-215 Air Breather)", qty: 1, rate: 680 },
+      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2300 },
+      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4300 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "SANY-215 (1000 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL (Sany-215 Diesel+Mobil Kit)", qty: 1, rate: 2300 },
-      { itemName: "S215-500-AIR-FLT (Sany-215 Air Filter Set)", qty: 1, rate: 4300 },
-      { itemName: "S215-1000-HYD-KIT (Sany-215 1000H Hyd Kit)", qty: 1, rate: 4600 },
-      { itemName: "S215-500-HYD-PLT (Sany-215 Hydraulic Pilot Filter)", qty: 1, rate: 1050 },
-      { itemName: "S215-500-AIR-BRTH (Sany-215 Air Breather)", qty: 1, rate: 680 },
+      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2300 },
+      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4300 },
+      { itemName: "S215-1000-HYD-KIT", qty: 1, rate: 4600 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
 
     // 5. JCB-215
     "JCB-215 (500 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL (JCB-215 Diesel+Mobil Kit)", qty: 1, rate: 1780 },
-      { itemName: "JCB215-500-AIR-FLT (JCB-215 Air Filter Set)", qty: 1, rate: 2300 },
-      { itemName: "JCB215-500-HYD-PLT (JCB-215 Hydraulic Pilot Filter)", qty: 1, rate: 980 },
-      { itemName: "JCB215-500-AIR-BRTH (JCB-215 Air Breather)", qty: 1, rate: 600 },
+      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 1780 },
+      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2300 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "JCB-215 (1000 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL (JCB-215 Diesel+Mobil Kit)", qty: 1, rate: 1780 },
-      { itemName: "JCB215-500-AIR-FLT (JCB-215 Air Filter Set)", qty: 1, rate: 2300 },
-      { itemName: "JCB215-1000-HYD-KIT (JCB-215 1000H Hyd Kit)", qty: 1, rate: 3300 },
-      { itemName: "JCB215-500-HYD-PLT (JCB-215 Hydraulic Pilot Filter)", qty: 1, rate: 980 },
-      { itemName: "JCB215-500-AIR-BRTH (JCB-215 Air Breather)", qty: 1, rate: 600 },
+      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 1780 },
+      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2300 },
+      { itemName: "JCB215-1000-HYD-KIT", qty: 1, rate: 3300 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
 
     // 6. XCMG-230
     "XCMG-230 (500 Hrs Service)": [
-      { itemName: "XCMG230-500-ENG-DSL (XCMG-230 Diesel+Mobil Kit)", qty: 1, rate: 2450 },
-      { itemName: "XCMG230-500-AIR-FLT (XCMG-230 Air Filter Set)", qty: 1, rate: 3200 },
-      { itemName: "XCMG230-500-HYD-PLT (XCMG-230 Hydraulic Pilot Filter)", qty: 1, rate: 1150 },
-      { itemName: "XCMG230-500-AIR-BRTH (XCMG-230 Air Breather)", qty: 1, rate: 750 },
+      { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2450 },
+      { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3200 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "XCMG-230 (1000 Hrs Service)": [
-      { itemName: "XCMG230-500-ENG-DSL (XCMG-230 Diesel+Mobil Kit)", qty: 1, rate: 2450 },
-      { itemName: "XCMG230-500-AIR-FLT (XCMG-230 Air Filter Set)", qty: 1, rate: 3200 },
-      { itemName: "XCMG230-1000-HYD-KIT (XCMG-230 1000H Hyd Kit)", qty: 1, rate: 4800 },
-      { itemName: "XCMG230-500-HYD-PLT (XCMG-230 Hydraulic Pilot Filter)", qty: 1, rate: 1150 },
-      { itemName: "XCMG230-500-AIR-BRTH (XCMG-230 Air Breather)", qty: 1, rate: 750 },
+      { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2450 },
+      { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3200 },
+      { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 4800 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ],
 
     // 7. ZAXIS-140
     "ZAXIS-140 (500 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL (Zaxis-140 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
-      { itemName: "Z140-500-AIR-FLT (Zaxis-140 Air Filter Set)", qty: 1, rate: 1200 },
-      { itemName: "Z-140-500-HYD-PLT (Zaxis-140 Hydraulic Pilot Filter)", qty: 1, rate: 900 },
-      { itemName: "Z-140-500-AIR-BRTH (Zaxis-140 Air Breather)", qty: 1, rate: 580 },
+      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 1950 },
+      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1200 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
     ],
     "ZAXIS-140 (1000 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL (Zaxis-140 Diesel+Mobil Kit)", qty: 1, rate: 1950 },
-      { itemName: "Z140-500-AIR-FLT (Zaxis-140 Air Filter Set)", qty: 1, rate: 1200 },
-      { itemName: "Z140-1000-HYD-KIT (Zaxis-140 1000H Hyd Kit)", qty: 1, rate: 2950 },
-      { itemName: "Z-140-500-HYD-PLT (Zaxis-140 Hydraulic Pilot Filter)", qty: 1, rate: 900 },
-      { itemName: "Z-140-500-AIR-BRTH (Zaxis-140 Air Breather)", qty: 1, rate: 580 },
+      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 1950 },
+      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1200 },
+      { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 2950 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 000 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 000 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
       { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
     ]
@@ -739,7 +719,7 @@
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
-  // 1. Instant Dropdown Population (0ms, Never Blank)
+  // 1. Instant Dropdown Population (CLEAN Cheat Codes Only, No Rates in Name)
   function renderProductDropdown() {
     const sel = document.getElementById("productSelect");
     const extraSel = document.getElementById("extraPartSelect");
@@ -748,7 +728,7 @@
     const itemsToUse = (productList.length > 0) ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const kitsToUse = (kitsMap && Object.keys(kitsMap).length > 0) ? kitsMap : DEFAULT_FALLBACK_KITS;
 
-    let mainHtml = '<option value="">-- Select Item or Service --</option>';
+    let mainHtml = '<option value="">-- All Products & Kits --</option>';
     let extraHtml = '<option value="">-- Choose Extra Item --</option>';
     let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
 
@@ -761,9 +741,9 @@
 
     mainHtml += '<optgroup label="📦 PARTS & OILS">';
     itemsToUse.forEach(p => {
-      mainHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
-      extraHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
-      poOtherHtml += `<option value="${p.name}">${p.name} | ₹${p.rate}</option>`;
+      mainHtml += `<option value="${p.name}">${p.name}</option>`;
+      extraHtml += `<option value="${p.name}">${p.name}</option>`;
+      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
     });
     mainHtml += '</optgroup>';
 
@@ -790,14 +770,14 @@
     // Match Kits
     Object.keys(kits).forEach(k => {
       if (k.toLowerCase().includes(q)) {
-        matches.push({ name: k, type: "KIT", rate: "-" });
+        matches.push({ name: k, type: "KIT" });
       }
     });
 
-    // Match Spare Parts & Oils
+    // Match Cheat Codes
     items.forEach(p => {
       if (p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.toLowerCase().includes(q))) {
-        matches.push({ name: p.name, type: "PART", rate: "₹" + p.rate });
+        matches.push({ name: p.name, type: "PART" });
       }
     });
 
@@ -812,10 +792,7 @@
       html += `
         <div class="recommendation-item" onclick="selectFromRecommendation('${m.name.replace(/'/g, "\\'")}')">
           <span><b>${m.name}</b></span>
-          <div>
-            <span class="rec-tag ${m.type==='KIT'?'rec-tag-kit':'rec-tag-part'}">${m.type}</span>
-            <span style="font-weight:bold; margin-left:4px;">${m.rate}</span>
-          </div>
+          <span class="rec-tag ${m.type==='KIT'?'rec-tag-kit':'rec-tag-part'}">${m.type}</span>
         </div>`;
     });
 
@@ -830,7 +807,7 @@
     onProductSelect(val);
   }
 
-  // Hide recommendations on outside click
+  // Hide recommendations on click outside
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".search-container")) {
       const box = document.getElementById("recommendationsBox");
@@ -840,7 +817,7 @@
     }
   });
 
-  // Service Popup Extra Search Recommendations
+  // Service Popup Extra Search
   function handleServiceExtraSearch(query) {
     const q = (query || "").toLowerCase().trim();
     const box = document.getElementById("serviceExtraRecBox");
@@ -864,7 +841,6 @@
       html += `
         <div class="recommendation-item" onclick="selectExtraFromRecommendation('${p.name.replace(/'/g, "\\'")}')">
           <span><b>${p.name}</b></span>
-          <span style="font-weight:bold;">₹${p.rate}</span>
         </div>`;
     });
     box.innerHTML = html;
@@ -1041,7 +1017,7 @@
     const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
     const barcode = document.getElementById("newProdBarcode").value.trim() || name;
 
-    if (!name) return alert("Kripya Product Name daalein!");
+    if (!name) return alert("Kripya Cheat Code daalein!");
 
     const btn = document.getElementById("saveProdBtn");
     btn.disabled = true;
@@ -1131,7 +1107,7 @@
     calculateTotal();
   }
 
-  // 7. Service Hours Modal with Pilot / Breather
+  // 7. Service Hours Modal
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     document.getElementById("serviceFilterInput").value = "";
@@ -1344,7 +1320,7 @@
     const q = (document.getElementById("summarySearch").value || "").toLowerCase();
     const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
     let html = `<table class="custom-table">
-      <thead><tr><th>Spare Part</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
+      <thead><tr><th>Cheat Code</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
     filtered.forEach(s => {
       html += `<tr>
         <td><b>${s.item}</b></td>
@@ -1381,7 +1357,7 @@
       if (eDate && c.date > eDate) return false;
       if (compFilter && c.company !== compFilter) return false;
       if (vehFilter && c.vehicle !== vehFilter) return false;
-      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
+      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("KIT") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
       return true;
     });
 
@@ -1424,7 +1400,7 @@
             </div>
             <table class="custom-table" style="margin-top:6px;">
               <thead>
-                <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
+                <tr><th>Date</th><th>Cheat Code</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
               </thead>
               <tbody>`;
         items.forEach(it => {
