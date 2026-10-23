@@ -70,6 +70,7 @@
     .refresh-indicator { font-size: 10px; color: #718096; text-align: right; margin-bottom: 4px; }
     .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #38a169; border-radius: 50%; margin-right: 4px; }
 
+    /* Auto Recommendation Dropdown & Keyboard Focus */
     .search-container { position: relative; width: 100%; }
     .recommendations-box {
       position: absolute;
@@ -94,11 +95,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: background 0.1s;
     }
-    .recommendation-item:hover {
-      background: #ebf8ff;
-      color: #2b6cb0;
-      font-weight: 600;
+    .recommendation-item:hover, .recommendation-item.active {
+      background: #ebf8ff !important;
+      color: #2b6cb0 !important;
+      font-weight: 700 !important;
+      border-left: 3px solid #3182ce;
     }
     .rec-tag { font-size: 9.5px; padding: 1px 5px; border-radius: 4px; font-weight: bold; }
     .rec-tag-kit { background: #feebc8; color: #7b341e; }
@@ -150,9 +153,15 @@
         </div>
       </div>
       
+      <!-- Live Search + Up/Down Arrow Navigation Wrapper -->
       <div class="search-container">
         <div style="display:flex; gap:6px;">
-          <input type="text" id="prodSearchInput" placeholder="🔍 Type cheat code (e.g. 210, PLT, BRTH, AIR, DSL)..." oninput="handleSearchInput(this.value)" autocomplete="off" style="flex:1; background:#fffdf5; border-color:#3182ce;">
+          <input type="text" id="prodSearchInput" 
+                 placeholder="🔍 Type cheat code (e.g. 210, PLT, BRTH, AIR, DSL)... Use ⬆️ ⬇️ to select" 
+                 oninput="handleSearchInput(this.value)" 
+                 onkeydown="handleSearchKeydown(event)" 
+                 autocomplete="off" 
+                 style="flex:1; background:#fffdf5; border-color:#3182ce;">
           <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
         </div>
         <div id="recommendationsBox" class="recommendations-box"></div>
@@ -497,7 +506,7 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // EXACT CLEAN CHEAT CODES (Pilot & Breather with Rate = 0)
+  // EXACT CLEAN CHEAT CODES (Rate = 0 for Pilot & Breather)
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
     { name: "S210-500-ENG-DSL", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
@@ -548,11 +557,12 @@
     { name: "Z-140-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
     { name: "Z-140-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
 
-    // Common Spares & Oils
+    // Standard Oils & Grease
+    { name: "CASTROL ENGINE OIL (Mobil) - 210L", unit: "Nos", rate: 65000, hsn: "2710", barcode: "CASTROL-210L" },
     { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710", barcode: "MOBIL-15W40" },
-    { name: "Gear Oil 80W90", unit: "L", rate: 360, hsn: "2710", barcode: "GEAR-80W90" },
-    { name: "Chassis Grease (18 Kg)", unit: "Nos", rate: 5500, hsn: "2710", barcode: "GREASE-18KG" },
-    { name: "Special Bearing Grease", unit: "Nos", rate: 1200, hsn: "2710", barcode: "GREASE-RING" },
+    { name: "PENSOL GEAR OIL", unit: "L", rate: 360, hsn: "2710", barcode: "PENSOL-GEAR-OIL" },
+    { name: "PENSOL CHASSIS GREASE", unit: "Nos", rate: 5500, hsn: "2710", barcode: "PENSOL-CHASSIS-GREASE" },
+    { name: "SAVSOL HYDRAULIC OIL 46", unit: "L", rate: 290, hsn: "2710", barcode: "SAVSOL-HYD-46" },
     { name: "Washing Kapda", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
@@ -564,7 +574,8 @@
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2050 },
       { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
     ],
     "SUPER-210 (1000 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 1950 },
@@ -573,7 +584,9 @@
       { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
     ],
 
     // 2. SUPER-200
@@ -582,7 +595,8 @@
       { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2050 },
       { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
     ],
     "SUPER-200 (1000 Hrs Service)": [
       { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1150 },
@@ -591,7 +605,9 @@
       { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
     ],
 
     // 3. ZAXIS-220
@@ -600,7 +616,8 @@
       { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 2900 },
       { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
     ],
     "ZAXIS-220 (1000 Hrs Service)": [
       { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 2800 },
@@ -609,7 +626,9 @@
       { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
     ],
 
     // 4. SANY-215
@@ -618,7 +637,8 @@
       { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4300 },
       { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
     ],
     "SANY-215 (1000 Hrs Service)": [
       { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2300 },
@@ -627,7 +647,9 @@
       { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
     ],
 
     // 5. JCB-215
@@ -636,7 +658,8 @@
       { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2300 },
       { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
     ],
     "JCB-215 (1000 Hrs Service)": [
       { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 1780 },
@@ -645,7 +668,9 @@
       { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
     ],
 
     // 6. XCMG-230
@@ -654,7 +679,8 @@
       { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3200 },
       { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
     ],
     "XCMG-230 (1000 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2450 },
@@ -663,7 +689,9 @@
       { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
     ],
 
     // 7. ZAXIS-140
@@ -672,7 +700,8 @@
       { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1200 },
       { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 }
+      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
     ],
     "ZAXIS-140 (1000 Hrs Service)": [
       { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 1950 },
@@ -681,7 +710,9 @@
       { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "Gear Oil 80W90", qty: 20, rate: 360 }
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
     ]
   };
 
@@ -698,7 +729,7 @@
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
-  let kitsMap = MASTER_SERVICE_KITS; // Permanently locked to MASTER_SERVICE_KITS
+  let kitsMap = MASTER_SERVICE_KITS;
   let supplierSet = new Set();
   let supplierItemsMap = {};
   let summaryData = [];
@@ -715,6 +746,10 @@
   let html5QrScanner = null;
   let currentScanTargetId = "barcodeInput";
   let lastPoSubmitTime = 0;
+
+  // Keyboard navigation tracking
+  let currentRecIndex = -1;
+  let currentFilteredMatches = [];
 
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
@@ -752,6 +787,9 @@
   function handleSearchInput(query) {
     const q = (query || "").toLowerCase().trim();
     const box = document.getElementById("recommendationsBox");
+    currentRecIndex = -1;
+    currentFilteredMatches = [];
+
     if (!q || q.length < 2) {
       box.style.display = "none";
       box.innerHTML = "";
@@ -759,32 +797,31 @@
     }
 
     const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    let matches = [];
 
     // Match Kits
     Object.keys(MASTER_SERVICE_KITS).forEach(k => {
       if (k.toLowerCase().includes(q)) {
-        matches.push({ name: k, type: "KIT" });
+        currentFilteredMatches.push({ name: k, type: "KIT" });
       }
     });
 
     // Match Cheat Codes
     items.forEach(p => {
       if (p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.toLowerCase().includes(q))) {
-        matches.push({ name: p.name, type: "PART" });
+        currentFilteredMatches.push({ name: p.name, type: "PART" });
       }
     });
 
-    if (matches.length === 0) {
+    if (currentFilteredMatches.length === 0) {
       box.innerHTML = `<div style="padding:8px 10px; font-size:11px; color:#718096;">Koi match nahi mila...</div>`;
       box.style.display = "block";
       return;
     }
 
     let html = "";
-    matches.slice(0, 10).forEach(m => {
+    currentFilteredMatches.slice(0, 10).forEach((m, idx) => {
       html += `
-        <div class="recommendation-item" onclick="selectFromRecommendation('${m.name.replace(/'/g, "\\'")}')">
+        <div class="recommendation-item" id="recItem_${idx}" onclick="selectFromRecommendation('${m.name.replace(/'/g, "\\'")}')">
           <span><b>${m.name}</b></span>
           <span class="rec-tag ${m.type==='KIT'?'rec-tag-kit':'rec-tag-part'}">${m.type}</span>
         </div>`;
@@ -792,6 +829,47 @@
 
     box.innerHTML = html;
     box.style.display = "block";
+  }
+
+  // 3. Up/Down Arrow & Enter Key Navigation
+  function handleSearchKeydown(e) {
+    const box = document.getElementById("recommendationsBox");
+    if (box.style.display !== "block" || currentFilteredMatches.length === 0) return;
+
+    const maxItems = Math.min(currentFilteredMatches.length, 10);
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      currentRecIndex++;
+      if (currentRecIndex >= maxItems) currentRecIndex = 0;
+      updateRecommendationHighlight(maxItems);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      currentRecIndex--;
+      if (currentRecIndex < 0) currentRecIndex = maxItems - 1;
+      updateRecommendationHighlight(maxItems);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (currentRecIndex >= 0 && currentRecIndex < maxItems) {
+        selectFromRecommendation(currentFilteredMatches[currentRecIndex].name);
+      }
+    } else if (e.key === "Escape") {
+      box.style.display = "none";
+    }
+  }
+
+  function updateRecommendationHighlight(maxItems) {
+    for (let i = 0; i < maxItems; i++) {
+      const el = document.getElementById(`recItem_${i}`);
+      if (el) {
+        if (i === currentRecIndex) {
+          el.classList.add("active");
+          el.scrollIntoView({ block: "nearest" });
+        } else {
+          el.classList.remove("active");
+        }
+      }
+    }
   }
 
   function selectFromRecommendation(val) {
@@ -887,7 +965,7 @@
     if (ledSup) ledSup.innerHTML = ledSupHtml;
   }
 
-  // 3. Tab Switching & PIN
+  // 4. Tab Switching & PIN
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -947,7 +1025,7 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 4. Barcode Camera Scanner
+  // 5. Barcode Camera Scanner
   function openScannerModal(targetId = "barcodeInput") {
     currentScanTargetId = targetId;
     document.getElementById("scannerModal").style.display = "flex";
@@ -991,7 +1069,7 @@
     }
   }
 
-  // 5. Add Product Actions
+  // 6. Add Product Actions
   function openAddProductModal() {
     document.getElementById("newProdName").value = "";
     document.getElementById("newProdRate").value = "";
@@ -1045,7 +1123,7 @@
     }
   }
 
-  // 6. Form Handlers & Next Service Calculation
+  // 7. Form Handlers & Next Service Calculation
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
@@ -1067,7 +1145,7 @@
   function onProductSelect(val) {
     if (!val) return;
 
-    // Direct check from MASTER_SERVICE_KITS (Guaranteed Pop-up Trigger)
+    // Service popup trigger directly from MASTER_SERVICE_KITS
     if (MASTER_SERVICE_KITS[val] && currentTab === "OUT") {
       activeServiceName = val;
       activeServiceParts = JSON.parse(JSON.stringify(MASTER_SERVICE_KITS[val]));
@@ -1100,7 +1178,7 @@
     calculateTotal();
   }
 
-  // 7. Service Hours Modal
+  // 8. Service Hours Modal
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     document.getElementById("serviceFilterInput").value = "";
@@ -1192,7 +1270,7 @@
     }
   }
 
-  // 8. Recent Entries Logger
+  // 9. Recent Entries Logger
   function addRecentEntry(type, target, item, qty, amt) {
     let list = getLocal("RECENT_LOGS") || [];
     list.unshift({ type, target, item, qty, amt });
@@ -1226,7 +1304,7 @@
     renderRecentEntries();
   }
 
-  // 9. Calculations & Save Entry
+  // 10. Calculations & Save Entry
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1294,7 +1372,7 @@
     }
   });
 
-  // 10. Ledger, Orders, Closing & Summary Logic
+  // 11. Ledger, Orders, Closing & Summary Logic
   async function loadSummary(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
@@ -1552,7 +1630,7 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  // 11. Purchase Order
+  // 12. Purchase Order
   function openCreateOrderModal() {
     populateSupplierDropdowns();
     renderProductDropdown();
@@ -1735,7 +1813,7 @@
     } catch(e) { alert(e.message); }
   }
 
-  // 12. Manual Refresh
+  // 13. Manual Refresh
   async function hardRefreshData(section) {
     const notify = document.getElementById("msg");
     notify.innerText = `🔄 Reloading fresh ${section} data...`;
@@ -1752,7 +1830,7 @@
     setTimeout(() => { notify.innerText = ""; }, 2000);
   }
 
-  // 13. Initial Master Data Fetch (LOCKED: Kits overwrite blocked)
+  // 14. Initial Master Data Fetch
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -1763,8 +1841,12 @@
           saveLocal("CACHED_PROD_LIST", productList);
         }
         
-        // Permanent fix: Master kits will not be overwritten by old Google Sheet data
-        kitsMap = MASTER_SERVICE_KITS;
+        // Smart Sync: Agar Google Sheet me 'kits' data ho aur wo khali na ho, tabhi sync karega, warna Master Kits safe rahenge
+        if (data.kits && Object.keys(data.kits).length > 0) {
+          kitsMap = data.kits;
+        } else {
+          kitsMap = MASTER_SERVICE_KITS;
+        }
 
         if (data.vehicles && data.vehicles.length > 0) {
           data.vehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
@@ -1782,7 +1864,7 @@
     }
   }
 
-  // 14. Clean Isolated Print
+  // 15. Clean Isolated Print
   function printTargetSection(targetId, title) {
     const el = document.getElementById(targetId);
     if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
@@ -1813,7 +1895,7 @@
     setTimeout(() => { printWin.print(); printWin.close(); }, 350);
   }
 
-  // 15. Startup Execution
+  // 16. Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     
