@@ -255,7 +255,7 @@
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
-  <!-- Restored: Recent Entries Log Table -->
+  <!-- Recent Entries Table -->
   <div id="recentEntriesSection" style="margin-top:16px; border-top:1.5px dashed #cbd5e0; padding-top:10px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
       <span style="font-weight:bold; font-size:11.5px; color:#2b6cb0;">📋 Recent Entries</span>
@@ -277,7 +277,7 @@
     </table>
   </div>
 
-  <!-- DAYBOOK TAB (Daily Transaction Register) -->
+  <!-- DAYBOOK TAB: Party / Vehicle No cleanly distinguished -->
   <div class="view-box" id="daybookView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">📅 Daily Daybook & Cash Flow</h3>
@@ -330,10 +330,7 @@
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
-        <button type="button" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
-      </div>
+      <button type="button" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
     </div>
 
     <div class="kpi-grid">
@@ -343,19 +340,14 @@
     </div>
 
     <input type="text" id="summarySearch" placeholder="🔍 Search cheat code or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
-    <div id="summaryPrintTarget">
-      <div id="summaryTableContent">Loading stock...</div>
-    </div>
+    <div id="summaryTableContent">Loading stock...</div>
   </div>
 
-  <!-- Restored: Month Closing & Machine-Wise Costing -->
+  <!-- Month Closing & Machine-Wise Costing -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
-        <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
-      </div>
+      <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
     </div>
 
     <div id="closingFiltersRow" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
@@ -388,7 +380,7 @@
     </div>
   </div>
 
-  <!-- Restored: Purchase Order (PO) & Re-Order Tab -->
+  <!-- Purchase Order (PO) & Re-Order Tab -->
   <div class="view-box" id="orderView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Purchase Order (PO) & Re-Order</h3>
@@ -403,23 +395,18 @@
   <div id="msg"></div>
 </div>
 
-<!-- Modal 1: PAY SUPPLIER (Payment Entry) -->
+<!-- Modal 1: PAY SUPPLIER -->
 <div class="modal" id="paySupplierModal">
   <div class="modal-content" style="max-width:360px;">
     <h3 style="margin-top:0; font-size:14px; color:#c53030;">💳 Pay to Supplier (Ledger Payment)</h3>
-    
     <div class="form-group">
       <label>Select Supplier</label>
-      <select id="payModalSupplierSelect">
-        <option value="">-- Choose Supplier --</option>
-      </select>
+      <select id="payModalSupplierSelect"><option value="">-- Choose Supplier --</option></select>
     </div>
-
     <div class="form-group">
       <label>Amount Paid (₹)</label>
       <input type="number" id="payModalAmount" placeholder="e.g. 50000" required>
     </div>
-
     <div class="form-group">
       <label>Payment Mode</label>
       <select id="payModalMode">
@@ -429,12 +416,10 @@
         <option value="Cheque">Cheque</option>
       </select>
     </div>
-
     <div class="form-group">
       <label>Remarks / Reference No</label>
       <input type="text" id="payModalRemarks" placeholder="e.g. UTR / Chq No">
     </div>
-
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" id="savePayBtn" onclick="submitSupplierPayment()" style="flex:1; background:#e53e3e; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Confirm & Pay</button>
       <button type="button" onclick="closePaySupplierModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
@@ -442,16 +427,14 @@
   </div>
 </div>
 
-<!-- Modal 2: Add Product with Purchase Rate & Sell Rate -->
+<!-- Modal 2: Add Product -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:380px;">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add Product (Purchase & Sell Rates)</h3>
-    
     <div class="form-group">
       <label>Cheat Code / Item Name</label>
       <input type="text" id="newProdName" placeholder="e.g. S210-500-ENG-DSL">
     </div>
-
     <div class="form-group">
       <label>Unit</label>
       <select id="newProdUnit">
@@ -462,7 +445,6 @@
         <option value="Mtr">Mtr</option>
       </select>
     </div>
-
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
       <div class="form-group">
         <label>Purchase Price (₹)</label>
@@ -473,12 +455,10 @@
         <input type="number" id="newProdSellRate" placeholder="Bikri/Issue Rate">
       </div>
     </div>
-
     <div class="form-group">
       <label>HSN Code</label>
       <input type="text" id="newProdHsn" value="8421">
     </div>
-
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
@@ -486,7 +466,6 @@
         <button type="button" class="btn-scan" onclick="openScannerModal('newProdBarcode')">📷 Scan</button>
       </div>
     </div>
-
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#38a169; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save to List</button>
       <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
@@ -494,7 +473,7 @@
   </div>
 </div>
 
-<!-- Modal 3: Barcode Camera Scanner -->
+<!-- Modal 3: Scanner -->
 <div class="modal" id="scannerModal">
   <div class="modal-content" id="scannerModalBox">
     <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
@@ -515,29 +494,24 @@
   </div>
 </div>
 
-<!-- Modal 5: Service Hours Checklist with Extra Part Search -->
+<!-- Modal 5: Service Hours Checklist -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
     <p style="font-size:11px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
-    
     <div id="serviceItemsList"></div>
-
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
       <label style="font-size:10px; font-weight:bold;">➕ Add Extra Part / Oil to this service:</label>
-      
       <div class="search-container" style="margin-bottom:4px;">
         <input type="text" id="serviceFilterInput" placeholder="🔍 Type extra cheat code..." oninput="handleServiceExtraSearch(this.value)" autocomplete="off" style="font-size:10.5px; padding:4px 6px;">
         <div id="serviceExtraRecBox" class="recommendations-box"></div>
       </div>
-
       <div style="display:flex; gap:6px;">
         <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
         <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
         <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 9px; border-radius:6px; cursor:pointer; font-size:11px;">Add</button>
       </div>
     </div>
-
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Confirm & Issue All</button>
       <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Cancel</button>
@@ -555,26 +529,21 @@
         <option value="">-- Choose Supplier --</option>
       </select>
     </div>
-
     <div id="poSupplierItemsSection" class="hidden">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <span style="font-weight:bold; font-size:11px;">Supplier History Items:</span>
         <small style="color:#718096; font-size:10px;">(Pehle khareede gaye)</small>
       </div>
       <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
-
       <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
-        <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product (Is PO me jodein):</label>
+        <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product:</label>
         <div style="display:flex; gap:6px; margin-top:4px;">
-          <select id="poOtherProductSelect" style="flex:2; font-size:11px;">
-            <option value="">-- Choose Any Product --</option>
-          </select>
+          <select id="poOtherProductSelect" style="flex:2; font-size:11px;"><option value="">-- Choose Any Product --</option></select>
           <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
           <button type="button" onclick="addOtherItemToPo()" style="background:#3182ce; color:white; border:none; padding:0 8px; border-radius:6px; font-size:11px; cursor:pointer;">Add</button>
         </div>
       </div>
     </div>
-
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
       <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
@@ -646,9 +615,8 @@
     { name: "Washing Kapda", unit: "Kg", purchaseRate: 80, sellRate: 95, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Master Service Kits (Auto Outward Deduction with Sell Rates)
+  // Master Service Kits
   const MASTER_SERVICE_KITS = {
-    // 1. SUPER-210 PRIME
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2400 },
@@ -668,92 +636,6 @@
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 },
       { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 330 }
     ],
-
-    // 2. SUPER-200
-    "SUPER-200 (500 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
-      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 }
-    ],
-    "SUPER-200 (1000 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
-      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
-      { itemName: "S200-1000-HYD-KIT", qty: 1, rate: 3800 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 410 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 330 }
-    ],
-
-    // 3. ZAXIS-220
-    "ZAXIS-220 (500 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
-      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 }
-    ],
-    "ZAXIS-220 (1000 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
-      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
-      { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 6500 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 410 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 330 }
-    ],
-
-    // 4. SANY-215
-    "SANY-215 (500 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
-      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 }
-    ],
-    "SANY-215 (1000 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
-      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
-      { itemName: "S215-1000-HYD-KIT", qty: 1, rate: 5200 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 410 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 330 }
-    ],
-
-    // 5. JCB-215
-    "JCB-215 (500 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
-      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 }
-    ],
-    "JCB-215 (1000 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
-      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
-      { itemName: "JCB215-1000-HYD-KIT", qty: 1, rate: 3800 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 410 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 330 }
-    ],
-
-    // 6. XCMG-230
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3650 },
@@ -768,27 +650,6 @@
       { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 5400 },
       { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 410 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 330 }
-    ],
-
-    // 7. ZAXIS-140
-    "ZAXIS-140 (500 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
-      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 }
-    ],
-    "ZAXIS-140 (1000 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
-      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
-      { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 3400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "Mobil Oil 15W40", qty: 20, rate: 360 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 410 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 6200 },
@@ -816,7 +677,6 @@
   let closingData = [];
   let ledgerData = [];
   let poData = [];
-
   let pendingTab = "";
   let isAuthenticated = false;
   let activeSelectedLedgerParty = "";
@@ -827,7 +687,6 @@
   let currentScanTargetId = "barcodeInput";
   let lastPoSubmitTime = 0;
 
-  // Arrow Key Navigation
   let currentRecIndex = -1;
   let currentFilteredMatches = [];
 
@@ -905,7 +764,6 @@
     box.style.display = "block";
   }
 
-  // Up/Down Arrow & Enter Key
   function handleSearchKeydown(e) {
     const box = document.getElementById("recommendationsBox");
     if (box.style.display !== "block" || currentFilteredMatches.length === 0) return;
@@ -952,16 +810,13 @@
     }
   });
 
-  // Service Popup Extra Search
   function handleServiceExtraSearch(query) {
     const q = (query || "").toLowerCase().trim();
     const box = document.getElementById("serviceExtraRecBox");
     if (!q || q.length < 2) {
       box.style.display = "none";
-      box.innerHTML = "";
       return;
     }
-
     const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const matches = items.filter(p => p.name.toLowerCase().includes(q));
 
@@ -970,7 +825,6 @@
       box.style.display = "block";
       return;
     }
-
     let html = "";
     matches.slice(0, 8).forEach(p => {
       html += `
@@ -1110,7 +964,7 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 5. Daybook Report Loader
+  // 5. Daybook Loader: Clean Entity Display
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1124,21 +978,31 @@
         let totIn = 0, totOut = 0, totPay = 0;
         let html = `<table class="custom-table">
           <thead>
-            <tr><th>Time</th><th>Category</th><th>Party / Machine</th><th>Particulars</th><th>Qty</th><th>Rate</th><th>Amount (₹)</th></tr>
+            <tr>
+              <th>Time</th>
+              <th>Category</th>
+              <th>Machine / Supplier</th>
+              <th>Item / Particulars</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Amount (₹)</th>
+            </tr>
           </thead><tbody>`;
         
         if (data.data.length === 0) {
-          html += `<tr><td colspan="7" style="text-align:center; color:#718096;">Is date par koi transaction record nahi hai.</td></tr>`;
+          html += `<tr><td colspan="7" style="text-align:center; color:#718096;">Is date par koi entry nahi mili.</td></tr>`;
         } else {
           data.data.forEach(r => {
             if (r.type === "PURCHASE") totIn += r.amount;
             if (r.type === "ISSUE") totOut += r.amount;
             if (r.type === "PAYMENT") totPay += r.amount;
 
+            var tagColor = r.type === "PURCHASE" ? "#2b6cb0" : (r.type === "ISSUE" ? "#2f855a" : "#c53030");
+
             html += `<tr>
               <td>${r.time}</td>
-              <td><b>${r.category}</b></td>
-              <td>${r.party}</td>
+              <td><span style="font-weight:bold; color:${tagColor}; font-size:10px;">${r.category}</span></td>
+              <td><b>${r.entity}</b></td>
               <td>${r.item}</td>
               <td>${r.qty}</td>
               <td>${r.rate !== '-' ? '₹' + r.rate : '-'}</td>
@@ -1379,7 +1243,7 @@
     renderRecentEntries();
   }
 
-  // 10. Ledger with Direct Payment Tracking
+  // 10. Ledger
   async function loadLedger() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
@@ -1573,7 +1437,7 @@
     container.innerHTML = html;
   }
 
-  // 12. Purchase Order (PO) & Re-Order Logic
+  // 12. Purchase Order
   function openCreateOrderModal() {
     populateSupplierDropdowns();
     renderProductDropdown();
@@ -1756,7 +1620,7 @@
     } catch(e) { alert(e.message); }
   }
 
-  // 13. Service Modal & Outward
+  // 13. Service Hours Modal
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     const container = document.getElementById("serviceItemsList");
@@ -1874,7 +1738,7 @@
     document.getElementById("summaryTableContent").innerHTML = html;
   }
 
-  // 15. Vehicles & Machine Logic
+  // 15. Vehicles Logic
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
@@ -1914,7 +1778,7 @@
     fSel.innerHTML = fHtml;
   }
 
-  // 16. Print & Scanner Handlers
+  // 16. Scanner & Isolated Print
   function openScannerModal(targetId = "barcodeInput") {
     currentScanTargetId = targetId;
     document.getElementById("scannerModal").style.display = "flex";
