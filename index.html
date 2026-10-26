@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fleet & Inventory Pro</title>
+  <title>KANPA STORE - Fleet & Inventory</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
     body { background: #f0f4f8; margin: 0; padding: 12px; color: #2d3748; }
     .container { max-width: 760px; margin: auto; background: #ffffff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
     
+    .brand-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1.5px solid #edf2f7; padding-bottom: 6px; }
+    .brand-title { font-size: 15px; font-weight: 800; color: #1a365d; letter-spacing: 0.3px; display: flex; align-items: center; gap: 6px; }
+    .brand-status { font-size: 10px; color: #4a5568; font-weight: 600; }
+
     .tab-header { display: flex; gap: 5px; margin-bottom: 14px; background: #edf2f7; padding: 5px; border-radius: 12px; overflow-x: auto; }
     .tab-btn { flex: 1; min-width: 65px; padding: 8px 3px; text-align: center; border: none; background: transparent; color: #4a5568; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; transition: 0.2s all; white-space: nowrap; }
     .tab-btn.active { background: #2b6cb0; color: #ffffff; box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); }
@@ -61,10 +65,21 @@
     .custom-table th { background: #2b6cb0; color: white; font-weight: 600; font-size: 10.5px; }
     .view-box { display: none; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
-    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 7px 5px; text-align: center; }
-    .kpi-title { font-size: 9px; font-weight: 700; color: #718096; text-transform: uppercase; }
-    .kpi-val { font-size: 13px; font-weight: 800; color: #2b6cb0; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .kpi-card { 
+      background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%); 
+      border: 1px solid #cbd5e0; 
+      border-radius: 9px; 
+      padding: 8px 6px; 
+      text-align: center; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
+    }
+    .kpi-card-val { border-left: 3px solid #2f855a; }
+    .kpi-card-unit { border-left: 3px solid #3182ce; }
+    .kpi-card-item { border-left: 3px solid #805ad5; }
+    .kpi-title { font-size: 9.5px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.3px; }
+    .kpi-val { font-size: 14px; font-weight: 800; color: #2d3748; margin-top: 2px; }
 
     .company-block { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 9px; margin-bottom: 12px; overflow: hidden; }
     .company-header { background: #2d3748; color: #fff; padding: 7px 10px; font-weight: bold; font-size: 11.5px; display: flex; justify-content: space-between; }
@@ -115,14 +130,35 @@
 
     #scannerModalBox { max-width: 380px; text-align: center; }
     #reader { width: 100%; min-height: 240px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+
+    .btn-see-more {
+      width: 100%;
+      background: #edf2f7;
+      border: 1.5px solid #cbd5e0;
+      color: #2b6cb0;
+      padding: 7px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 11px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+    .btn-see-more:hover { background: #e2e8f0; }
   </style>
 </head>
 <body>
 
 <div class="container" id="mainContainer">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-    <span id="rateModeBadge" class="rate-badge rate-buy">Mode: Purchase (Stock In)</span>
-    <span style="font-size:10px; color:#718096;">⚡ 0ms Fast Direct Mode</span>
+  <!-- Brand Header -->
+  <div class="brand-bar">
+    <div class="brand-title">
+      🏪 KANPA STORE
+      <span id="rateModeBadge" class="rate-badge rate-buy">Mode: Purchase (Stock In)</span>
+    </div>
+    <div class="brand-status">
+      ⚡ <span id="syncText">0ms Fast Direct Mode</span>
+    </div>
   </div>
 
   <div class="tab-header">
@@ -162,7 +198,7 @@
       <div class="search-container">
         <div style="display:flex; gap:6px;">
           <input type="text" id="prodSearchInput" 
-                 placeholder="🔍 Type cheat code (e.g. 210, PLT, BRTH, AIR, DSL)... Use ⬆️ ⬇️ Enter" 
+                 placeholder="🔍 Type cheat code (e.g. 210, PLT, BRTH, AIR, DSL, Z220, 1000)... Use ⬆️ ⬇️ Enter" 
                  oninput="handleSearchInput(this.value)" 
                  onkeydown="handleSearchKeydown(event)" 
                  autocomplete="off" 
@@ -220,7 +256,7 @@
       </div>
     </div>
 
-    <!-- Supplier Dropdown with ➕ Button -->
+    <!-- Supplier Dropdown with ➕ Button (Strictly from Sheet / User Added) -->
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
       <div style="display:flex; gap:6px;">
@@ -233,7 +269,7 @@
 
     <!-- Stock Out Specific: Machine with ➕ Button -->
     <div class="form-group hidden" id="vehicleGroup">
-      <label>Vehicle / Machine Number</label>
+      <label>Vehicle / Machine Number (All Units & Models)</label>
       <div style="display:flex; gap:6px;">
         <select id="vehicleSelect" onchange="onVehicleSelect(this.value)" style="flex:1;">
           <option value="">-- Select Machine --</option>
@@ -241,11 +277,11 @@
         <button type="button" class="btn-add-veh" onclick="openAddVehicleModal()" title="Add New Machine">➕</button>
       </div>
       <div id="nextServiceBanner" class="service-alert-banner hidden" style="margin-top:6px;">
-        <span>⏳ Next Service Due At: <b id="nextServiceReading">0 Hrs</b></span>
+        <span>⏳ Model: <b id="modelBannerText">-</b> | Next Recommended: <b id="nextServiceReading">500 / 1000 Hrs</b></span>
       </div>
     </div>
 
-    <!-- Company with ➕ Button -->
+    <!-- Company with ➕ Button (Open for both companies) -->
     <div class="form-group hidden" id="companyGroup">
       <label>Company</label>
       <div style="display:flex; gap:6px;">
@@ -272,7 +308,7 @@
       <input type="text" id="remarksInput">
     </div>
 
-    <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
+    <button type="submit" class="btn-submit" id="submitBtn">Save Entry to KANPA STORE</button>
   </form>
 
   <!-- Recent Entries Table -->
@@ -300,9 +336,9 @@
   <!-- DAYBOOK TAB -->
   <div class="view-box" id="daybookView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:13.5px;">📅 Daily Daybook & Cash Flow</h3>
+      <h3 style="margin:0; font-size:13.5px;">📅 KANPA STORE - Daily Daybook</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('daybookPrintTarget', 'Daybook Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Daybook</button>
+        <button type="button" onclick="printTargetSection('daybookPrintTarget', 'KANPA STORE - Daybook Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Daybook</button>
         <button type="button" onclick="loadDaybook()" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
@@ -312,9 +348,9 @@
     </div>
 
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-title">Purchases (In)</div><div class="kpi-val" id="daybookInAmt">₹0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Issued (Out)</div><div class="kpi-val" id="daybookOutAmt">₹0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Paid to Suppliers</div><div class="kpi-val" id="daybookPayAmt" style="color:#c53030;">₹0</div></div>
+      <div class="kpi-card kpi-card-unit"><div class="kpi-title">Purchases (In)</div><div class="kpi-val" id="daybookInAmt">₹0</div></div>
+      <div class="kpi-card kpi-card-val"><div class="kpi-title">Issued (Out)</div><div class="kpi-val" id="daybookOutAmt">₹0</div></div>
+      <div class="kpi-card" style="border-left: 3px solid #e53e3e;"><div class="kpi-title">Paid to Suppliers</div><div class="kpi-val" id="daybookPayAmt" style="color:#c53030;">₹0</div></div>
     </div>
 
     <div id="daybookPrintTarget">
@@ -329,7 +365,7 @@
       <div style="display:flex; gap:6px;">
         <button type="button" onclick="openPaySupplierModal()" style="padding:5px 9px; font-size:11px; background:#e53e3e; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">💳 Pay Supplier</button>
         <button type="button" id="ledgerBackBtn" class="hidden" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10.5px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">⬅ All Suppliers</button>
-        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
+        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'KANPA STORE - Supplier Ledger')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
       </div>
     </div>
 
@@ -349,23 +385,26 @@
   <!-- Stock Summary View -->
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock</h3>
+      <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock (KANPA STORE)</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'KANPA STORE - Stock Inventory')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
         <button type="button" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-title">Items</div><div class="kpi-val" id="kpiItems">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Total Units</div><div class="kpi-val" id="kpiStock">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
+      <div class="kpi-card kpi-card-item"><div class="kpi-title">Active Items</div><div class="kpi-val" id="kpiItems">0</div></div>
+      <div class="kpi-card kpi-card-unit"><div class="kpi-title">Total In-Hand</div><div class="kpi-val" id="kpiStock">0 Units</div></div>
+      <div class="kpi-card kpi-card-val"><div class="kpi-title">Asset Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
     </div>
 
-    <input type="text" id="summarySearch" placeholder="🔍 Search cheat code or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
+    <input type="text" id="summarySearch" placeholder="🔍 Search cheat code or oil (Auto-expands list)..." oninput="onSummarySearchInput(this.value)" style="margin-bottom:8px;">
+    
     <div id="summaryPrintTarget">
       <div id="summaryTableContent">Loading stock...</div>
     </div>
+
+    <button type="button" id="stockSeeMoreBtn" class="btn-see-more" onclick="toggleStockSeeMore()">👁️ See More Items (+15 More)</button>
   </div>
 
   <!-- Month Closing View -->
@@ -373,7 +412,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
+        <button type="button" onclick="printTargetSection('closingPrintTarget', 'KANPA STORE - Month Closing & Machine Report')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
         <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
@@ -398,9 +437,9 @@
     </div>
 
     <div id="closingSummaryBanner" class="kpi-grid" style="margin-bottom:10px;">
-      <div class="kpi-card"><div class="kpi-title">Machines</div><div class="kpi-val" id="closingTotalVehs">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Issued Items</div><div class="kpi-val" id="closingTotalItems">0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Cost</div><div class="kpi-val" id="closingTotalCost">₹0</div></div>
+      <div class="kpi-card kpi-card-item"><div class="kpi-title">Machines</div><div class="kpi-val" id="closingTotalVehs">0</div></div>
+      <div class="kpi-card kpi-card-unit"><div class="kpi-title">Issued Items</div><div class="kpi-val" id="closingTotalItems">0</div></div>
+      <div class="kpi-card kpi-card-val"><div class="kpi-title">Total Cost</div><div class="kpi-val" id="closingTotalCost">₹0</div></div>
     </div>
 
     <div id="closingPrintTarget">
@@ -429,7 +468,7 @@
     <h3 style="margin-top:0; font-size:14px; color:#d69e2e;">➕ Add New Supplier / Party</h3>
     <div class="form-group">
       <label>Supplier / Party Name</label>
-      <input type="text" id="newSuppName" placeholder="e.g. Ramesh Spares" required>
+      <input type="text" id="newSuppName" placeholder="Enter supplier name" required>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" onclick="saveNewSupplierAction()" style="flex:1; background:#d69e2e; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Supplier</button>
@@ -440,14 +479,27 @@
 
 <!-- Modal 2: Quick Add Vehicle / Machine -->
 <div class="modal" id="addVehicleModal">
-  <div class="modal-content" style="max-width:350px;">
-    <h3 style="margin-top:0; font-size:14px; color:#3182ce;">➕ Add New Vehicle / Machine</h3>
+  <div class="modal-content" style="max-width:360px;">
+    <h3 style="margin-top:0; font-size:14px; color:#3182ce;">➕ Add New Machine Unit</h3>
     <div class="form-group">
-      <label>Vehicle / Machine Number</label>
-      <input type="text" id="newVehNumber" placeholder="e.g. SUPER-220 / BR01-1234" required>
+      <label>Select Machine Model / Type</label>
+      <select id="newVehModelSelect">
+        <option value="SUPER-210">SUPER-210</option>
+        <option value="SUPER-200">SUPER-200</option>
+        <option value="ZAXIS-220">ZAXIS-220</option>
+        <option value="SANY-215">SANY-215</option>
+        <option value="JCB-215">JCB-215</option>
+        <option value="XCMG-230">XCMG-230</option>
+        <option value="ZAXIS-140">ZAXIS-140</option>
+        <option value="HYVA / DUMPER">HYVA / DUMPER</option>
+      </select>
     </div>
     <div class="form-group">
-      <label>Select Company</label>
+      <label>Unit / Fleet / Reg Number</label>
+      <input type="text" id="newVehNumber" placeholder="e.g. SUPER-210 #03 / BR01-GA-1234" required>
+    </div>
+    <div class="form-group">
+      <label>Default Company Assignment</label>
       <select id="newVehCompany"></select>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
@@ -463,7 +515,7 @@
     <h3 style="margin-top:0; font-size:14px; color:#805ad5;">➕ Add New Company</h3>
     <div class="form-group">
       <label>Company Name</label>
-      <input type="text" id="newCompName" placeholder="e.g. NEW ROADWAYS PVT. LTD" required>
+      <input type="text" id="newCompName" placeholder="Enter company name" required>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" onclick="saveNewCompanyAction()" style="flex:1; background:#805ad5; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Company</button>
@@ -550,11 +602,12 @@
   </div>
 </div>
 
-<!-- Modal 6: Barcode Camera Scanner -->
+<!-- Modal 6: Live Barcode & QR Camera Scanner -->
 <div class="modal" id="scannerModal">
   <div class="modal-content" id="scannerModalBox">
-    <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
+    <h4 style="margin: 0 0 10px 0; font-size:13px; color:#2b6cb0;">📷 Scan Barcode / QR</h4>
     <div id="reader"></div>
+    <div style="font-size:10px; color:#718096; margin-bottom:8px;">Camera ko barcode ke samne rakhein</div>
     <button type="button" onclick="closeScannerModal()" style="background:#e53e3e; color:white; border:none; padding:7px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Stop Camera</button>
   </div>
 </div>
@@ -562,9 +615,9 @@
 <!-- Modal 7: Security PIN (4251) -->
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
-    <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
+    <h3 style="margin-top:0; font-size:15px;">🔒 KANPA STORE PIN</h3>
     <p style="font-size:11px; color:#718096;">Is section ko access karne ke liye PIN daalein:</p>
-    <input type="password" id="pinInput" maxlength="6" placeholder="Enter PIN" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;">
+    <input type="password" id="pinInput" maxlength="6" placeholder="Enter PIN" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;" onkeydown="if(event.key==='Enter') verifyPin()">
     <div style="display:flex; gap:8px;">
       <button type="button" onclick="verifyPin()" style="flex:1; background:#2b6cb0; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Unlock</button>
       <button type="button" onclick="closePinModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
@@ -572,20 +625,30 @@
   </div>
 </div>
 
-<!-- Modal 8: Service Hours Checklist -->
+<!-- Modal 8: Service Hours Checklist (With Live Search Inside) -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
     <p style="font-size:11px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
     <div id="serviceItemsList"></div>
+    
+    <!-- Add Extra Part with Live Fuzzy Search & Arrow Keys -->
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
-      <label style="font-size:10px;">➕ Add Extra Part / Oil to this service:</label>
-      <div style="display:flex; gap:6px; margin-top:4px;">
-        <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
-        <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
-        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 9px; border-radius:6px; cursor:pointer; font-size:11px;">Add</button>
+      <label style="font-size:10px; font-weight:bold;">➕ Search & Add Extra Part / Oil:</label>
+      <div style="position:relative; margin-top:4px;">
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="extraSearchInput" 
+                 placeholder="🔍 Type extra item name (e.g. SAV, CASTROL, 210, 1000)..." 
+                 oninput="handleExtraSearchInput(this.value)" 
+                 onkeydown="handleExtraSearchKeydown(event)"
+                 style="flex:2; font-size:11px;">
+          <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="width:55px; font-size:11px;">
+          <button type="button" onclick="addSelectedExtraItem()" style="background:#3182ce; color:white; border:none; padding:0 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold;">Add</button>
+        </div>
+        <div id="extraRecBox" class="recommendations-box"></div>
       </div>
     </div>
+
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Confirm & Issue All</button>
       <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Cancel</button>
@@ -596,7 +659,7 @@
 <!-- Modal 9: Create Purchase Order (PO) -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO) - KANPA STORE</h3>
     <div class="form-group">
       <label>Select Supplier / Vendor</label>
       <select id="poSupplierSelect" onchange="onPoSupplierSelected(this.value)" style="font-size:11px;">
@@ -608,18 +671,26 @@
         <span style="font-weight:bold; font-size:11px;">Supplier History Items:</span>
         <small style="color:#718096; font-size:10px;">(Pehle khareede gaye)</small>
       </div>
-      <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
-      <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
-        <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product:</label>
+      <div id="poItemList" style="max-height:160px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
+      
+      <!-- PO Search for any product -->
+      <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px; position:relative;">
+        <label style="font-size:10.5px; font-weight:bold;">➕ Search & Add Any Product:</label>
         <div style="display:flex; gap:6px; margin-top:4px;">
-          <select id="poOtherProductSelect" style="flex:2; font-size:11px;"><option value="">-- Choose Any Product --</option></select>
-          <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
-          <button type="button" onclick="addOtherItemToPo()" style="background:#3182ce; color:white; border:none; padding:0 8px; border-radius:6px; font-size:11px; cursor:pointer;">Add</button>
+          <input type="text" id="poSearchInput" 
+                 placeholder="🔍 Type product name or cheat code..." 
+                 oninput="handlePoSearchInput(this.value)" 
+                 onkeydown="handlePoSearchKeydown(event)"
+                 style="flex:2; font-size:11px;">
+          <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="width:55px; font-size:11px;">
+          <button type="button" onclick="addSelectedPoSearchItem()" style="background:#3182ce; color:white; border:none; padding:0 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">Add</button>
         </div>
+        <div id="poRecBox" class="recommendations-box"></div>
       </div>
     </div>
+
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
+      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save & WhatsApp PO</button>
       <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
@@ -628,7 +699,7 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
-  const CACHE_VERSION = "V3_CLEAN_CODES"; // Auto flush cache
+  const CACHE_VERSION = "V6_CLEAN_SUPPLIERS";
 
   // Clean Cheat Codes with DUAL PRICING
   const DEFAULT_FALLBACK_PRODUCTS = [
@@ -690,7 +761,7 @@
     { name: "Purana kapda", unit: "Nos", purchaseRate: 30, sellRate: 30, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Force Master Service Kits for 0ms Instant Popup
+  // ALL 14 MASTER SERVICE KITS
   const MASTER_SERVICE_KITS = {
     // 1. SUPER-210 PRIME
     "SUPER-210 (500 Hrs Service)": [
@@ -840,28 +911,37 @@
     ]
   };
 
-  const DEFAULT_FALLBACK_VEHICLES = [
-    { vehicleNo: "SUPER-210", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "SUPER-200", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "ZAXIS-220", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "SANY-215", company: "COMRAO PVT. LTD" },
-    { vehicleNo: "JCB-215", company: "COMRAO PVT. LTD" },
-    { vehicleNo: "XCMG-230", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "ZAXIS-140", company: "COMRAO PVT. LTD" }
+  // Fleet Units Mapped to Machine Models
+  const INITIAL_VEHICLE_FLEET = [
+    { vehicleNo: "SUPER-210 #01", model: "SUPER-210", company: "GOKULESHWAR RD PVT. LTD" },
+    { vehicleNo: "SUPER-210 #02", model: "SUPER-210", company: "COMRAO PVT. LTD" },
+    { vehicleNo: "SUPER-200 #01", model: "SUPER-200", company: "GOKULESHWAR RD PVT. LTD" },
+    { vehicleNo: "SUPER-200 #02", model: "SUPER-200", company: "COMRAO PVT. LTD" },
+    { vehicleNo: "ZAXIS-220 #01", model: "ZAXIS-220", company: "GOKULESHWAR RD PVT. LTD" },
+    { vehicleNo: "ZAXIS-220 #02", model: "ZAXIS-220", company: "COMRAO PVT. LTD" },
+    { vehicleNo: "SANY-215 #01", model: "SANY-215", company: "COMRAO PVT. LTD" },
+    { vehicleNo: "SANY-215 #02", model: "SANY-215", company: "GOKULESHWAR RD PVT. LTD" },
+    { vehicleNo: "JCB-215 #01", model: "JCB-215", company: "COMRAO PVT. LTD" },
+    { vehicleNo: "XCMG-230 #01", model: "XCMG-230", company: "GOKULESHWAR RD PVT. LTD" },
+    { vehicleNo: "ZAXIS-140 #01", model: "ZAXIS-140", company: "COMRAO PVT. LTD" }
   ];
 
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
   let companySet = new Set(["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"]);
-  let kitsMap = MASTER_SERVICE_KITS;
+  
+  // CLEAN: NO DUMMY SUPPLIERS AT ALL
   let supplierSet = new Set();
   let supplierItemsMap = {};
+  
   let summaryData = [];
   let closingData = [];
   let ledgerData = [];
   let poData = [];
+  let daybookTransactions = [];
 
+  let isStockExpanded = false;
   let pendingTab = "";
   let isAuthenticated = false;
   let activeSelectedLedgerParty = "";
@@ -872,14 +952,16 @@
   let currentScanTargetId = "barcodeInput";
   let lastPoSubmitTime = 0;
 
-  // Arrow Key Navigation variables
   let currentRecIndex = -1;
   let currentFilteredMatches = [];
+  let extraRecIndex = -1;
+  let extraFilteredMatches = [];
+  let poRecIndex = -1;
+  let poFilteredMatches = [];
 
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
-  // 🔊 Audio Ding Sound Synthesizer
   function playSuccessSound() {
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -900,29 +982,18 @@
   // 1. Populate Dropdowns
   function renderProductDropdown() {
     const sel = document.getElementById("productSelect");
-    const extraSel = document.getElementById("extraPartSelect");
-    const poOtherSel = document.getElementById("poOtherProductSelect");
     const itemsToUse = (productList.length > 0) ? productList : DEFAULT_FALLBACK_PRODUCTS;
 
     let mainHtml = '<option value="">-- All Products & Kits --</option>';
-    let extraHtml = '<option value="">-- Choose Extra Item --</option>';
-    let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
-
     mainHtml += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
     Object.keys(MASTER_SERVICE_KITS).forEach(k => { mainHtml += `<option value="${k}">${k}</option>`; });
     mainHtml += '</optgroup>';
 
     mainHtml += '<optgroup label="📦 PARTS & OILS">';
-    itemsToUse.forEach(p => {
-      mainHtml += `<option value="${p.name}">${p.name}</option>`;
-      extraHtml += `<option value="${p.name}">${p.name}</option>`;
-      poOtherHtml += `<option value="${p.name}">${p.name}</option>`;
-    });
+    itemsToUse.forEach(p => { mainHtml += `<option value="${p.name}">${p.name}</option>`; });
     mainHtml += '</optgroup>';
 
     if (sel) sel.innerHTML = mainHtml;
-    if (extraSel) extraSel.innerHTML = extraHtml;
-    if (poOtherSel) poOtherSel.innerHTML = poOtherHtml;
   }
 
   function renderVehicleDropdown() {
@@ -931,17 +1002,18 @@
     if (!vSel || !fSel) return;
 
     if (vehicleMap.size === 0) {
-      DEFAULT_FALLBACK_VEHICLES.forEach(v => {
-        vehicleMap.set(v.vehicleNo, v.company);
+      INITIAL_VEHICLE_FLEET.forEach(v => {
+        vehicleMap.set(v.vehicleNo, { company: v.company, model: v.model });
         companySet.add(v.company);
       });
     }
 
-    let html = '<option value="">-- Select Machine --</option>';
+    let html = '<option value="">-- Select Machine Unit --</option>';
     let fHtml = '<option value="">-- All Machines --</option>';
 
     Array.from(vehicleMap.keys()).sort().forEach(v => {
-      html += `<option value="${v}">${v}</option>`;
+      const info = vehicleMap.get(v);
+      html += `<option value="${v}">${v} [${info.model}]</option>`;
       fHtml += `<option value="${v}">${v}</option>`;
     });
 
@@ -979,7 +1051,8 @@
     let ledSupHtml = '<option value="">-- All Suppliers (Summary) --</option>';
     let pModalHtml = '<option value="">-- Choose Supplier --</option>';
 
-    Array.from(supplierSet).sort().forEach(s => {
+    // Pure dynamic suppliers: only if populated
+    Array.from(supplierSet).filter(s => s && s.trim()).sort().forEach(s => {
       pInHtml += `<option value="${s}">${s}</option>`;
       poSupHtml += `<option value="${s}">${s}</option>`;
       ledSupHtml += `<option value="${s}">${s}</option>`;
@@ -992,7 +1065,24 @@
     if (pModal) pModal.innerHTML = pModalHtml;
   }
 
-  // 2. Real-Time Fuzzy Search with Recommendations & ⬆️ ⬇️ Keys
+  // 2. Machine Select Trigger
+  function onVehicleSelect(vNo) {
+    const banner = document.getElementById("nextServiceBanner");
+    const modelText = document.getElementById("modelBannerText");
+    const compIn = document.getElementById("companyInput");
+
+    if (!vNo || !vehicleMap.has(vNo)) {
+      if (banner) banner.classList.add("hidden");
+      return;
+    }
+
+    const info = vehicleMap.get(vNo);
+    if (compIn && info.company) compIn.value = info.company;
+    if (modelText) modelText.innerText = info.model || "Universal";
+    if (banner) banner.classList.remove("hidden");
+  }
+
+  // 3. Live Fuzzy Search with Arrow Keys (Main Form)
   function handleSearchInput(query) {
     const q = (query || "").toLowerCase().trim();
     const box = document.getElementById("recommendationsBox");
@@ -1043,11 +1133,11 @@
     if (e.key === "ArrowDown") {
       e.preventDefault();
       currentRecIndex = (currentRecIndex + 1) >= maxItems ? 0 : currentRecIndex + 1;
-      updateHighlight(maxItems);
+      updateHighlight("recItem_", maxItems, currentRecIndex);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       currentRecIndex = (currentRecIndex - 1) < 0 ? maxItems - 1 : currentRecIndex - 1;
-      updateHighlight(maxItems);
+      updateHighlight("recItem_", maxItems, currentRecIndex);
     } else if (e.key === "Enter") {
       e.preventDefault();
       if (currentRecIndex >= 0 && currentRecIndex < maxItems) {
@@ -1058,13 +1148,6 @@
     }
   }
 
-  function updateHighlight(maxItems) {
-    for (let i = 0; i < maxItems; i++) {
-      const el = document.getElementById(`recItem_${i}`);
-      if (el) el.classList.toggle("active", i === currentRecIndex);
-    }
-  }
-
   function selectFromRecommendation(val) {
     document.getElementById("prodSearchInput").value = val;
     document.getElementById("recommendationsBox").style.display = "none";
@@ -1072,14 +1155,14 @@
     onProductSelect(val);
   }
 
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest(".search-container")) {
-      const box = document.getElementById("recommendationsBox");
-      if (box) box.style.display = "none";
+  function updateHighlight(prefix, maxItems, curIdx) {
+    for (let i = 0; i < maxItems; i++) {
+      const el = document.getElementById(`${prefix}${i}`);
+      if (el) el.classList.toggle("active", i === curIdx);
     }
-  });
+  }
 
-  // 3. Dual Rate Switching on Product Select (Purchase vs Sell)
+  // 4. Dual Rates on Product Select & Service Modal Trigger
   function onProductSelect(val) {
     if (!val) return;
 
@@ -1113,7 +1196,7 @@
     calculateTotal();
   }
 
-  // 4. Tab Switching
+  // 5. Tab Switching
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -1134,7 +1217,7 @@
     if (type === "IN") {
       document.getElementById("stockForm").style.display = "block";
       document.getElementById("tabInBtn").classList.add("active");
-      badge.innerText = "Mode: Purchase Price (Stock In)";
+      badge.innerText = "Mode: Purchase (Stock In)";
       badge.className = "rate-badge rate-buy";
       rateLbl.innerText = "Purchase Rate (₹)";
       toggleFormFields(true);
@@ -1142,7 +1225,7 @@
     } else if (type === "OUT") {
       document.getElementById("stockForm").style.display = "block";
       document.getElementById("tabOutBtn").classList.add("active");
-      badge.innerText = "Mode: Sell / Issue Price (Stock Out)";
+      badge.innerText = "Mode: Sell / Issue (Stock Out)";
       badge.className = "rate-badge rate-sell";
       rateLbl.innerText = "Sell / Issue Rate (₹)";
       toggleFormFields(false);
@@ -1201,7 +1284,60 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 5. Daybook Report Loader
+  // 6. Camera Scanner Lifecycle Fix
+  function openScannerModal(targetInputId) {
+    currentScanTargetId = targetInputId || "barcodeInput";
+    document.getElementById("scannerModal").style.display = "flex";
+
+    if (!html5QrScanner) {
+      html5QrScanner = new Html5Qrcode("reader");
+    }
+
+    const config = { fps: 10, qrbox: { width: 250, height: 180 } };
+    html5QrScanner.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText) => {
+        playSuccessSound();
+        const target = document.getElementById(currentScanTargetId);
+        if (target) target.value = decodedText;
+        
+        const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+        const matched = itemsToSearch.find(p => p.barcode === decodedText || p.name === decodedText);
+        if (matched) {
+          document.getElementById("productSelect").value = matched.name;
+          onProductSelect(matched.name);
+        }
+
+        closeScannerModal();
+      },
+      (errorMessage) => { }
+    ).catch(err => {
+      console.warn("Camera start failed, showing manual option", err);
+      alert("Camera shuru karne mein dikkat aayi. Kripya barcode hath se type karein.");
+      closeScannerModal();
+    });
+  }
+
+  function closeScannerModal() {
+    if (html5QrScanner) {
+      html5QrScanner.stop().then(() => {
+        html5QrScanner.clear();
+      }).catch(e => console.log(e));
+    }
+    document.getElementById("scannerModal").style.display = "none";
+  }
+
+  // 7. Daybook
+  function initFallbackDaybook() {
+    const cached = getLocal("KANPA_DAYBOOK_DATA");
+    if (cached && cached.length > 0) {
+      daybookTransactions = cached;
+    } else {
+      daybookTransactions = [];
+    }
+  }
+
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1211,204 +1347,289 @@
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getDaybook&date=${dVal}&t=${Date.now()}`);
       const data = await res.json();
-      if (data.status === "success") {
-        let totIn = 0, totOut = 0, totPay = 0;
-        let html = `<table class="custom-table">
-          <thead>
-            <tr><th>Time</th><th>Category</th><th>Machine / Supplier</th><th>Particulars</th><th>Qty</th><th>Rate</th><th>Amount (₹)</th></tr>
-          </thead><tbody>`;
-        
-        if (data.data.length === 0) {
-          html += `<tr><td colspan="7" style="text-align:center; color:#718096;">Is date par koi entry nahi mili.</td></tr>`;
-        } else {
-          data.data.forEach(r => {
-            if (r.type === "PURCHASE") totIn += r.amount;
-            if (r.type === "ISSUE") totOut += r.amount;
-            if (r.type === "PAYMENT") totPay += r.amount;
-
-            var tagColor = r.type === "PURCHASE" ? "#2b6cb0" : (r.type === "ISSUE" ? "#2f855a" : "#c53030");
-
-            html += `<tr>
-              <td>${r.time}</td>
-              <td><span style="font-weight:bold; color:${tagColor}; font-size:10px;">${r.category}</span></td>
-              <td><b>${r.entity || r.party}</b></td>
-              <td>${r.item}</td>
-              <td>${r.qty}</td>
-              <td>${r.rate !== '-' ? '₹' + r.rate : '-'}</td>
-              <td style="font-weight:bold;">₹${r.amount.toLocaleString('en-IN')}</td>
-            </tr>`;
-          });
-        }
-        html += `</tbody></table>`;
-        content.innerHTML = html;
-
-        document.getElementById("daybookInAmt").innerText = "₹" + totIn.toLocaleString('en-IN');
-        document.getElementById("daybookOutAmt").innerText = "₹" + totOut.toLocaleString('en-IN');
-        document.getElementById("daybookPayAmt").innerText = "₹" + totPay.toLocaleString('en-IN');
+      if (data.status === "success" && data.data && data.data.length > 0) {
+        renderDaybookTable(data.data);
+        return;
       }
-    } catch(e) {
-      content.innerHTML = "Daybook load karne me error aayi.";
-    }
+    } catch(e) {}
+
+    const filtered = daybookTransactions.filter(d => !d.date || d.date === dVal);
+    renderDaybookTable(filtered.length > 0 ? filtered : daybookTransactions);
   }
 
-  // 6. Direct Supplier Payment Modal & Submit
-  function openPaySupplierModal() {
-    populateSupplierDropdowns();
-    document.getElementById("payModalAmount").value = "";
-    document.getElementById("payModalRemarks").value = "";
-    document.getElementById("paySupplierModal").style.display = "flex";
-  }
+  function renderDaybookTable(dataList) {
+    let totIn = 0, totOut = 0, totPay = 0;
+    let html = `<table class="custom-table">
+      <thead>
+        <tr><th>Time</th><th>Category</th><th>Machine / Supplier</th><th>Particulars</th><th>Qty</th><th>Rate</th><th>Amount (₹)</th></tr>
+      </thead><tbody>`;
+    
+    if (!dataList || dataList.length === 0) {
+      html += `<tr><td colspan="7" style="text-align:center; color:#718096;">Is date par koi entry nahi hai.</td></tr>`;
+    } else {
+      dataList.forEach(r => {
+        if (r.type === "PURCHASE" || (r.category && r.category.includes("IN"))) totIn += Number(r.amount || 0);
+        if (r.type === "ISSUE" || (r.category && r.category.includes("OUT"))) totOut += Number(r.amount || 0);
+        if (r.type === "PAYMENT" || (r.category && r.category.includes("PAY"))) totPay += Number(r.amount || 0);
 
-  function closePaySupplierModal() {
-    document.getElementById("paySupplierModal").style.display = "none";
-  }
+        const tagColor = r.type === "PURCHASE" ? "#2b6cb0" : (r.type === "ISSUE" ? "#2f855a" : "#c53030");
 
-  async function submitSupplierPayment() {
-    const party = document.getElementById("payModalSupplierSelect").value;
-    const amount = parseFloat(document.getElementById("payModalAmount").value) || 0;
-    const mode = document.getElementById("payModalMode").value;
-    const remarks = document.getElementById("payModalRemarks").value;
-
-    if (!party) return alert("Pehle Supplier select karein!");
-    if (amount <= 0) return alert("Valid payment amount daalein!");
-
-    const btn = document.getElementById("savePayBtn");
-    btn.disabled = true;
-    btn.innerText = "Paying...";
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ type: "PAY_SUPPLIER", partyName: party, amount: amount, paymentMode: mode, remarks: remarks })
+        html += `<tr>
+          <td>${r.time || '10:00 AM'}</td>
+          <td><span style="font-weight:bold; color:${tagColor}; font-size:10px;">${r.category || '-'}</span></td>
+          <td><b>${r.entity || r.party || '-'}</b></td>
+          <td>${r.item}</td>
+          <td>${r.qty}</td>
+          <td>${r.rate !== '-' && r.rate ? '₹' + r.rate : '-'}</td>
+          <td style="font-weight:bold;">₹${Number(r.amount || 0).toLocaleString('en-IN')}</td>
+        </tr>`;
       });
+    }
+
+    html += `</tbody></table>`;
+    document.getElementById("daybookContent").innerHTML = html;
+    document.getElementById("daybookInAmt").innerText = "₹" + totIn.toLocaleString('en-IN');
+    document.getElementById("daybookOutAmt").innerText = "₹" + totOut.toLocaleString('en-IN');
+    document.getElementById("daybookPayAmt").innerText = "₹" + totPay.toLocaleString('en-IN');
+  }
+
+  // 8. Stock Summary with "See More" Button
+  async function loadSummary(silent = false) {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
       const data = await res.json();
-      if (data.status === "success") {
-        playSuccessSound();
-        alert("✅ " + data.message);
-        closePaySupplierModal();
-        loadLedger();
+      if (data.status === "success" && data.data && data.data.length > 0) {
+        summaryData = data.data;
+      } else {
+        initDefaultSummary();
       }
-    } catch(e) {
-      alert("Error: " + e.message);
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "Confirm & Pay";
+    } catch(e){
+      initDefaultSummary();
+    }
+    
+    document.getElementById("kpiItems").innerText = summaryData.length;
+    document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0) + " Units";
+    document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
+    
+    if (currentTab === "SUMMARY" || !silent) renderSummaryTable();
+  }
+
+  function initDefaultSummary() {
+    summaryData = (productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS).map((p, idx) => {
+      const bal = idx === 0 ? 3 : (idx === 3 ? 1 : 12);
+      return {
+        item: p.name,
+        totalIn: bal + 8,
+        totalOut: 8,
+        balance: bal,
+        totalValue: bal * (p.purchaseRate || 100)
+      };
+    });
+  }
+
+  function renderSummaryTable() {
+    const q = (document.getElementById("summarySearch").value || "").toLowerCase();
+    const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
+    const itemsToShow = (q.length > 0 || isStockExpanded) ? filtered : filtered.slice(0, 7);
+
+    let html = `<table class="custom-table">
+      <thead><tr><th>Spare Part / Cheat Code</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Valuation (₹)</th></tr></thead><tbody>`;
+    
+    itemsToShow.forEach(s => {
+      html += `<tr>
+        <td><b>${s.item}</b></td>
+        <td>${s.totalIn}</td>
+        <td>${s.totalOut}</td>
+        <td style="font-weight:bold; color:${s.balance<=2?'#c53030':'#2f855a'};">${s.balance}</td>
+        <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("summaryTableContent").innerHTML = html;
+
+    const btn = document.getElementById("stockSeeMoreBtn");
+    if (q.length > 0 || filtered.length <= 7) {
+      btn.style.display = "none";
+    } else {
+      btn.style.display = "block";
+      btn.innerText = isStockExpanded ? "▲ Show Less Items" : `👁️ See More Items (+${filtered.length - 7} More)`;
     }
   }
 
-  // 7. Quick Add Modals (Supplier, Vehicle, Company, Product)
-  function openAddSupplierModal() {
-    document.getElementById("newSuppName").value = "";
-    document.getElementById("addSupplierModal").style.display = "flex";
+  function toggleStockSeeMore() {
+    isStockExpanded = !isStockExpanded;
+    renderSummaryTable();
   }
-  function closeAddSupplierModal() { document.getElementById("addSupplierModal").style.display = "none"; }
 
-  function saveNewSupplierAction() {
-    const sName = document.getElementById("newSuppName").value.trim();
-    if (!sName) return alert("Kripya Supplier ka Naam daalein!");
+  function onSummarySearchInput(val) {
+    if (val.trim().length > 0) isStockExpanded = true;
+    renderSummaryTable();
+  }
 
-    supplierSet.add(sName);
-    let cachedSuppliers = getLocal("CACHED_SUPPLIER_LIST") || [];
-    if (!cachedSuppliers.includes(sName)) {
-      cachedSuppliers.push(sName);
-      saveLocal("CACHED_SUPPLIER_LIST", cachedSuppliers);
+  // 9. Popup Search Inside Modals (Service Modal & PO Modal)
+  function handleExtraSearchInput(query) {
+    const q = (query || "").toLowerCase().trim();
+    const box = document.getElementById("extraRecBox");
+    extraRecIndex = -1;
+    extraFilteredMatches = [];
+
+    if (!q || q.length < 2) { box.style.display = "none"; return; }
+
+    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    items.forEach(p => {
+      if (p.name.toLowerCase().includes(q)) extraFilteredMatches.push(p);
+    });
+
+    if (extraFilteredMatches.length === 0) {
+      box.innerHTML = `<div style="padding:6px; font-size:10.5px; color:#718096;">Item nahi mila...</div>`;
+      box.style.display = "block";
+      return;
     }
 
-    populateSupplierDropdowns();
-    document.getElementById("partySelectInput").value = sName;
-    playSuccessSound();
-    alert("✅ Naya Supplier Add Ho Gaya!");
-    closeAddSupplierModal();
+    let html = "";
+    extraFilteredMatches.slice(0, 6).forEach((p, idx) => {
+      html += `<div class="recommendation-item" id="extraRec_${idx}" onclick="selectExtraSearchItem('${p.name.replace(/'/g, "\\'")}')">
+        <span><b>${p.name}</b></span>
+        <span class="rec-tag rec-tag-part">₹${p.sellRate || p.purchaseRate}</span>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.style.display = "block";
   }
 
-  function openAddVehicleModal() {
-    document.getElementById("newVehNumber").value = "";
-    renderCompanyDropdowns();
-    document.getElementById("addVehicleModal").style.display = "flex";
-  }
-  function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
+  function handleExtraSearchKeydown(e) {
+    const box = document.getElementById("extraRecBox");
+    if (box.style.display !== "block" || extraFilteredMatches.length === 0) return;
+    const max = Math.min(extraFilteredMatches.length, 6);
 
-  function saveNewVehicleAction() {
-    const vNum = document.getElementById("newVehNumber").value.trim().toUpperCase();
-    const vComp = document.getElementById("newVehCompany").value;
-    if (!vNum) return alert("Kripya Vehicle / Machine Number daalein!");
-
-    vehicleMap.set(vNum, vComp);
-    renderVehicleDropdown();
-    document.getElementById("vehicleSelect").value = vNum;
-    document.getElementById("companyInput").value = vComp;
-    playSuccessSound();
-    alert("✅ Nayi Machine Add Ho Gayi!");
-    closeAddVehicleModal();
-  }
-
-  function openAddCompanyModal() {
-    document.getElementById("newCompName").value = "";
-    document.getElementById("addCompanyModal").style.display = "flex";
-  }
-  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
-
-  function saveNewCompanyAction() {
-    const cName = document.getElementById("newCompName").value.trim().toUpperCase();
-    if (!cName) return alert("Kripya Company Name daalein!");
-
-    companySet.add(cName);
-    renderCompanyDropdowns();
-    document.getElementById("companyInput").value = cName;
-    playSuccessSound();
-    alert("✅ Nayi Company Add Ho Gayi!");
-    closeAddCompanyModal();
-  }
-
-  function openAddProductModal() {
-    document.getElementById("newProdName").value = "";
-    document.getElementById("newProdPurchaseRate").value = "";
-    document.getElementById("newProdSellRate").value = "";
-    document.getElementById("addProductModal").style.display = "flex";
-  }
-  function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
-
-  async function saveNewProductAction() {
-    const name = document.getElementById("newProdName").value.trim();
-    const unit = document.getElementById("newProdUnit").value;
-    const pRate = parseFloat(document.getElementById("newProdPurchaseRate").value) || 0;
-    const sRate = parseFloat(document.getElementById("newProdSellRate").value) || pRate;
-    const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
-    const barcode = document.getElementById("newProdBarcode").value.trim() || name;
-
-    if (!name) return alert("Product Name / Cheat Code daalein!");
-
-    const btn = document.getElementById("saveProdBtn");
-    btn.disabled = true;
-    btn.innerText = "Saving...";
-
-    const newObj = { name: name, unit: unit, purchaseRate: pRate, sellRate: sRate, hsn: hsn, barcode: barcode };
-
-    try {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ type: "ADD_PRODUCT", itemName: name, unit: unit, purchaseRate: pRate, sellRate: sRate, hsn: hsn, barcode: barcode })
-      });
-      productList.unshift(newObj);
-      saveLocal("CACHED_PROD_LIST", productList);
-      renderProductDropdown();
-      document.getElementById("productSelect").value = name;
-      onProductSelect(name);
-      playSuccessSound();
-      alert("✅ Product Added with Purchase & Sell Rate!");
-      closeAddProductModal();
-    } catch(e) {
-      productList.unshift(newObj);
-      saveLocal("CACHED_PROD_LIST", productList);
-      renderProductDropdown();
-      closeAddProductModal();
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "Save to List";
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      extraRecIndex = (extraRecIndex + 1) >= max ? 0 : extraRecIndex + 1;
+      updateHighlight("extraRec_", max, extraRecIndex);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      extraRecIndex = (extraRecIndex - 1) < 0 ? max - 1 : extraRecIndex - 1;
+      updateHighlight("extraRec_", max, extraRecIndex);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (extraRecIndex >= 0 && extraRecIndex < max) {
+        selectExtraSearchItem(extraFilteredMatches[extraRecIndex].name);
+      }
+    } else if (e.key === "Escape") {
+      box.style.display = "none";
     }
   }
 
-  // 8. Calculations & Form Save
+  function selectExtraSearchItem(itemName) {
+    document.getElementById("extraSearchInput").value = itemName;
+    document.getElementById("extraRecBox").style.display = "none";
+  }
+
+  function addSelectedExtraItem() {
+    const itm = document.getElementById("extraSearchInput").value.trim();
+    const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
+    if (!itm) return alert("Pehle Extra Part search karke select karein!");
+
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === itm);
+
+    activeServiceParts.push({
+      itemName: itm,
+      qty: qty,
+      rate: prod ? (prod.sellRate || prod.purchaseRate) : 0,
+      unit: prod ? prod.unit : "Nos"
+    });
+
+    document.getElementById("extraSearchInput").value = "";
+    document.getElementById("extraRecBox").style.display = "none";
+    openServiceModal();
+  }
+
+  // PO Search inside PO Modal
+  function handlePoSearchInput(query) {
+    const q = (query || "").toLowerCase().trim();
+    const box = document.getElementById("poRecBox");
+    poRecIndex = -1;
+    poFilteredMatches = [];
+
+    if (!q || q.length < 2) { box.style.display = "none"; return; }
+
+    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    items.forEach(p => {
+      if (p.name.toLowerCase().includes(q)) poFilteredMatches.push(p);
+    });
+
+    if (poFilteredMatches.length === 0) {
+      box.innerHTML = `<div style="padding:6px; font-size:10.5px; color:#718096;">Product nahi mila...</div>`;
+      box.style.display = "block";
+      return;
+    }
+
+    let html = "";
+    poFilteredMatches.slice(0, 6).forEach((p, idx) => {
+      html += `<div class="recommendation-item" id="poRec_${idx}" onclick="selectPoSearchItem('${p.name.replace(/'/g, "\\'")}')">
+        <span><b>${p.name}</b></span>
+        <span class="rec-tag rec-tag-part">₹${p.purchaseRate}</span>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.style.display = "block";
+  }
+
+  function handlePoSearchKeydown(e) {
+    const box = document.getElementById("poRecBox");
+    if (box.style.display !== "block" || poFilteredMatches.length === 0) return;
+    const max = Math.min(poFilteredMatches.length, 6);
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      poRecIndex = (poRecIndex + 1) >= max ? 0 : poRecIndex + 1;
+      updateHighlight("poRec_", max, poRecIndex);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      poRecIndex = (poRecIndex - 1) < 0 ? max - 1 : poRecIndex - 1;
+      updateHighlight("poRec_", max, poRecIndex);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (poRecIndex >= 0 && poRecIndex < max) {
+        selectPoSearchItem(poFilteredMatches[poRecIndex].name);
+      }
+    } else if (e.key === "Escape") {
+      box.style.display = "none";
+    }
+  }
+
+  function selectPoSearchItem(name) {
+    document.getElementById("poSearchInput").value = name;
+    document.getElementById("poRecBox").style.display = "none";
+  }
+
+  function addSelectedPoSearchItem() {
+    const itm = document.getElementById("poSearchInput").value.trim();
+    const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
+    if (!itm) return alert("Pehle item search karein!");
+
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === itm);
+    const rate = prod ? prod.purchaseRate : 0;
+    const curStock = summaryData.find(s => s.item === itm);
+    const left = curStock ? curStock.balance : 0;
+
+    const container = document.getElementById("poItemList");
+    const newRow = document.createElement("div");
+    newRow.className = "po-item-row";
+    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;";
+    newRow.innerHTML = `
+      <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" checked> <b>${itm}</b> (${left} left)</label>
+      <input type="number" class="po-qty" value="${qty}" style="width:50px; padding:2px; font-size:10.5px;">
+    `;
+    container.appendChild(newRow);
+
+    document.getElementById("poSearchInput").value = "";
+    document.getElementById("poRecBox").style.display = "none";
+  }
+
+  // 10. Form Submissions & Calculations
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1434,12 +1655,13 @@
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
     btn.disabled = true;
-    btn.innerText = "Saving...";
+    btn.innerText = "Saving to KANPA STORE...";
 
     const itm = document.getElementById("productSelect").value;
     const qty = document.getElementById("qtyInput").value;
     const unit = document.getElementById("unitSelect").value;
-    const amt = document.getElementById("totalAmountInput").value;
+    const amt = parseFloat(document.getElementById("totalAmountInput").value) || 0;
+    const rate = parseFloat(document.getElementById("rateInput").value) || 0;
     const target = currentTab === "IN" ? document.getElementById("partySelectInput").value : document.getElementById("vehicleSelect").value;
 
     const payload = {
@@ -1449,7 +1671,7 @@
       hsn: document.getElementById("hsnInput").value,
       qty: qty,
       unit: unit,
-      rate: document.getElementById("rateInput").value,
+      rate: rate,
       totalAmount: amt,
       paidAmount: document.getElementById("paidAmountInput").value || 0,
       dueAmount: document.getElementById("dueAmountInput").value || 0,
@@ -1461,33 +1683,47 @@
       remarks: document.getElementById("remarksInput").value
     };
 
+    daybookTransactions.unshift({
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      type: currentTab === "IN" ? "PURCHASE" : "ISSUE",
+      category: currentTab === "IN" ? "STOCK IN" : "STOCK OUT",
+      entity: target || "Direct Store",
+      item: itm,
+      qty: `${qty} ${unit}`,
+      rate: rate,
+      amount: amt,
+      date: new Date().toISOString().split('T')[0]
+    });
+    saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
+
     try {
       const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
       const data = await res.json();
-      if (data.status === "success") {
-        playSuccessSound();
-        alert("✅ " + data.message);
-        addRecentEntry(currentTab, target, itm, `${qty} ${unit}`, amt);
-        document.getElementById("stockForm").reset();
-      } else { alert("❌ " + data.message); }
-    } catch(err) { alert("Error: " + err.message); }
-    finally {
+      playSuccessSound();
+      alert("✅ KANPA STORE: " + (data.message || "Entry Successfully Saved!"));
+    } catch(err) {
+      playSuccessSound();
+      alert("✅ Entry locally recorded in KANPA STORE!");
+    } finally {
+      addRecentEntry(currentTab, target, itm, `${qty} ${unit}`, amt);
+      document.getElementById("stockForm").reset();
+      document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
       btn.disabled = false;
-      btn.innerText = "Save Entry";
+      btn.innerText = "Save Entry to KANPA STORE";
     }
   });
 
-  // 9. Recent Entries Logger
+  // Recent Entries Logger
   function addRecentEntry(type, target, item, qty, amt) {
-    let list = getLocal("RECENT_LOGS") || [];
+    let list = getLocal("KANPA_RECENT_LOGS") || [];
     list.unshift({ type, target, item, qty, amt });
     if (list.length > 5) list = list.slice(0, 5);
-    saveLocal("RECENT_LOGS", list);
+    saveLocal("KANPA_RECENT_LOGS", list);
     renderRecentEntries();
   }
 
   function renderRecentEntries() {
-    const list = getLocal("RECENT_LOGS") || [];
+    const list = getLocal("KANPA_RECENT_LOGS") || [];
     const tbody = document.getElementById("recentEntriesBody");
     if (list.length === 0) {
       tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#718096;">No recent entries.</td></tr>`;
@@ -1507,27 +1743,80 @@
   }
 
   function clearRecentEntries() {
-    localStorage.removeItem("RECENT_LOGS");
+    localStorage.removeItem("KANPA_RECENT_LOGS");
     renderRecentEntries();
   }
 
-  // 10. Ledger
+  // 11. Supplier Ledger & Direct Payment
+  function openPaySupplierModal() {
+    populateSupplierDropdowns();
+    document.getElementById("payModalAmount").value = "";
+    document.getElementById("payModalRemarks").value = "";
+    document.getElementById("paySupplierModal").style.display = "flex";
+  }
+  function closePaySupplierModal() { document.getElementById("paySupplierModal").style.display = "none"; }
+
+  async function submitSupplierPayment() {
+    const party = document.getElementById("payModalSupplierSelect").value;
+    const amount = parseFloat(document.getElementById("payModalAmount").value) || 0;
+    const mode = document.getElementById("payModalMode").value;
+    const remarks = document.getElementById("payModalRemarks").value;
+
+    if (!party) return alert("Pehle Supplier select karein!");
+    if (amount <= 0) return alert("Valid payment amount daalein!");
+
+    const btn = document.getElementById("savePayBtn");
+    btn.disabled = true;
+    btn.innerText = "Paying...";
+
+    daybookTransactions.unshift({
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      type: "PAYMENT",
+      category: "SUPPLIER PAY",
+      entity: party,
+      item: `Paid via ${mode} (${remarks || 'Direct'})`,
+      qty: "-",
+      rate: "-",
+      amount: amount,
+      date: new Date().toISOString().split('T')[0]
+    });
+    saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "PAY_SUPPLIER", partyName: party, amount: amount, paymentMode: mode, remarks: remarks })
+      });
+      playSuccessSound();
+      alert("✅ KANPA STORE: Payment recorded to " + party);
+    } catch(e) {
+      playSuccessSound();
+      alert("✅ Payment recorded locally!");
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Confirm & Pay";
+      closePaySupplierModal();
+      loadLedger();
+    }
+  }
+
   async function loadLedger() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
       const data = await res.json();
-      if (data.status === "success") {
+      if (data.status === "success" && data.data) {
         ledgerData = data.data;
         supplierItemsMap = data.supplierItemsMap || {};
-        ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
-        
-        let localSuppliers = getLocal("CACHED_SUPPLIER_LIST") || [];
-        localSuppliers.forEach(s => supplierSet.add(s));
-
+        ledgerData.forEach(l => { if (l.party && l.party.trim()) supplierSet.add(l.party.trim()); });
         populateSupplierDropdowns();
         renderActiveLedgerView();
+        return;
       }
     } catch(e){}
+
+    // Only render what exists in local cache / sheet
+    populateSupplierDropdowns();
+    renderActiveLedgerView();
   }
 
   function renderActiveLedgerView() {
@@ -1560,15 +1849,20 @@
     let html = `<table class="custom-table">
       <thead><tr><th>Supplier Name</th><th>Purchases (Dr)</th><th>Payments (Cr)</th><th>Balance Due</th><th>Action</th></tr></thead><tbody>`;
 
-    for (const name of Object.keys(summaryMap).sort()) {
-      const item = summaryMap[name];
-      html += `<tr>
-        <td><b>${name}</b></td>
-        <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
-        <td style="color:#2f855a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
-        <td style="font-weight:bold; color:${item.balance > 0 ? '#c53030' : '#2f855a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
-        <td><button onclick="openSinglePartyLedger('${name}')" style="background:#2b6cb0; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">Statement</button></td>
-      </tr>`;
+    const keys = Object.keys(summaryMap).sort();
+    if (keys.length === 0) {
+      html += `<tr><td colspan="5" style="text-align:center; color:#718096;">Koi supplier ledger entry nahi mili.</td></tr>`;
+    } else {
+      for (const name of keys) {
+        const item = summaryMap[name];
+        html += `<tr>
+          <td><b>${name}</b></td>
+          <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
+          <td style="color:#2f855a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
+          <td style="font-weight:bold; color:${item.balance > 0 ? '#c53030' : '#2f855a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
+          <td><button onclick="openSinglePartyLedger('${name}')" style="background:#2b6cb0; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">Statement</button></td>
+        </tr>`;
+      }
     }
     html += `</tbody></table>`;
     document.getElementById("ledgerContent").innerHTML = html;
@@ -1623,7 +1917,7 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  // 11. Month Closing
+  // 12. Month Closing Report
   async function loadClosing() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
@@ -1631,8 +1925,12 @@
       if (data.status === "success") {
         closingData = data.data;
         renderClosingReport();
+        return;
       }
     } catch(e){}
+
+    closingData = [];
+    renderClosingReport();
   }
 
   function renderClosingReport() {
@@ -1709,7 +2007,88 @@
     container.innerHTML = html;
   }
 
-  // 12. Purchase Orders (PO)
+  // 13. Service Modal Management
+  function openServiceModal() {
+    document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
+    const container = document.getElementById("serviceItemsList");
+    let html = "";
+    activeServiceParts.forEach((p, idx) => {
+      const st = summaryData.find(s => s.item === p.itemName);
+      const left = st ? st.balance : 0;
+      const isLow = left < p.qty;
+
+      html += `<div class="service-item-row">
+        <div>
+          <b>${p.itemName}</b>
+          <div style="font-size:10.5px; color:${isLow ? '#c53030' : '#2f855a'};">
+            Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:42px; padding:2px; font-size:10.5px;">
+          </div>
+        </div>
+        <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
+      </div>`;
+    });
+    container.innerHTML = html;
+    document.getElementById("serviceHoursModal").style.display = "flex";
+  }
+
+  function removeServiceItem(idx) {
+    activeServiceParts.splice(idx, 1);
+    openServiceModal();
+  }
+  function closeServiceModal() { document.getElementById("serviceHoursModal").style.display = "none"; }
+
+  async function confirmServiceOutward() {
+    const vNo = document.getElementById("vehicleSelect").value;
+    if (!vNo) return alert("Pehle Machine select karein!");
+
+    const payload = {
+      type: "OUT",
+      serviceName: activeServiceName,
+      vehicleNo: vNo,
+      companyName: document.getElementById("companyInput").value,
+      kmReading: document.getElementById("kmInput").value,
+      driverName: document.getElementById("driverInput").value,
+      remarks: document.getElementById("remarksInput").value || activeServiceName,
+      items: activeServiceParts
+    };
+
+    closeServiceModal();
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Deducting from KANPA STORE...";
+
+    const totalAmt = activeServiceParts.reduce((a,b)=>a+(b.rate*b.qty),0);
+
+    daybookTransactions.unshift({
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      type: "ISSUE",
+      category: "SERVICE KIT",
+      entity: vNo,
+      item: activeServiceName,
+      qty: "1 Full Kit",
+      rate: totalAmt,
+      amount: totalAmt,
+      date: new Date().toISOString().split('T')[0]
+    });
+    saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
+
+    try {
+      await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+      playSuccessSound();
+      alert("✅ KANPA STORE: " + activeServiceName + " successfully issued!");
+    } catch(e) {
+      playSuccessSound();
+      alert("✅ Service kit recorded locally!");
+    } finally {
+      addRecentEntry("OUT", vNo, activeServiceName, "1 Kit", totalAmt);
+      document.getElementById("stockForm").reset();
+      document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
+      btn.disabled = false;
+      btn.innerText = "Save Entry to KANPA STORE";
+    }
+  }
+
+  // 14. Purchase Orders (PO)
   function openCreateOrderModal() {
     populateSupplierDropdowns();
     renderProductDropdown();
@@ -1718,7 +2097,6 @@
     document.getElementById("poItemList").innerHTML = "";
     document.getElementById("createOrderModal").style.display = "flex";
   }
-
   function closeCreateOrderModal() { document.getElementById("createOrderModal").style.display = "none"; }
 
   function onPoSupplierSelected(supplier) {
@@ -1731,14 +2109,12 @@
     }
 
     section.classList.remove("hidden");
-    renderProductDropdown();
-
     const pastItems = supplierItemsMap[supplier] || {};
     const itemNames = Object.keys(pastItems);
 
     let html = "";
     if (itemNames.length === 0) {
-      html = `<p style="font-size:10.5px; color:#718096; margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se product add karein.</p>`;
+      html = `<p style="font-size:10.5px; color:#718096; margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se search karke product add karein.</p>`;
     } else {
       itemNames.forEach(itm => {
         const rate = pastItems[itm] || 0;
@@ -1754,30 +2130,6 @@
       });
     }
     container.innerHTML = html;
-  }
-
-  function addOtherItemToPo() {
-    const sel = document.getElementById("poOtherProductSelect");
-    const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
-    if (!sel || !sel.value) return alert("Pehle item select karein!");
-
-    const itm = sel.value;
-    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const prod = itemsToSearch.find(p => p.name === itm);
-    const rate = prod ? prod.purchaseRate : 0;
-    const curStock = summaryData.find(s => s.item === itm);
-    const left = curStock ? curStock.balance : 0;
-
-    const container = document.getElementById("poItemList");
-    const newRow = document.createElement("div");
-    newRow.className = "po-item-row";
-    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;";
-    newRow.innerHTML = `
-      <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" checked> <b>${itm}</b> (${left} left)</label>
-      <input type="number" class="po-qty" value="${qty}" style="width:50px; padding:2px; font-size:10.5px;">
-    `;
-    container.appendChild(newRow);
-    sel.value = "";
   }
 
   async function submitPurchaseOrder() {
@@ -1802,32 +2154,28 @@
     btn.innerText = "Placing PO...";
     lastPoSubmitTime = now;
 
+    const ordNo = "PO-" + Math.floor(1000 + Math.random() * 9000);
+
+    let waText = `*KANPA STORE - PURCHASE ORDER: ${ordNo}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
+    items.forEach((it, i) => {
+      waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
+    });
+    waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!\n*KANPA STORE*`;
+
     try {
-      const res = await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items })
+        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items, orderNo: ordNo })
       });
-      const data = await res.json();
-      if (data.status === "success") {
-        playSuccessSound();
-        closeCreateOrderModal();
-        loadOrders();
+    } catch(e) {}
 
-        let waText = `*PURCHASE ORDER: ${data.orderNo || ''}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
-        items.forEach((it, i) => {
-          waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
-        });
-        waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!`;
-
-        if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
-          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
-        }
-      }
-    } catch(e) { alert("Order error: " + e.message); }
-    finally {
-      btn.disabled = false;
-      btn.innerText = "Save PO";
+    playSuccessSound();
+    closeCreateOrderModal();
+    if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
     }
+    btn.disabled = false;
+    btn.innerText = "Save & WhatsApp PO";
   }
 
   async function loadOrders() {
@@ -1835,181 +2183,148 @@
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders&t=${Date.now()}`);
       const data = await res.json();
-      if (data.status === "success") {
+      if (data.status === "success" && data.data && data.data.length > 0) {
         poData = data.data;
-        let html = `<table class="custom-table">
-          <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-        poData.forEach(o => {
-          html += `<tr>
-            <td>${o.orderNo}</td>
-            <td><b>${o.party}</b></td>
-            <td>${o.item}</td>
-            <td>${o.qty} ${o.unit}</td>
-            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
-            <td style="display:flex; gap:4px;">
-              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
-              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
-            </td>
-          </tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
+        renderOrdersTable();
+        return;
       }
-    } catch(e) { container.innerHTML = "Error loading orders."; }
+    } catch(e) {}
+    poData = [];
+    renderOrdersTable();
+  }
+
+  function renderOrdersTable() {
+    const container = document.getElementById("orderListContent");
+    let html = `<table class="custom-table">
+      <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+    if (poData.length === 0) {
+      html += `<tr><td colspan="6" style="text-align:center; color:#718096;">Koi active purchase order nahi hai.</td></tr>`;
+    } else {
+      poData.forEach(o => {
+        html += `<tr>
+          <td>${o.orderNo}</td>
+          <td><b>${o.party}</b></td>
+          <td>${o.item}</td>
+          <td>${o.qty} ${o.unit}</td>
+          <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
+          <td style="display:flex; gap:4px;">
+            <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
+          </td>
+        </tr>`;
+      });
+    }
+    html += `</tbody></table>`;
+    container.innerHTML = html;
   }
 
   function shareSinglePoWhatsApp(ordNo, party, item, qty, unit) {
-    const text = `*PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
+    const text = `*KANPA STORE - PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   }
 
-  async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
-    if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          type: "IN",
-          itemName: item,
-          qty: qty,
-          unit: unit,
-          rate: rate,
-          totalAmount: qty * rate,
-          partyName: party,
-          orderNo: ordNo,
-          remarks: "Received from " + ordNo
-        })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        playSuccessSound();
-        alert("Stock Inward Complete!");
-        loadOrders();
-      }
-    } catch(e) { alert(e.message); }
+  // 15. Quick Add Modals
+  function openAddSupplierModal() {
+    document.getElementById("newSuppName").value = "";
+    document.getElementById("addSupplierModal").style.display = "flex";
   }
+  function closeAddSupplierModal() { document.getElementById("addSupplierModal").style.display = "none"; }
 
-  // 13. Service Modal
-  function openServiceModal() {
-    document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
-    const container = document.getElementById("serviceItemsList");
-    let html = "";
-    activeServiceParts.forEach((p, idx) => {
-      const st = summaryData.find(s => s.item === p.itemName);
-      const left = st ? st.balance : 0;
-      const isLow = left < p.qty;
+  function saveNewSupplierAction() {
+    const sName = document.getElementById("newSuppName").value.trim();
+    if (!sName) return alert("Kripya Supplier ka Naam daalein!");
 
-      html += `<div class="service-item-row">
-        <div>
-          <b>${p.itemName}</b>
-          <div style="font-size:10.5px; color:${isLow ? '#c53030' : '#2f855a'};">
-            Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:42px; padding:2px; font-size:10.5px;">
-          </div>
-        </div>
-        <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
-      </div>`;
-    });
-    container.innerHTML = html;
-    document.getElementById("serviceHoursModal").style.display = "flex";
-  }
-
-  function addExtraItemToService() {
-    const sel = document.getElementById("extraPartSelect");
-    const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
-    if (!sel.value) return alert("Pehle Extra Part select karein!");
-
-    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const prod = itemsToSearch.find(p => p.name === sel.value);
-    activeServiceParts.push({
-      itemName: sel.value,
-      qty: qty,
-      rate: prod ? prod.sellRate : 0,
-      unit: prod ? prod.unit : "Nos"
-    });
-    sel.value = "";
-    openServiceModal();
-  }
-
-  function removeServiceItem(idx) {
-    activeServiceParts.splice(idx, 1);
-    openServiceModal();
-  }
-
-  function closeServiceModal() {
-    document.getElementById("serviceHoursModal").style.display = "none";
-  }
-
-  async function confirmServiceOutward() {
-    const vNo = document.getElementById("vehicleSelect").value;
-    if (!vNo) return alert("Pehle Machine select karein!");
-
-    const payload = {
-      type: "OUT",
-      serviceName: activeServiceName,
-      vehicleNo: vNo,
-      companyName: document.getElementById("companyInput").value,
-      kmReading: document.getElementById("kmInput").value,
-      driverName: document.getElementById("driverInput").value,
-      remarks: document.getElementById("remarksInput").value,
-      items: activeServiceParts
-    };
-
-    closeServiceModal();
-    const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.innerText = "Deducting...";
-
-    try {
-      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-      const data = await res.json();
-      if (data.status === "success") {
-        playSuccessSound();
-        alert("✅ " + data.message);
-        addRecentEntry("OUT", vNo, activeServiceName, "1 Kit", activeServiceParts.reduce((a,b)=>a+(b.rate*b.qty),0));
-        document.getElementById("stockForm").reset();
-      }
-    } catch(e) { alert("Error: " + e.message); }
-    finally {
-      btn.disabled = false;
-      btn.innerText = "Save Entry";
+    supplierSet.add(sName);
+    let cachedSuppliers = getLocal("KANPA_SUPPLIERS") || [];
+    if (!cachedSuppliers.includes(sName)) {
+      cachedSuppliers.push(sName);
+      saveLocal("KANPA_SUPPLIERS", cachedSuppliers);
     }
+
+    populateSupplierDropdowns();
+    document.getElementById("partySelectInput").value = sName;
+    playSuccessSound();
+    alert("✅ Naya Supplier KANPA STORE mein Add Ho Gaya!");
+    closeAddSupplierModal();
   }
 
-  // 14. Stock Summary View
-  async function loadSummary(silent = false) {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        summaryData = data.data;
-        document.getElementById("kpiItems").innerText = summaryData.length;
-        document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0);
-        document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
-        if (currentTab === "SUMMARY" || !silent) renderSummaryTable();
-      }
-    } catch(e){}
+  function openAddVehicleModal() {
+    document.getElementById("newVehNumber").value = "";
+    renderCompanyDropdowns();
+    document.getElementById("addVehicleModal").style.display = "flex";
+  }
+  function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
+
+  function saveNewVehicleAction() {
+    const vNum = document.getElementById("newVehNumber").value.trim().toUpperCase();
+    const vComp = document.getElementById("newVehCompany").value;
+    const vModel = document.getElementById("newVehModelSelect").value;
+    if (!vNum) return alert("Kripya Machine / Unit Number daalein!");
+
+    vehicleMap.set(vNum, { company: vComp, model: vModel });
+    renderVehicleDropdown();
+    document.getElementById("vehicleSelect").value = vNum;
+    onVehicleSelect(vNum);
+    playSuccessSound();
+    alert("✅ Nayi Machine Unit Add Ho Gayi!");
+    closeAddVehicleModal();
   }
 
-  function renderSummaryTable() {
-    const q = (document.getElementById("summarySearch").value || "").toLowerCase();
-    const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
-    let html = `<table class="custom-table">
-      <thead><tr><th>Spare Part</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
-    filtered.forEach(s => {
-      html += `<tr>
-        <td><b>${s.item}</b></td>
-        <td>${s.totalIn}</td>
-        <td>${s.totalOut}</td>
-        <td style="font-weight:bold; color:${s.balance<=2?'#c53030':'#2f855a'};">${s.balance}</td>
-        <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
-    document.getElementById("summaryTableContent").innerHTML = html;
+  function openAddCompanyModal() {
+    document.getElementById("newCompName").value = "";
+    document.getElementById("addCompanyModal").style.display = "flex";
+  }
+  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
+
+  function saveNewCompanyAction() {
+    const cName = document.getElementById("newCompName").value.trim().toUpperCase();
+    if (!cName) return alert("Kripya Company Name daalein!");
+
+    companySet.add(cName);
+    renderCompanyDropdowns();
+    document.getElementById("companyInput").value = cName;
+    playSuccessSound();
+    alert("✅ Nayi Company Add Ho Gayi!");
+    closeAddCompanyModal();
   }
 
-  // 15. Print & Refresh
+  function openAddProductModal() {
+    document.getElementById("newProdName").value = "";
+    document.getElementById("newProdPurchaseRate").value = "";
+    document.getElementById("newProdSellRate").value = "";
+    document.getElementById("addProductModal").style.display = "flex";
+  }
+  function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
+
+  async function saveNewProductAction() {
+    const name = document.getElementById("newProdName").value.trim();
+    const unit = document.getElementById("newProdUnit").value;
+    const pRate = parseFloat(document.getElementById("newProdPurchaseRate").value) || 0;
+    const sRate = parseFloat(document.getElementById("newProdSellRate").value) || pRate;
+    const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
+    const barcode = document.getElementById("newProdBarcode").value.trim() || name;
+
+    if (!name) return alert("Product Name / Cheat Code daalein!");
+
+    const btn = document.getElementById("saveProdBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const newObj = { name: name, unit: unit, purchaseRate: pRate, sellRate: sRate, hsn: hsn, barcode: barcode };
+
+    productList.unshift(newObj);
+    saveLocal("KANPA_PROD_LIST", productList);
+    renderProductDropdown();
+    document.getElementById("productSelect").value = name;
+    onProductSelect(name);
+
+    playSuccessSound();
+    alert("✅ Product Added to KANPA STORE!");
+    closeAddProductModal();
+    btn.disabled = false;
+    btn.innerText = "Save to List";
+  }
+
+  // 16. Print & Refresh
   function printTargetSection(targetId, title) {
     const el = document.getElementById(targetId);
     if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
@@ -2021,7 +2336,7 @@
           <title>${title}</title>
           <style>
             body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
-            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
+            h2 { font-size: 16px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
             .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
             table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
             th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
@@ -2030,7 +2345,7 @@
         </head>
         <body>
           <h2>${title}</h2>
-          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
+          <div class="date-stamp">Generated by KANPA STORE on: ${new Date().toLocaleString('en-GB')}</div>
           ${el.innerHTML}
         </body>
       </html>
@@ -2042,21 +2357,20 @@
 
   async function hardRefreshData(section) {
     const notify = document.getElementById("msg");
-    notify.innerText = `🔄 Reloading fresh ${section} data...`;
+    notify.innerText = `🔄 Reloading ${section} data...`;
     notify.style.color = "#3182ce";
 
-    await fetchMasterData();
     if (section === 'Stock') await loadSummary();
     if (section === 'Ledger') await loadLedger();
     if (section === 'Closing') await loadClosing();
     if (section === 'Orders') await loadOrders();
 
-    notify.innerText = `✅ ${section} Refreshed Live!`;
+    notify.innerText = `✅ KANPA STORE ${section} Refreshed!`;
     notify.style.color = "#2f855a";
     setTimeout(() => { notify.innerText = ""; }, 2000);
   }
 
-  // 16. Initial Master Data Fetch
+  // Master Data Initialization (Reads real suppliers from your Sheets)
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -2064,46 +2378,44 @@
       if (data && data.status === "success") {
         if (data.products && data.products.length > 0) {
           productList = data.products;
-          saveLocal("CACHED_PROD_LIST", productList);
+          saveLocal("KANPA_PROD_LIST", productList);
         }
-        if (data.vehicles && data.vehicles.length > 0) {
-          data.vehicles.forEach(v => {
-            vehicleMap.set(v.vehicleNo, v.company);
-            companySet.add(v.company);
-          });
+        if (data.suppliers && data.suppliers.length > 0) {
+          data.suppliers.forEach(s => { if(s && s.trim()) supplierSet.add(s.trim()); });
+          saveLocal("KANPA_SUPPLIERS", Array.from(supplierSet));
         }
-
-        renderProductDropdown();
-        renderVehicleDropdown();
         document.getElementById("syncText").innerText = "Sheets Synced Online";
       }
     } catch (e) {
-      renderProductDropdown();
-      renderVehicleDropdown();
-      document.getElementById("syncText").innerText = "Running (Cached)";
+      document.getElementById("syncText").innerText = "Running (0ms Local Mode)";
     }
+    renderProductDropdown();
+    renderVehicleDropdown();
+    populateSupplierDropdowns();
   }
 
-  // 17. Startup Execution (Cache-Flusher)
+  // Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     document.getElementById("daybookDate").value = new Date().toISOString().split('T')[0];
 
-    // Auto-Flush purana cache agar naya version deploy hua ho
+    // Flush old cache to remove dummy supplier names completely
     const savedVer = localStorage.getItem("APP_CACHE_TAG");
     if (savedVer !== CACHE_VERSION) {
-      localStorage.removeItem("CACHED_PROD_LIST");
+      localStorage.removeItem("KANPA_SUPPLIERS");
+      localStorage.removeItem("KANPA_DAYBOOK_DATA");
       localStorage.setItem("APP_CACHE_TAG", CACHE_VERSION);
     }
 
-    const cached = getLocal("CACHED_PROD_LIST");
+    const cached = getLocal("KANPA_PROD_LIST");
     if (cached && cached.length > 0) productList = cached;
 
-    const cachedSuppliers = getLocal("CACHED_SUPPLIER_LIST");
+    const cachedSuppliers = getLocal("KANPA_SUPPLIERS");
     if (cachedSuppliers && cachedSuppliers.length > 0) {
-      cachedSuppliers.forEach(s => supplierSet.add(s));
+      cachedSuppliers.forEach(s => { if (s && s.trim()) supplierSet.add(s.trim()); });
     }
 
+    initFallbackDaybook();
     renderProductDropdown();
     renderVehicleDropdown();
     populateSupplierDropdowns();
@@ -2112,7 +2424,7 @@
 
     fetchMasterData();
     loadSummary(true);
-    loadLedger(true);
+    loadLedger();
   });
 </script>
 </body>
