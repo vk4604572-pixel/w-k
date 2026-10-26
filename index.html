@@ -122,7 +122,7 @@
 <div class="container" id="mainContainer">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
     <span id="rateModeBadge" class="rate-badge rate-buy">Mode: Purchase (Stock In)</span>
-    <span style="font-size:10px; color:#718096;">⚡ 0ms Instant Cache</span>
+    <span style="font-size:10px; color:#718096;">⚡ 0ms Fast Direct Mode</span>
   </div>
 
   <div class="tab-header">
@@ -472,7 +472,7 @@
   </div>
 </div>
 
-<!-- Modal 4: Add Product with Dual Rates (Purchase Rate & Sell Rate) -->
+<!-- Modal 4: Add Product with Dual Rates -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:380px;">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add Product (Purchase & Sell Rates)</h3>
@@ -628,8 +628,9 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
+  const CACHE_VERSION = "V3_CLEAN_CODES"; // Auto flush cache
 
-  // Exact Clean Items with DUAL PRICING (purchaseRate vs sellRate)
+  // Clean Cheat Codes with DUAL PRICING
   const DEFAULT_FALLBACK_PRODUCTS = [
     // Super-210 Prime
     { name: "S210-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "S210-500-ENG-DSL" },
@@ -680,7 +681,7 @@
     { name: "Z-140-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
     { name: "Z-140-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
 
-    // Exact Specified Brand Names
+    // Oils & Grease
     { name: "CASTROL ENGINE OIL(Mobil) -210L", unit: "L", purchaseRate: 278, sellRate: 300, hsn: "2710", barcode: "CASTROL-210L" },
     { name: "PENSOL GEAR OIL", unit: "L", purchaseRate: 289, sellRate: 300, hsn: "2710", barcode: "PENSOL-GEAR-OIL" },
     { name: "PENSOL CHASSIS GREASE", unit: "Nos", purchaseRate: 3350, sellRate: 3500, hsn: "2710", barcode: "PENSOL-CHASSIS-GREASE" },
@@ -1096,7 +1097,6 @@
       document.getElementById("hsnInput").value = prod.hsn || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
-      // Rate Selection: Stock In = Purchase Rate | Stock Out = Sell Rate
       var rateToApply = (currentTab === "IN") ? (prod.purchaseRate || 0) : (prod.sellRate || prod.purchaseRate || 0);
       document.getElementById("rateInput").value = rateToApply;
 
@@ -1576,6 +1576,7 @@
 
   function openSinglePartyLedger(party) {
     activeSelectedLedgerParty = party;
+    document.getElementById("ledgerPartyFilter").value = party;
     renderActiveLedgerView();
   }
 
@@ -2083,10 +2084,17 @@
     }
   }
 
-  // 17. Startup Execution
+  // 17. Startup Execution (Cache-Flusher)
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     document.getElementById("daybookDate").value = new Date().toISOString().split('T')[0];
+
+    // Auto-Flush purana cache agar naya version deploy hua ho
+    const savedVer = localStorage.getItem("APP_CACHE_TAG");
+    if (savedVer !== CACHE_VERSION) {
+      localStorage.removeItem("CACHED_PROD_LIST");
+      localStorage.setItem("APP_CACHE_TAG", CACHE_VERSION);
+    }
 
     const cached = getLocal("CACHED_PROD_LIST");
     if (cached && cached.length > 0) productList = cached;
