@@ -34,6 +34,9 @@
     .barcode-row { display: flex; gap: 8px; }
     .btn-scan { background: #319795; color: white; border: none; padding: 0 12px; border-radius: 7px; font-weight: bold; font-size: 11px; cursor: pointer; }
     .btn-add-prod { background: #38a169; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-add-supp { background: #d69e2e; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-add-veh  { background: #3182ce; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-add-comp { background: #805ad5; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
 
     .qty-stepper-row { display: flex; gap: 6px; }
     .stepper-btn { width: 38px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 7px; font-weight: bold; font-size: 14px; cursor: pointer; }
@@ -70,43 +73,6 @@
     .refresh-indicator { font-size: 10px; color: #718096; text-align: right; margin-bottom: 4px; }
     .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #38a169; border-radius: 50%; margin-right: 4px; }
 
-    /* Auto Recommendation Dropdown & Keyboard Focus */
-    .search-container { position: relative; width: 100%; }
-    .recommendations-box {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      border: 1.5px solid #3182ce;
-      border-top: none;
-      border-radius: 0 0 8px 8px;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 1000;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-      display: none;
-    }
-    .recommendation-item {
-      padding: 8px 10px;
-      font-size: 11px;
-      cursor: pointer;
-      border-bottom: 1px solid #edf2f7;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background 0.1s;
-    }
-    .recommendation-item:hover, .recommendation-item.active {
-      background: #ebf8ff !important;
-      color: #2b6cb0 !important;
-      font-weight: 700 !important;
-      border-left: 3px solid #3182ce;
-    }
-    .rec-tag { font-size: 9.5px; padding: 1px 5px; border-radius: 4px; font-weight: bold; }
-    .rec-tag-kit { background: #feebc8; color: #7b341e; }
-    .rec-tag-part { background: #e2e8f0; color: #2d3748; }
-
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
     .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
@@ -119,7 +85,7 @@
 
 <div class="container" id="mainContainer">
   <div class="refresh-indicator">
-    <span class="pulse-dot"></span><span id="syncText">Instant LocalStorage Memory Active</span>
+    <span class="pulse-dot"></span><span id="syncText">Live Sync Active</span>
   </div>
 
   <div class="tab-header">
@@ -131,6 +97,7 @@
     <button class="tab-btn" id="tabOrderBtn" onclick="switchTab('ORDER')">📝 Order (PO)</button>
   </div>
 
+  <!-- Main Entry Form -->
   <form id="stockForm">
     <div class="form-group">
       <label>Date & Time</label>
@@ -145,6 +112,7 @@
       </div>
     </div>
 
+    <!-- Product / Service Selection -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -153,23 +121,12 @@
         </div>
       </div>
       
-      <!-- Live Search + Up/Down Arrow Navigation Wrapper -->
-      <div class="search-container">
-        <div style="display:flex; gap:6px;">
-          <input type="text" id="prodSearchInput" 
-                 placeholder="🔍 Type cheat code (e.g. 210, PLT, BRTH, AIR, DSL)... Use ⬆️ ⬇️ to select" 
-                 oninput="handleSearchInput(this.value)" 
-                 onkeydown="handleSearchKeydown(event)" 
-                 autocomplete="off" 
-                 style="flex:1; background:#fffdf5; border-color:#3182ce;">
-          <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
-        </div>
-        <div id="recommendationsBox" class="recommendations-box"></div>
+      <div style="display:flex; gap:6px;">
+        <select id="productSelect" onchange="onProductSelect(this.value)" style="flex:1;">
+          <option value="">-- Loading Products... --</option>
+        </select>
+        <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
       </div>
-
-      <select id="productSelect" onchange="onProductSelect(this.value)" style="margin-top:5px;">
-        <option value="">-- All Products & Kits --</option>
-      </select>
     </div>
 
     <div class="form-group">
@@ -177,6 +134,7 @@
       <input type="text" id="hsnInput" placeholder="Auto filled">
     </div>
 
+    <!-- Quantity & Units -->
     <div class="form-group">
       <label>Quantity & Unit</label>
       <div class="qty-stepper-row">
@@ -203,6 +161,7 @@
       <input type="number" id="totalAmountInput" readonly style="background:#edf2f7; font-weight:bold;">
     </div>
 
+    <!-- Stock In Specific -->
     <div id="paymentGroup" class="form-group">
       <label>Payment Tracking (Ledger)</label>
       <div style="display:flex; gap:8px;">
@@ -211,29 +170,41 @@
       </div>
     </div>
 
+    <!-- Supplier Dropdown with ➕ Button -->
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
-      <select id="partySelectInput">
-        <option value="">-- Select Supplier --</option>
-      </select>
+      <div style="display:flex; gap:6px;">
+        <select id="partySelectInput" style="flex:1;">
+          <option value="">-- Select Supplier --</option>
+        </select>
+        <button type="button" class="btn-add-supp" onclick="openAddSupplierModal()" title="Add New Supplier">➕</button>
+      </div>
     </div>
 
+    <!-- Stock Out Specific: Machine with ➕ Button -->
     <div class="form-group hidden" id="vehicleGroup">
       <label>Vehicle / Machine Number</label>
-      <select id="vehicleSelect" onchange="onVehicleSelect(this.value)">
-        <option value="">-- Select Machine --</option>
-      </select>
+      <div style="display:flex; gap:6px;">
+        <select id="vehicleSelect" onchange="onVehicleSelect(this.value)" style="flex:1;">
+          <option value="">-- Select Machine --</option>
+        </select>
+        <button type="button" class="btn-add-veh" onclick="openAddVehicleModal()" title="Add New Machine">➕</button>
+      </div>
       <div id="nextServiceBanner" class="service-alert-banner hidden" style="margin-top:6px;">
         <span>⏳ Next Service Due At: <b id="nextServiceReading">0 Hrs</b></span>
       </div>
     </div>
 
+    <!-- Company with ➕ Button -->
     <div class="form-group hidden" id="companyGroup">
       <label>Company</label>
-      <select id="companyInput">
-        <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
-        <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
-      </select>
+      <div style="display:flex; gap:6px;">
+        <select id="companyInput" style="flex:1;">
+          <option value="GOKULESHWAR RD PVT. LTD">GOKULESHWAR RD PVT. LTD</option>
+          <option value="COMRAO PVT. LTD">COMRAO PVT. LTD</option>
+        </select>
+        <button type="button" class="btn-add-comp" onclick="openAddCompanyModal()" title="Add New Company">➕</button>
+      </div>
     </div>
 
     <div class="form-group hidden" id="kmGroup">
@@ -254,6 +225,7 @@
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
+  <!-- Recent Entries Table -->
   <div id="recentEntriesSection" style="margin-top:16px; border-top:1.5px dashed #cbd5e0; padding-top:10px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
       <span style="font-weight:bold; font-size:11.5px; color:#2b6cb0;">📋 Recent Entries</span>
@@ -264,7 +236,7 @@
         <tr>
           <th>Type</th>
           <th>Machine / Party</th>
-          <th>Cheat Code / Item</th>
+          <th>Item</th>
           <th>Qty</th>
           <th>Amount (₹)</th>
         </tr>
@@ -275,6 +247,7 @@
     </table>
   </div>
 
+  <!-- Stock Summary View -->
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock</h3>
@@ -290,12 +263,13 @@
       <div class="kpi-card"><div class="kpi-title">Valuation</div><div class="kpi-val" id="kpiValue">₹0</div></div>
     </div>
 
-    <input type="text" id="summarySearch" placeholder="🔍 Search cheat code or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
+    <input type="text" id="summarySearch" placeholder="🔍 Search spare parts or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
     <div id="summaryPrintTarget">
       <div id="summaryTableContent">Loading stock...</div>
     </div>
   </div>
 
+  <!-- Supplier Ledger -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;" id="ledgerHeadingTitle">Supplier Ledger Summary</h3>
@@ -319,6 +293,7 @@
     </div>
   </div>
 
+  <!-- Month Closing View -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
@@ -358,6 +333,7 @@
     </div>
   </div>
 
+  <!-- Purchase Order (PO) Tab -->
   <div class="view-box" id="orderView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Purchase Order (PO) & Re-Order</h3>
@@ -372,15 +348,63 @@
   <div id="msg"></div>
 </div>
 
+<!-- Modal 1: Quick Add Supplier -->
+<div class="modal" id="addSupplierModal">
+  <div class="modal-content" style="max-width:350px;">
+    <h3 style="margin-top:0; font-size:14px; color:#d69e2e;">➕ Add New Supplier / Party</h3>
+    <div class="form-group">
+      <label>Supplier / Party Name</label>
+      <input type="text" id="newSuppName" placeholder="e.g. Ramesh Spares" required>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" onclick="saveNewSupplierAction()" style="flex:1; background:#d69e2e; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Supplier</button>
+      <button type="button" onclick="closeAddSupplierModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Quick Add Vehicle / Machine -->
+<div class="modal" id="addVehicleModal">
+  <div class="modal-content" style="max-width:350px;">
+    <h3 style="margin-top:0; font-size:14px; color:#3182ce;">➕ Add New Vehicle / Machine</h3>
+    <div class="form-group">
+      <label>Vehicle / Machine Number</label>
+      <input type="text" id="newVehNumber" placeholder="e.g. SUPER-220 / BR01-1234" required>
+    </div>
+    <div class="form-group">
+      <label>Select Company</label>
+      <select id="newVehCompany"></select>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" onclick="saveNewVehicleAction()" style="flex:1; background:#3182ce; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Machine</button>
+      <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Quick Add Company -->
+<div class="modal" id="addCompanyModal">
+  <div class="modal-content" style="max-width:350px;">
+    <h3 style="margin-top:0; font-size:14px; color:#805ad5;">➕ Add New Company</h3>
+    <div class="form-group">
+      <label>Company Name</label>
+      <input type="text" id="newCompName" placeholder="e.g. NEW ROADWAYS PVT. LTD" required>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" onclick="saveNewCompanyAction()" style="flex:1; background:#805ad5; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Company</button>
+      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: Quick Add Product -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:380px;">
-    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add New Product / Cheat Code</h3>
-    
+    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add New Product / Spare Part</h3>
     <div class="form-group">
-      <label>Cheat Code / Item Name</label>
+      <label>Item Name / Cheat Code</label>
       <input type="text" id="newProdName" placeholder="e.g. S210-500-ENG-DSL">
     </div>
-
     <div class="form-group">
       <label>Unit</label>
       <select id="newProdUnit">
@@ -391,17 +415,14 @@
         <option value="Mtr">Mtr</option>
       </select>
     </div>
-
     <div class="form-group">
       <label>Standard Rate (₹)</label>
       <input type="number" id="newProdRate" placeholder="e.g. 1950">
     </div>
-
     <div class="form-group">
       <label>HSN Code</label>
       <input type="text" id="newProdHsn" value="8421">
     </div>
-
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
@@ -409,7 +430,6 @@
         <button type="button" class="btn-scan" onclick="openScannerModal('newProdBarcode')">📷 Scan</button>
       </div>
     </div>
-
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#38a169; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save to List</button>
       <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
@@ -417,6 +437,7 @@
   </div>
 </div>
 
+<!-- Modal 5: Barcode Camera Scanner -->
 <div class="modal" id="scannerModal">
   <div class="modal-content" id="scannerModalBox">
     <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
@@ -425,6 +446,7 @@
   </div>
 </div>
 
+<!-- Modal 6: Security PIN (4251) -->
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
@@ -437,28 +459,20 @@
   </div>
 </div>
 
+<!-- Modal 7: Service Hours Checklist (Direct Code Map - 0ms Instant) -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
     <p style="font-size:11px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
-    
     <div id="serviceItemsList"></div>
-
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
-      <label style="font-size:10px; font-weight:bold;">➕ Add Extra Part / Oil to this service:</label>
-      
-      <div class="search-container" style="margin-bottom:4px;">
-        <input type="text" id="serviceFilterInput" placeholder="🔍 Type extra cheat code..." oninput="handleServiceExtraSearch(this.value)" autocomplete="off" style="font-size:10.5px; padding:4px 6px;">
-        <div id="serviceExtraRecBox" class="recommendations-box"></div>
-      </div>
-
-      <div style="display:flex; gap:6px;">
+      <label style="font-size:10px;">➕ Add Extra Part / Oil to this service:</label>
+      <div style="display:flex; gap:6px; margin-top:4px;">
         <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
         <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
         <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 9px; border-radius:6px; cursor:pointer; font-size:11px;">Add</button>
       </div>
     </div>
-
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Confirm & Issue All</button>
       <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Cancel</button>
@@ -466,6 +480,7 @@
   </div>
 </div>
 
+<!-- Modal 8: Create Purchase Order (PO) -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
@@ -475,26 +490,21 @@
         <option value="">-- Choose Supplier --</option>
       </select>
     </div>
-
     <div id="poSupplierItemsSection" class="hidden">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <span style="font-weight:bold; font-size:11px;">Supplier History Items:</span>
         <small style="color:#718096; font-size:10px;">(Pehle khareede gaye)</small>
       </div>
       <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
-
       <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
-        <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product (Is PO me jodein):</label>
+        <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product:</label>
         <div style="display:flex; gap:6px; margin-top:4px;">
-          <select id="poOtherProductSelect" style="flex:2; font-size:11px;">
-            <option value="">-- Choose Any Product --</option>
-          </select>
+          <select id="poOtherProductSelect" style="flex:2; font-size:11px;"><option value="">-- Choose Any Product --</option></select>
           <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
           <button type="button" onclick="addOtherItemToPo()" style="background:#3182ce; color:white; border:none; padding:0 8px; border-radius:6px; font-size:11px; cursor:pointer;">Add</button>
         </div>
       </div>
     </div>
-
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
       <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
@@ -506,213 +516,61 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
 
-  // EXACT CLEAN CHEAT CODES (Rate = 0 for Pilot & Breather)
+  // Clean Item Names (No bracket descriptions)
   const DEFAULT_FALLBACK_PRODUCTS = [
-    // Super-210 Prime
     { name: "S210-500-ENG-DSL", unit: "Set", rate: 1950, hsn: "8421", barcode: "S210-500-ENG-DSL" },
     { name: "S210-500-AIR-FLT", unit: "Set", rate: 2050, hsn: "8421", barcode: "S210-500-AIR-FLT" },
     { name: "S210-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
-    { name: "S-210-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
-    { name: "S-210-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
-
-    // Super-200
     { name: "S200-500-ENG-DSL", unit: "Set", rate: 1150, hsn: "8421", barcode: "S200-500-ENG-DSL" },
     { name: "S200-500-AIR-FLT", unit: "Set", rate: 2050, hsn: "8421", barcode: "S200-500-AIR-FLT" },
     { name: "S200-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
-    { name: "S200-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "S200-500-HYD-PLT" },
-    { name: "S200-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
-
-    // ZAXIS-220
     { name: "Z220-500-ENG-DSL", unit: "Set", rate: 2800, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
     { name: "Z220-500-AIR-FLT", unit: "Set", rate: 2900, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
     { name: "Z220-1000-HYD-KIT", unit: "Set", rate: 5750, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
-    { name: "Z220-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
-    { name: "Z220-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
-
-    // SANY-215
     { name: "S215-500-ENG-DSL", unit: "Set", rate: 2300, hsn: "8421", barcode: "S215-500-ENG-DSL" },
     { name: "S215-500-AIR-FLT", unit: "Set", rate: 4300, hsn: "8421", barcode: "S215-500-AIR-FLT" },
     { name: "S215-1000-HYD-KIT", unit: "Set", rate: 4600, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
-    { name: "S215-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "S215-500-HYD-PLT" },
-    { name: "S215-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
-
-    // JCB-215
     { name: "JCB215-500-ENG-DSL", unit: "Set", rate: 1780, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
     { name: "JCB215-500-AIR-FLT", unit: "Set", rate: 2300, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
     { name: "JCB215-1000-HYD-KIT", unit: "Set", rate: 3300, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
-    { name: "JCB215-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
-    { name: "JCB215-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
-
-    // XCMG-230
     { name: "XCMG230-500-ENG-DSL", unit: "Set", rate: 2450, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
     { name: "XCMG230-500-AIR-FLT", unit: "Set", rate: 3200, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
     { name: "XCMG230-1000-HYD-KIT", unit: "Set", rate: 4800, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
-    { name: "XCMG230-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
-    { name: "XCMG230-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
-
-    // ZAXIS-140
     { name: "Z140-500-ENG-DSL", unit: "Set", rate: 1950, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
     { name: "Z140-500-AIR-FLT", unit: "Set", rate: 1200, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
     { name: "Z140-1000-HYD-KIT", unit: "Set", rate: 2950, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
-    { name: "Z-140-500-HYD-PLT", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
-    { name: "Z-140-500-AIR-BRTH", unit: "Nos", rate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
-
-    // Standard Oils & Grease
-    { name: "CASTROL ENGINE OIL (Mobil) - 210L", unit: "Nos", rate: 65000, hsn: "2710", barcode: "CASTROL-210L" },
-    { name: "Mobil Oil 15W40", unit: "L", rate: 320, hsn: "2710", barcode: "MOBIL-15W40" },
-    { name: "PENSOL GEAR OIL", unit: "L", rate: 360, hsn: "2710", barcode: "PENSOL-GEAR-OIL" },
-    { name: "PENSOL CHASSIS GREASE", unit: "Nos", rate: 5500, hsn: "2710", barcode: "PENSOL-CHASSIS-GREASE" },
-    { name: "SAVSOL HYDRAULIC OIL 46", unit: "L", rate: 290, hsn: "2710", barcode: "SAVSOL-HYD-46" },
-    { name: "Washing Kapda", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
+    { name: "CASTROL ENGINE OIL(Mobil) -210L", unit: "L", rate: 320, hsn: "2710", barcode: "MOBIL-15W40" },
+    { name: "PENSOL GEAR OIL", unit: "L", rate: 360, hsn: "2710", barcode: "GEAR-80W90" },
+    { name: "PENSOL CHASSIS GREASE", unit: "Nos", rate: 5500, hsn: "2710", barcode: "GREASE-18KG" },
+    { name: "Special Bearing Grease", unit: "Nos", rate: 1200, hsn: "2710", barcode: "GREASE-RING" },
+    { name: "Purana kapda", unit: "Kg", rate: 80, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Force Master Service Kits for ALL 7 Machines
+  // Locked Master Service Kits for 0ms Instant Popup
   const MASTER_SERVICE_KITS = {
-    // 1. SUPER-210 PRIME
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 1950 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2050 },
-      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 320 }
     ],
     "SUPER-210 (1000 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 1950 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2050 },
       { itemName: "S210-1000-HYD-KIT", qty: 1, rate: 3300 },
-      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 320 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 }
     ],
-
-    // 2. SUPER-200
-    "SUPER-200 (500 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1150 },
-      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2050 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
-    ],
-    "SUPER-200 (1000 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1150 },
-      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2050 },
-      { itemName: "S200-1000-HYD-KIT", qty: 1, rate: 3300 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
-    ],
-
-    // 3. ZAXIS-220
-    "ZAXIS-220 (500 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 2800 },
-      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 2900 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
-    ],
-    "ZAXIS-220 (1000 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 2800 },
-      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 2900 },
-      { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 5750 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
-    ],
-
-    // 4. SANY-215
-    "SANY-215 (500 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2300 },
-      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4300 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
-    ],
-    "SANY-215 (1000 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2300 },
-      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4300 },
-      { itemName: "S215-1000-HYD-KIT", qty: 1, rate: 4600 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
-    ],
-
-    // 5. JCB-215
-    "JCB-215 (500 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 1780 },
-      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2300 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
-    ],
-    "JCB-215 (1000 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 1780 },
-      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2300 },
-      { itemName: "JCB215-1000-HYD-KIT", qty: 1, rate: 3300 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
-    ],
-
-    // 6. XCMG-230
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2450 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3200 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 320 }
     ],
     "XCMG-230 (1000 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2450 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3200 },
       { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 4800 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
-    ],
-
-    // 7. ZAXIS-140
-    "ZAXIS-140 (500 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 1950 },
-      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1200 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 }
-    ],
-    "ZAXIS-140 (1000 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 1950 },
-      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1200 },
-      { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 2950 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "Mobil Oil 15W40", qty: 20, rate: 320 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 5500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 50, rate: 290 }
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 320 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 360 }
     ]
   };
 
@@ -729,7 +587,7 @@
   let currentTab = "IN";
   let productList = [];
   let vehicleMap = new Map();
-  let kitsMap = MASTER_SERVICE_KITS;
+  let companySet = new Set(["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"]);
   let supplierSet = new Set();
   let supplierItemsMap = {};
   let summaryData = [];
@@ -747,22 +605,35 @@
   let currentScanTargetId = "barcodeInput";
   let lastPoSubmitTime = 0;
 
-  // Keyboard navigation tracking
-  let currentRecIndex = -1;
-  let currentFilteredMatches = [];
-
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
-  // 1. Instant Dropdown Population
+  // 🔊 Audio Ding Sound Synthesizer
+  function playSuccessSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.35);
+    } catch(e) {}
+  }
+
+  // 1. Populate Dropdowns
   function renderProductDropdown() {
     const sel = document.getElementById("productSelect");
     const extraSel = document.getElementById("extraPartSelect");
     const poOtherSel = document.getElementById("poOtherProductSelect");
-
     const itemsToUse = (productList.length > 0) ? productList : DEFAULT_FALLBACK_PRODUCTS;
 
-    let mainHtml = '<option value="">-- All Products & Kits --</option>';
+    let mainHtml = '<option value="">-- Select Item or Service --</option>';
     let extraHtml = '<option value="">-- Choose Extra Item --</option>';
     let poOtherHtml = '<option value="">-- Choose Any Product --</option>';
 
@@ -783,154 +654,16 @@
     if (poOtherSel) poOtherSel.innerHTML = poOtherHtml;
   }
 
-  // 2. Real-Time Fuzzy Search & Recommendation List
-  function handleSearchInput(query) {
-    const q = (query || "").toLowerCase().trim();
-    const box = document.getElementById("recommendationsBox");
-    currentRecIndex = -1;
-    currentFilteredMatches = [];
-
-    if (!q || q.length < 2) {
-      box.style.display = "none";
-      box.innerHTML = "";
-      return;
-    }
-
-    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-
-    // Match Kits
-    Object.keys(MASTER_SERVICE_KITS).forEach(k => {
-      if (k.toLowerCase().includes(q)) {
-        currentFilteredMatches.push({ name: k, type: "KIT" });
-      }
-    });
-
-    // Match Cheat Codes
-    items.forEach(p => {
-      if (p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.toLowerCase().includes(q))) {
-        currentFilteredMatches.push({ name: p.name, type: "PART" });
-      }
-    });
-
-    if (currentFilteredMatches.length === 0) {
-      box.innerHTML = `<div style="padding:8px 10px; font-size:11px; color:#718096;">Koi match nahi mila...</div>`;
-      box.style.display = "block";
-      return;
-    }
-
-    let html = "";
-    currentFilteredMatches.slice(0, 10).forEach((m, idx) => {
-      html += `
-        <div class="recommendation-item" id="recItem_${idx}" onclick="selectFromRecommendation('${m.name.replace(/'/g, "\\'")}')">
-          <span><b>${m.name}</b></span>
-          <span class="rec-tag ${m.type==='KIT'?'rec-tag-kit':'rec-tag-part'}">${m.type}</span>
-        </div>`;
-    });
-
-    box.innerHTML = html;
-    box.style.display = "block";
-  }
-
-  // 3. Up/Down Arrow & Enter Key Navigation
-  function handleSearchKeydown(e) {
-    const box = document.getElementById("recommendationsBox");
-    if (box.style.display !== "block" || currentFilteredMatches.length === 0) return;
-
-    const maxItems = Math.min(currentFilteredMatches.length, 10);
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      currentRecIndex++;
-      if (currentRecIndex >= maxItems) currentRecIndex = 0;
-      updateRecommendationHighlight(maxItems);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      currentRecIndex--;
-      if (currentRecIndex < 0) currentRecIndex = maxItems - 1;
-      updateRecommendationHighlight(maxItems);
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (currentRecIndex >= 0 && currentRecIndex < maxItems) {
-        selectFromRecommendation(currentFilteredMatches[currentRecIndex].name);
-      }
-    } else if (e.key === "Escape") {
-      box.style.display = "none";
-    }
-  }
-
-  function updateRecommendationHighlight(maxItems) {
-    for (let i = 0; i < maxItems; i++) {
-      const el = document.getElementById(`recItem_${i}`);
-      if (el) {
-        if (i === currentRecIndex) {
-          el.classList.add("active");
-          el.scrollIntoView({ block: "nearest" });
-        } else {
-          el.classList.remove("active");
-        }
-      }
-    }
-  }
-
-  function selectFromRecommendation(val) {
-    document.getElementById("prodSearchInput").value = val;
-    document.getElementById("recommendationsBox").style.display = "none";
-    document.getElementById("productSelect").value = val;
-    onProductSelect(val);
-  }
-
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest(".search-container")) {
-      const box = document.getElementById("recommendationsBox");
-      if (box) box.style.display = "none";
-      const sBox = document.getElementById("serviceExtraRecBox");
-      if (sBox) sBox.style.display = "none";
-    }
-  });
-
-  // Service Popup Extra Search
-  function handleServiceExtraSearch(query) {
-    const q = (query || "").toLowerCase().trim();
-    const box = document.getElementById("serviceExtraRecBox");
-    if (!q || q.length < 2) {
-      box.style.display = "none";
-      box.innerHTML = "";
-      return;
-    }
-
-    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const matches = items.filter(p => p.name.toLowerCase().includes(q));
-
-    if (matches.length === 0) {
-      box.innerHTML = `<div style="padding:6px 8px; font-size:10.5px; color:#718096;">No part found...</div>`;
-      box.style.display = "block";
-      return;
-    }
-
-    let html = "";
-    matches.slice(0, 8).forEach(p => {
-      html += `
-        <div class="recommendation-item" onclick="selectExtraFromRecommendation('${p.name.replace(/'/g, "\\'")}')">
-          <span><b>${p.name}</b></span>
-        </div>`;
-    });
-    box.innerHTML = html;
-    box.style.display = "block";
-  }
-
-  function selectExtraFromRecommendation(val) {
-    document.getElementById("serviceFilterInput").value = val;
-    document.getElementById("serviceExtraRecBox").style.display = "none";
-    document.getElementById("extraPartSelect").value = val;
-  }
-
   function renderVehicleDropdown() {
     const vSel = document.getElementById("vehicleSelect");
     const fSel = document.getElementById("closingVehFilter");
     if (!vSel || !fSel) return;
 
     if (vehicleMap.size === 0) {
-      DEFAULT_FALLBACK_VEHICLES.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
+      DEFAULT_FALLBACK_VEHICLES.forEach(v => {
+        vehicleMap.set(v.vehicleNo, v.company);
+        companySet.add(v.company);
+      });
     }
 
     let html = '<option value="">-- Select Machine --</option>';
@@ -943,6 +676,25 @@
 
     vSel.innerHTML = html;
     fSel.innerHTML = fHtml;
+    renderCompanyDropdowns();
+  }
+
+  function renderCompanyDropdowns() {
+    const cIn = document.getElementById("companyInput");
+    const cFilter = document.getElementById("closingCompFilter");
+    const cModal = document.getElementById("newVehCompany");
+
+    let cHtml = '';
+    let cFilterHtml = '<option value="">-- All Companies --</option>';
+
+    Array.from(companySet).sort().forEach(c => {
+      cHtml += `<option value="${c}">${c}</option>`;
+      cFilterHtml += `<option value="${c}">${c}</option>`;
+    });
+
+    if (cIn) cIn.innerHTML = cHtml;
+    if (cFilter) cFilter.innerHTML = cFilterHtml;
+    if (cModal) cModal.innerHTML = cHtml;
   }
 
   function populateSupplierDropdowns() {
@@ -965,7 +717,7 @@
     if (ledSup) ledSup.innerHTML = ledSupHtml;
   }
 
-  // 4. Tab Switching & PIN
+  // 2. Tab Switching
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -1025,7 +777,71 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 5. Barcode Camera Scanner
+  // 3. Quick Add Modals (Supplier, Vehicle, Company)
+  function openAddSupplierModal() {
+    document.getElementById("newSuppName").value = "";
+    document.getElementById("addSupplierModal").style.display = "flex";
+  }
+  function closeAddSupplierModal() { document.getElementById("addSupplierModal").style.display = "none"; }
+
+  function saveNewSupplierAction() {
+    const sName = document.getElementById("newSuppName").value.trim();
+    if (!sName) return alert("Kripya Supplier ka Naam daalein!");
+
+    supplierSet.add(sName);
+    let cachedSuppliers = getLocal("CACHED_SUPPLIER_LIST") || [];
+    if (!cachedSuppliers.includes(sName)) {
+      cachedSuppliers.push(sName);
+      saveLocal("CACHED_SUPPLIER_LIST", cachedSuppliers);
+    }
+
+    populateSupplierDropdowns();
+    document.getElementById("partySelectInput").value = sName;
+    playSuccessSound();
+    alert("✅ Naya Supplier Add Ho Gaya!");
+    closeAddSupplierModal();
+  }
+
+  function openAddVehicleModal() {
+    document.getElementById("newVehNumber").value = "";
+    renderCompanyDropdowns();
+    document.getElementById("addVehicleModal").style.display = "flex";
+  }
+  function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
+
+  function saveNewVehicleAction() {
+    const vNum = document.getElementById("newVehNumber").value.trim().toUpperCase();
+    const vComp = document.getElementById("newVehCompany").value;
+    if (!vNum) return alert("Kripya Vehicle / Machine Number daalein!");
+
+    vehicleMap.set(vNum, vComp);
+    renderVehicleDropdown();
+    document.getElementById("vehicleSelect").value = vNum;
+    document.getElementById("companyInput").value = vComp;
+    playSuccessSound();
+    alert("✅ Nayi Machine Add Ho Gayi!");
+    closeAddVehicleModal();
+  }
+
+  function openAddCompanyModal() {
+    document.getElementById("newCompName").value = "";
+    document.getElementById("addCompanyModal").style.display = "flex";
+  }
+  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
+
+  function saveNewCompanyAction() {
+    const cName = document.getElementById("newCompName").value.trim().toUpperCase();
+    if (!cName) return alert("Kripya Company Name daalein!");
+
+    companySet.add(cName);
+    renderCompanyDropdowns();
+    document.getElementById("companyInput").value = cName;
+    playSuccessSound();
+    alert("✅ Nayi Company Add Ho Gayi!");
+    closeAddCompanyModal();
+  }
+
+  // 4. Scanner & Product Add
   function openScannerModal(targetId = "barcodeInput") {
     currentScanTargetId = targetId;
     document.getElementById("scannerModal").style.display = "flex";
@@ -1036,7 +852,12 @@
       (decodedText) => {
         document.getElementById(currentScanTargetId).value = decodedText;
         if (currentScanTargetId === "barcodeInput") {
-          matchProductByBarcode(decodedText);
+          const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+          const prod = itemsToSearch.find(p => p.barcode === decodedText);
+          if (prod) {
+            document.getElementById("productSelect").value = prod.name;
+            onProductSelect(prod.name);
+          }
         }
         closeScannerModal();
       },
@@ -1060,26 +881,13 @@
     }
   }
 
-  function matchProductByBarcode(code) {
-    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
-    const prod = itemsToSearch.find(p => p.barcode === code);
-    if (prod) {
-      document.getElementById("productSelect").value = prod.name;
-      onProductSelect(prod.name);
-    }
-  }
-
-  // 6. Add Product Actions
   function openAddProductModal() {
     document.getElementById("newProdName").value = "";
     document.getElementById("newProdRate").value = "";
     document.getElementById("newProdBarcode").value = "";
     document.getElementById("addProductModal").style.display = "flex";
   }
-
-  function closeAddProductModal() {
-    document.getElementById("addProductModal").style.display = "none";
-  }
+  function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
 
   async function saveNewProductAction() {
     const name = document.getElementById("newProdName").value.trim();
@@ -1088,7 +896,7 @@
     const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
     const barcode = document.getElementById("newProdBarcode").value.trim() || name;
 
-    if (!name) return alert("Kripya Cheat Code daalein!");
+    if (!name) return alert("Product Name daalein!");
 
     const btn = document.getElementById("saveProdBtn");
     btn.disabled = true;
@@ -1097,16 +905,16 @@
     const newObj = { name: name, unit: unit, rate: rate, hsn: hsn, barcode: barcode };
 
     try {
-      const res = await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({ type: "ADD_PRODUCT", itemName: name, unit: unit, rate: rate, hsn: hsn, barcode: barcode })
       });
-      const data = await res.json();
       productList.unshift(newObj);
       saveLocal("CACHED_PROD_LIST", productList);
       renderProductDropdown();
       document.getElementById("productSelect").value = name;
       onProductSelect(name);
+      playSuccessSound();
       alert("✅ Product Add Ho Gaya!");
       closeAddProductModal();
     } catch(e) {
@@ -1115,6 +923,7 @@
       renderProductDropdown();
       document.getElementById("productSelect").value = name;
       onProductSelect(name);
+      playSuccessSound();
       alert("✅ Product Local List Me Add Ho Gaya!");
       closeAddProductModal();
     } finally {
@@ -1123,7 +932,7 @@
     }
   }
 
-  // 7. Form Handlers & Next Service Calculation
+  // 5. Form Selection Handlers
   function onVehicleSelect(vNo) {
     if (!vNo) return;
     const comp = vehicleMap.get(vNo) || "GOKULESHWAR RD PVT. LTD";
@@ -1145,7 +954,6 @@
   function onProductSelect(val) {
     if (!val) return;
 
-    // Service popup trigger directly from MASTER_SERVICE_KITS
     if (MASTER_SERVICE_KITS[val] && currentTab === "OUT") {
       activeServiceName = val;
       activeServiceParts = JSON.parse(JSON.stringify(MASTER_SERVICE_KITS[val]));
@@ -1178,11 +986,9 @@
     calculateTotal();
   }
 
-  // 8. Service Hours Modal
+  // 6. Service Modal
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
-    document.getElementById("serviceFilterInput").value = "";
-    document.getElementById("serviceExtraRecBox").style.display = "none";
     renderServiceItems();
     document.getElementById("serviceHoursModal").style.display = "flex";
   }
@@ -1212,7 +1018,7 @@
   function addExtraItemToService() {
     const sel = document.getElementById("extraPartSelect");
     const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
-    if (!sel.value) return alert("Pehle Extra Part select karein!");
+    if (!sel.value) return alert("Pehle item select karein!");
 
     const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const prod = itemsToSearch.find(p => p.name === sel.value);
@@ -1259,6 +1065,7 @@
       const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
       const data = await res.json();
       if (data.status === "success") {
+        playSuccessSound();
         alert("✅ " + data.message);
         addRecentEntry("OUT", vNo, activeServiceName, "1 Kit", activeServiceParts.reduce((a,b)=>a+(b.rate*b.qty),0));
         document.getElementById("stockForm").reset();
@@ -1270,7 +1077,7 @@
     }
   }
 
-  // 9. Recent Entries Logger
+  // 7. Recent Entries Logger
   function addRecentEntry(type, target, item, qty, amt) {
     let list = getLocal("RECENT_LOGS") || [];
     list.unshift({ type, target, item, qty, amt });
@@ -1304,7 +1111,7 @@
     renderRecentEntries();
   }
 
-  // 10. Calculations & Save Entry
+  // 8. Calculations & Form Save
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1361,6 +1168,7 @@
       const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
       const data = await res.json();
       if (data.status === "success") {
+        playSuccessSound();
         alert("✅ " + data.message);
         addRecentEntry(currentTab, target, itm, `${qty} ${unit}`, amt);
         document.getElementById("stockForm").reset();
@@ -1372,7 +1180,7 @@
     }
   });
 
-  // 11. Ledger, Orders, Closing & Summary Logic
+  // 9. Stock Summary
   async function loadSummary(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
@@ -1391,7 +1199,7 @@
     const q = (document.getElementById("summarySearch").value || "").toLowerCase();
     const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
     let html = `<table class="custom-table">
-      <thead><tr><th>Cheat Code</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
+      <thead><tr><th>Spare Part</th><th>Total In</th><th>Total Out</th><th>Left Qty</th><th>Value (₹)</th></tr></thead><tbody>`;
     filtered.forEach(s => {
       html += `<tr>
         <td><b>${s.item}</b></td>
@@ -1405,6 +1213,7 @@
     document.getElementById("summaryTableContent").innerHTML = html;
   }
 
+  // 10. Month Closing
   async function loadClosing(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
@@ -1428,7 +1237,7 @@
       if (eDate && c.date > eDate) return false;
       if (compFilter && c.company !== compFilter) return false;
       if (vehFilter && c.vehicle !== vehFilter) return false;
-      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("KIT") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
+      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
       return true;
     });
 
@@ -1471,7 +1280,7 @@
             </div>
             <table class="custom-table" style="margin-top:6px;">
               <thead>
-                <tr><th>Date</th><th>Cheat Code</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
+                <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
               </thead>
               <tbody>`;
         items.forEach(it => {
@@ -1490,6 +1299,7 @@
     container.innerHTML = html;
   }
 
+  // 11. Supplier Ledger
   async function loadLedger(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
@@ -1498,6 +1308,10 @@
         ledgerData = data.data;
         supplierItemsMap = data.supplierItemsMap || {};
         ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
+        
+        let localSuppliers = getLocal("CACHED_SUPPLIER_LIST") || [];
+        localSuppliers.forEach(s => supplierSet.add(s));
+
         populateSupplierDropdowns();
         if (currentTab === "LEDGER" || !silent) renderActiveLedgerView();
       }
@@ -1522,11 +1336,8 @@
   }
 
   function renderActiveLedgerView() {
-    if (activeSelectedLedgerParty) {
-      renderSinglePartyDetailedLedger(activeSelectedLedgerParty);
-    } else {
-      renderAllSuppliersSummary();
-    }
+    if (activeSelectedLedgerParty) renderSinglePartyDetailedLedger(activeSelectedLedgerParty);
+    else renderAllSuppliersSummary();
   }
 
   function renderAllSuppliersSummary() {
@@ -1552,16 +1363,7 @@
     });
 
     let html = `<table class="custom-table">
-      <thead>
-        <tr>
-          <th>Supplier Name</th>
-          <th>Total Purchases (Dr)</th>
-          <th>Total Paid (Cr)</th>
-          <th>Balance Due</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>`;
+      <thead><tr><th>Supplier Name</th><th>Total Purchases (Dr)</th><th>Total Paid (Cr)</th><th>Balance Due</th><th>Action</th></tr></thead><tbody>`;
 
     const partyNames = Object.keys(summaryMap).sort();
     if (partyNames.length === 0) {
@@ -1620,7 +1422,7 @@
         html += `<tr>
           <td>${l.displayDate || l.date}</td>
           <td>${l.particulars}</td>
-          <td style="color:#2d3748;">${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
+          <td>${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
           <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
           <td style="font-weight:bold; color:${running > 0 ? '#c53030' : '#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
         </tr>`;
@@ -1630,7 +1432,7 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  // 12. Purchase Order
+  // 12. Purchase Orders (PO)
   function openCreateOrderModal() {
     populateSupplierDropdowns();
     renderProductDropdown();
@@ -1640,9 +1442,7 @@
     document.getElementById("createOrderModal").style.display = "flex";
   }
 
-  function closeCreateOrderModal() {
-    document.getElementById("createOrderModal").style.display = "none";
-  }
+  function closeCreateOrderModal() { document.getElementById("createOrderModal").style.display = "none"; }
 
   function onPoSupplierSelected(supplier) {
     const section = document.getElementById("poSupplierItemsSection");
@@ -1708,9 +1508,7 @@
     if (!party) return alert("Kripya Supplier select karein!");
 
     const now = Date.now();
-    if (now - lastPoSubmitTime < 10000) {
-      return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
-    }
+    if (now - lastPoSubmitTime < 10000) return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
 
     const chks = document.querySelectorAll(".po-chk:checked");
     const items = [];
@@ -1734,6 +1532,7 @@
       });
       const data = await res.json();
       if (data.status === "success") {
+        playSuccessSound();
         closeCreateOrderModal();
         loadOrders();
 
@@ -1807,64 +1606,14 @@
       });
       const data = await res.json();
       if (data.status === "success") {
+        playSuccessSound();
         alert("Stock Inward Complete!");
         loadOrders();
       }
     } catch(e) { alert(e.message); }
   }
 
-  // 13. Manual Refresh
-  async function hardRefreshData(section) {
-    const notify = document.getElementById("msg");
-    notify.innerText = `🔄 Reloading fresh ${section} data...`;
-    notify.style.color = "#3182ce";
-
-    await fetchMasterData();
-    if (section === 'Stock') await loadSummary();
-    if (section === 'Ledger') await loadLedger();
-    if (section === 'Closing') await loadClosing();
-    if (section === 'Orders') await loadOrders();
-
-    notify.innerText = `✅ ${section} Refreshed Live!`;
-    notify.style.color = "#2f855a";
-    setTimeout(() => { notify.innerText = ""; }, 2000);
-  }
-
-  // 14. Initial Master Data Fetch
-  async function fetchMasterData() {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
-      const data = await res.json();
-      if (data && data.status === "success") {
-        if (data.products && data.products.length > 0) {
-          productList = data.products;
-          saveLocal("CACHED_PROD_LIST", productList);
-        }
-        
-        // Smart Sync: Agar Google Sheet me 'kits' data ho aur wo khali na ho, tabhi sync karega, warna Master Kits safe rahenge
-        if (data.kits && Object.keys(data.kits).length > 0) {
-          kitsMap = data.kits;
-        } else {
-          kitsMap = MASTER_SERVICE_KITS;
-        }
-
-        if (data.vehicles && data.vehicles.length > 0) {
-          data.vehicles.forEach(v => vehicleMap.set(v.vehicleNo, v.company));
-        }
-
-        renderProductDropdown();
-        renderVehicleDropdown();
-        document.getElementById("syncText").innerText = "Sheets Synced Online";
-      }
-    } catch (e) {
-      kitsMap = MASTER_SERVICE_KITS;
-      renderProductDropdown();
-      renderVehicleDropdown();
-      document.getElementById("syncText").innerText = "Running (Cached)";
-    }
-  }
-
-  // 15. Clean Isolated Print
+  // 13. Print & Refresh
   function printTargetSection(targetId, title) {
     const el = document.getElementById(targetId);
     if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
@@ -1895,14 +1644,62 @@
     setTimeout(() => { printWin.print(); printWin.close(); }, 350);
   }
 
-  // 16. Startup Execution
+  async function hardRefreshData(section) {
+    const notify = document.getElementById("msg");
+    notify.innerText = `🔄 Reloading fresh ${section} data...`;
+    notify.style.color = "#3182ce";
+
+    await fetchMasterData();
+    if (section === 'Stock') await loadSummary();
+    if (section === 'Ledger') await loadLedger();
+    if (section === 'Closing') await loadClosing();
+    if (section === 'Orders') await loadOrders();
+
+    notify.innerText = `✅ ${section} Refreshed Live!`;
+    notify.style.color = "#2f855a";
+    setTimeout(() => { notify.innerText = ""; }, 2000);
+  }
+
+  // 14. Initial Master Data Fetch
+  async function fetchMasterData() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
+      const data = await res.json();
+      if (data && data.status === "success") {
+        if (data.products && data.products.length > 0) {
+          productList = data.products;
+          saveLocal("CACHED_PROD_LIST", productList);
+        }
+        if (data.vehicles && data.vehicles.length > 0) {
+          data.vehicles.forEach(v => {
+            vehicleMap.set(v.vehicleNo, v.company);
+            companySet.add(v.company);
+          });
+        }
+
+        renderProductDropdown();
+        renderVehicleDropdown();
+        document.getElementById("syncText").innerText = "Sheets Synced Online";
+      }
+    } catch (e) {
+      renderProductDropdown();
+      renderVehicleDropdown();
+      document.getElementById("syncText").innerText = "Running (Cached)";
+    }
+  }
+
+  // 15. Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     
     const cached = getLocal("CACHED_PROD_LIST");
     if (cached && cached.length > 0) productList = cached;
 
-    kitsMap = MASTER_SERVICE_KITS;
+    const cachedSuppliers = getLocal("CACHED_SUPPLIER_LIST");
+    if (cachedSuppliers && cachedSuppliers.length > 0) {
+      cachedSuppliers.forEach(s => supplierSet.add(s));
+    }
+
     renderProductDropdown();
     renderVehicleDropdown();
     populateSupplierDropdowns();
