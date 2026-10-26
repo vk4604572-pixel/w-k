@@ -3,77 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fleet & Inventory Pro</title>
+  <title>Fleet & Inventory Pro ERP</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
-    body { background: #f0f4f8; margin: 0; padding: 12px; color: #2d3748; }
-    .container { max-width: 760px; margin: auto; background: #ffffff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-    
-    .tab-header { display: flex; gap: 5px; margin-bottom: 14px; background: #edf2f7; padding: 5px; border-radius: 12px; overflow-x: auto; }
-    .tab-btn { flex: 1; min-width: 65px; padding: 8px 3px; text-align: center; border: none; background: transparent; color: #4a5568; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; transition: 0.2s all; white-space: nowrap; }
-    .tab-btn.active { background: #2b6cb0; color: #ffffff; box-shadow: 0 3px 8px rgba(43, 108, 176, 0.35); }
+    :root {
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      --surface: #ffffff;
+      --bg: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
 
-    .form-group { margin-bottom: 11px; position: relative; }
-    label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 11px; color: #4a5568; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    body { background: var(--bg); margin: 0; padding: 12px; color: var(--text); }
+    .container { max-width: 820px; margin: auto; background: var(--surface); border-radius: 20px; padding: 18px; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); border: 1px solid rgba(226, 232, 240, 0.8); }
+    
+    /* Top Header Bar */
+    .app-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .app-title { font-size: 15px; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .rate-badge { font-size: 9.5px; font-weight: 700; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.3px; }
+    .rate-buy { background: #fee2e2; color: #991b1b; }
+    .rate-sell { background: #d1fae5; color: #065f46; }
+
+    /* Modern Attractive Tabs */
+    .tab-header { 
+      display: flex; 
+      gap: 6px; 
+      margin-bottom: 16px; 
+      background: #e2e8f0; 
+      padding: 6px; 
+      border-radius: 14px; 
+      overflow-x: auto; 
+      scrollbar-width: none;
+    }
+    .tab-header::-webkit-scrollbar { display: none; }
+    .tab-btn { 
+      flex: 1; 
+      min-width: 78px; 
+      padding: 9px 6px; 
+      text-align: center; 
+      border: none; 
+      background: transparent; 
+      color: #475569; 
+      font-weight: 700; 
+      font-size: 11px; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+      white-space: nowrap; 
+    }
+    .tab-btn:hover { background: rgba(255, 255, 255, 0.6); color: var(--primary); }
+    .tab-btn.active { 
+      background: var(--primary-gradient); 
+      color: #ffffff; 
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); 
+      transform: translateY(-1px);
+    }
+
+    /* Forms & Inputs */
+    .form-group { margin-bottom: 12px; position: relative; }
+    label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 11px; color: var(--text-muted); }
     
     input, select { 
       width: 100%; 
-      padding: 7px 9px; 
-      border: 1.5px solid #cbd5e0; 
-      border-radius: 7px; 
-      font-size: 11px !important; 
+      padding: 8px 10px; 
+      border: 1.5px solid var(--border); 
+      border-radius: 9px; 
+      font-size: 11.5px !important; 
       background: #fff; 
       white-space: nowrap; 
       overflow: hidden; 
       text-overflow: ellipsis; 
+      transition: border 0.2s;
     }
-    select option { font-size: 11px !important; }
-    input:focus, select:focus { outline: none; border-color: #3182ce; }
+    select option { font-size: 11.5px !important; }
+    input:focus, select:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
 
     .barcode-row { display: flex; gap: 8px; }
-    .btn-scan { background: #319795; color: white; border: none; padding: 0 12px; border-radius: 7px; font-weight: bold; font-size: 11px; cursor: pointer; }
-    .btn-add-prod { background: #38a169; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
-    .btn-add-supp { background: #d69e2e; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
-    .btn-add-veh  { background: #3182ce; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
-    .btn-add-comp { background: #805ad5; color: white; border: none; padding: 0 10px; border-radius: 7px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-scan { background: #0f766e; color: white; border: none; padding: 0 13px; border-radius: 9px; font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.2s; }
+    .btn-add-prod { background: #059669; color: white; border: none; padding: 0 11px; border-radius: 9px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-add-supp { background: #d97706; color: white; border: none; padding: 0 11px; border-radius: 9px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-add-veh  { background: #2563eb; color: white; border: none; padding: 0 11px; border-radius: 9px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-add-comp { background: #7c3aed; color: white; border: none; padding: 0 11px; border-radius: 9px; font-weight: bold; font-size: 13px; cursor: pointer; }
 
     .qty-stepper-row { display: flex; gap: 6px; }
-    .stepper-btn { width: 38px; background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 7px; font-weight: bold; font-size: 14px; cursor: pointer; }
-    .unit-select { width: 90px; flex-shrink: 0; font-weight: bold; background: #f7fafc; font-size: 11px !important; }
+    .stepper-btn { width: 40px; background: #e2e8f0; border: 1.5px solid var(--border); border-radius: 9px; font-weight: bold; font-size: 15px; cursor: pointer; }
+    .unit-select { width: 95px; flex-shrink: 0; font-weight: bold; background: #f8fafc; font-size: 11.5px !important; }
 
-    .rate-badge { font-size: 9.5px; font-weight: bold; padding: 2px 6px; border-radius: 6px; }
-    .rate-buy { background: #fed7d7; color: #742a2a; }
-    .rate-sell { background: #c6f6d5; color: #22543d; }
+    .stock-badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 12px; font-weight: bold; margin-left: 6px; }
+    .stock-in-hand { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .stock-low { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-    .stock-badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; margin-left: 6px; }
-    .stock-in-hand { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
-    .stock-low { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
+    .service-alert-banner { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; font-size: 11px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
 
-    .service-alert-banner { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 7px 10px; margin-bottom: 10px; font-size: 11px; color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; }
-
-    .btn-submit { width: 100%; padding: 11px; background: #38a169; color: #fff; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+    .btn-submit { width: 100%; padding: 12px; background: var(--primary-gradient); color: #fff; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); transition: 0.2s; }
+    .btn-submit:hover { opacity: 0.95; transform: translateY(-1px); }
     .hidden { display: none !important; }
     #msg { margin-top: 8px; text-align: center; font-weight: 700; font-size: 12px; }
 
-    .custom-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; background: #fff; }
-    .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 6px 7px; text-align: left; }
-    .custom-table th { background: #2b6cb0; color: white; font-weight: 600; font-size: 10.5px; }
+    /* Tables */
+    .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 8px; font-size: 11px; background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .custom-table th, .custom-table td { padding: 7px 9px; text-align: left; border-bottom: 1px solid var(--border); }
+    .custom-table th { background: #f8fafc; color: var(--text-muted); font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .custom-table tr:last-child td { border-bottom: none; }
     .view-box { display: none; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
-    .kpi-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 7px 5px; text-align: center; }
-    .kpi-title { font-size: 9px; font-weight: 700; color: #718096; text-transform: uppercase; }
-    .kpi-val { font-size: 13px; font-weight: 800; color: #2b6cb0; }
+    /* Dashboard Widgets & KPI Grid */
+    .dash-kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (min-width: 600px) { .dash-kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+    .dash-kpi-card { background: #ffffff; border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 10px; text-align: left; position: relative; overflow: hidden; transition: 0.2s; }
+    .dash-kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.06); }
+    .dash-kpi-icon { font-size: 18px; margin-bottom: 4px; }
+    .dash-kpi-title { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .dash-kpi-val { font-size: 16px; font-weight: 800; color: var(--text); margin-top: 2px; }
+    
+    .quick-actions-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+    .action-tile { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 5px; text-align: center; cursor: pointer; transition: 0.2s; }
+    .action-tile:hover { background: #eff6ff; border-color: var(--primary-light); color: var(--primary); }
+    .action-tile-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+    .action-tile-text { font-size: 10px; font-weight: 700; }
 
-    .company-block { background: #fff; border: 1.5px solid #cbd5e0; border-radius: 9px; margin-bottom: 12px; overflow: hidden; }
-    .company-header { background: #2d3748; color: #fff; padding: 7px 10px; font-weight: bold; font-size: 11.5px; display: flex; justify-content: space-between; }
-    .vehicle-card { border-bottom: 1px solid #e2e8f0; padding: 8px 10px; }
+    .company-block { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+    .company-header { background: #1e293b; color: #fff; padding: 8px 12px; font-weight: bold; font-size: 11.5px; display: flex; justify-content: space-between; }
+    .vehicle-card { border-bottom: 1px solid var(--border); padding: 9px 12px; }
     .vehicle-card:last-child { border-bottom: none; }
     .vehicle-head-row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .vehicle-title { font-weight: 800; color: #2b6cb0; font-size: 11.5px; }
-    .vehicle-cost { font-weight: 800; color: #2d3748; font-size: 11.5px; }
+    .vehicle-title { font-weight: 800; color: var(--primary); font-size: 11.5px; }
+    .vehicle-cost { font-weight: 800; color: var(--text); font-size: 11.5px; }
 
+    /* Live Search & Recommendation Dropdown */
     .search-container { position: relative; width: 100%; }
     .recommendations-box {
       position: absolute;
@@ -81,52 +145,57 @@
       left: 0;
       right: 0;
       background: #ffffff;
-      border: 1.5px solid #3182ce;
+      border: 1.5px solid var(--primary-light);
       border-top: none;
-      border-radius: 0 0 8px 8px;
+      border-radius: 0 0 10px 10px;
       max-height: 220px;
       overflow-y: auto;
       z-index: 1000;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.12);
       display: none;
     }
     .recommendation-item {
       padding: 8px 10px;
       font-size: 11px;
       cursor: pointer;
-      border-bottom: 1px solid #edf2f7;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .recommendation-item:hover, .recommendation-item.active {
-      background: #ebf8ff !important;
-      color: #2b6cb0 !important;
+      background: #eff6ff !important;
+      color: var(--primary) !important;
       font-weight: 700 !important;
-      border-left: 3px solid #3182ce;
+      border-left: 3px solid var(--primary-light);
     }
     .rec-tag { font-size: 9.5px; padding: 1px 5px; border-radius: 4px; font-weight: bold; }
-    .rec-tag-kit { background: #feebc8; color: #7b341e; }
-    .rec-tag-part { background: #e2e8f0; color: #2d3748; }
+    .rec-tag-kit { background: #fef3c7; color: #92400e; }
+    .rec-tag-part { background: #f1f5f9; color: #334155; }
 
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 16px; border-radius: 12px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
-    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+    .modal-content { background: white; padding: 18px; border-radius: 16px; width: 94%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+    .service-item-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 11px; }
 
     #scannerModalBox { max-width: 380px; text-align: center; }
-    #reader { width: 100%; min-height: 240px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+    #reader { width: 100%; min-height: 240px; background: #000; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
 <div class="container" id="mainContainer">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-    <span id="rateModeBadge" class="rate-badge rate-buy">Mode: Purchase (Stock In)</span>
-    <span style="font-size:10px; color:#718096;">⚡ 0ms Fast Direct Mode</span>
+  <div class="app-topbar">
+    <div class="app-title">⚙️ Fleet & Inventory Pro</div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span id="rateModeBadge" class="rate-badge rate-buy">Mode: Purchase (Stock In)</span>
+      <span style="font-size:10px; color:#10b981; font-weight:700;">● Online</span>
+    </div>
   </div>
 
+  <!-- Modern Pill-Style Tabs -->
   <div class="tab-header">
-    <button class="tab-btn active" id="tabInBtn" onclick="switchTab('IN')">📥 Stock In</button>
+    <button class="tab-btn active" id="tabDashBtn" onclick="switchTab('DASH')">⚡ Dashboard</button>
+    <button class="tab-btn" id="tabInBtn" onclick="switchTab('IN')">📥 Stock In</button>
     <button class="tab-btn" id="tabOutBtn" onclick="switchTab('OUT')">📤 Stock Out</button>
     <button class="tab-btn" id="tabDaybookBtn" onclick="switchTab('DAYBOOK')">📅 Daybook</button>
     <button class="tab-btn" id="tabSummaryBtn" onclick="switchTab('SUMMARY')">📊 Stock</button>
@@ -135,11 +204,76 @@
     <button class="tab-btn" id="tabOrderBtn" onclick="switchTab('ORDER')">📝 Order (PO)</button>
   </div>
 
-  <!-- Main Entry Form -->
-  <form id="stockForm">
+  <!-- ==================== TAB 0: EXECUTIVE DASHBOARD ==================== -->
+  <div class="view-box" id="dashboardView" style="display:block;">
+    <!-- 4 Core Executive KPI Cards -->
+    <div class="dash-kpi-grid">
+      <div class="dash-kpi-card" style="border-left: 4px solid #3b82f6;">
+        <div class="dash-kpi-icon">📦</div>
+        <div class="dash-kpi-title">Warehouse Value</div>
+        <div class="dash-kpi-val" id="dashTotalValue">₹0</div>
+      </div>
+      <div class="dash-kpi-card" style="border-left: 4px solid #ef4444;">
+        <div class="dash-kpi-icon">⏳</div>
+        <div class="dash-kpi-title">Supplier Due</div>
+        <div class="dash-kpi-val" style="color:#ef4444;" id="dashSupplierDue">₹0</div>
+      </div>
+      <div class="dash-kpi-card" style="border-left: 4px solid #f59e0b;">
+        <div class="dash-kpi-icon">🚨</div>
+        <div class="dash-kpi-title">Low Stock Items</div>
+        <div class="dash-kpi-val" style="color:#d97706;" id="dashLowStockCount">0 Items</div>
+      </div>
+      <div class="dash-kpi-card" style="border-left: 4px solid #10b981;">
+        <div class="dash-kpi-icon">🚜</div>
+        <div class="dash-kpi-title">Active Machines</div>
+        <div class="dash-kpi-val" id="dashActiveMachines">0 Units</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Hub -->
+    <div class="quick-actions-bar">
+      <div class="action-tile" onclick="switchTab('IN')">
+        <span class="action-tile-icon">📥</span>
+        <span class="action-tile-text">Stock In</span>
+      </div>
+      <div class="action-tile" onclick="switchTab('OUT')">
+        <span class="action-tile-icon">📤</span>
+        <span class="action-tile-text">Issue Machine</span>
+      </div>
+      <div class="action-tile" onclick="switchTab('DAYBOOK')">
+        <span class="action-tile-icon">📅</span>
+        <span class="action-tile-text">Today Register</span>
+      </div>
+      <div class="action-tile" onclick="openPaySupplierModal()">
+        <span class="action-tile-icon">💳</span>
+        <span class="action-tile-text">Pay Supplier</span>
+      </div>
+    </div>
+
+    <!-- Urgent Re-Order Alert Table -->
+    <div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-weight:bold; font-size:11.5px; color:#b91c1c;">⚠️ Critical Low Stock (Re-order Needed)</span>
+        <button type="button" onclick="switchTab('ORDER')" style="background:none; border:none; color:var(--primary); font-size:10.5px; font-weight:bold; cursor:pointer;">Create PO ➔</button>
+      </div>
+      <div id="dashLowStockTableContainer">Loading critical items...</div>
+    </div>
+
+    <!-- Recent Activity Snapshot -->
+    <div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-weight:bold; font-size:11.5px; color:var(--primary);">📋 Latest 5 Operations</span>
+        <button type="button" onclick="clearRecentEntries()" style="background:none; border:none; color:#ef4444; font-size:10px; cursor:pointer;">Clear Log</button>
+      </div>
+      <div id="dashRecentLogsContainer"></div>
+    </div>
+  </div>
+
+  <!-- ==================== FORM TABS (IN / OUT) ==================== -->
+  <form id="stockForm" style="display:none;">
     <div class="form-group">
       <label>Date & Time</label>
-      <input type="text" id="dateTimeDisplay" readonly style="background:#edf2f7;">
+      <input type="text" id="dateTimeDisplay" readonly style="background:#f1f5f9;">
     </div>
 
     <div class="form-group">
@@ -166,7 +300,7 @@
                  oninput="handleSearchInput(this.value)" 
                  onkeydown="handleSearchKeydown(event)" 
                  autocomplete="off" 
-                 style="flex:1; background:#fffdf5; border-color:#3182ce;">
+                 style="flex:1; background:#fffdf5; border-color:var(--primary-light);">
           <button type="button" class="btn-add-prod" onclick="openAddProductModal()" title="Add New Product">➕</button>
         </div>
         <div id="recommendationsBox" class="recommendations-box"></div>
@@ -207,7 +341,7 @@
       </div>
       <div class="form-group">
         <label>Total Amount (₹)</label>
-        <input type="number" id="totalAmountInput" readonly style="background:#edf2f7; font-weight:bold;">
+        <input type="number" id="totalAmountInput" readonly style="background:#f1f5f9; font-weight:bold;">
       </div>
     </div>
 
@@ -216,7 +350,7 @@
       <label>Payment Tracking (Purchase Paid)</label>
       <div style="display:flex; gap:8px;">
         <input type="number" id="paidAmountInput" placeholder="Paid (₹)" oninput="calculateDue()">
-        <input type="number" id="dueAmountInput" readonly placeholder="Due (₹)" style="background:#edf2f7; color:#c53030; font-weight:bold;">
+        <input type="number" id="dueAmountInput" readonly placeholder="Due (₹)" style="background:#f1f5f9; color:#ef4444; font-weight:bold;">
       </div>
     </div>
 
@@ -275,35 +409,13 @@
     <button type="submit" class="btn-submit" id="submitBtn">Save Entry</button>
   </form>
 
-  <!-- Recent Entries Table -->
-  <div id="recentEntriesSection" style="margin-top:16px; border-top:1.5px dashed #cbd5e0; padding-top:10px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-      <span style="font-weight:bold; font-size:11.5px; color:#2b6cb0;">📋 Recent Entries</span>
-      <button type="button" onclick="clearRecentEntries()" style="background:none; border:none; color:#e53e3e; font-size:10px; cursor:pointer;">Clear</button>
-    </div>
-    <table class="custom-table">
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Machine / Party</th>
-          <th>Cheat Code / Item</th>
-          <th>Qty</th>
-          <th>Amount (₹)</th>
-        </tr>
-      </thead>
-      <tbody id="recentEntriesBody">
-        <tr><td colspan="5" style="text-align:center; color:#718096;">No recent entries.</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- DAYBOOK TAB -->
+  <!-- ==================== TAB: DAYBOOK ==================== -->
   <div class="view-box" id="daybookView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">📅 Daily Daybook & Cash Flow</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('daybookPrintTarget', 'Daybook Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Daybook</button>
-        <button type="button" onclick="loadDaybook()" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="printTargetSection('daybookPrintTarget', 'Daybook Statement')" style="padding:4px 8px; font-size:10.5px; background:#0f766e; color:white; border:none; border-radius:6px; cursor:pointer;">🖨️ Print Daybook</button>
+        <button type="button" onclick="loadDaybook()" style="padding:4px 8px; font-size:10.5px; background:#475569; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
@@ -314,7 +426,7 @@
     <div class="kpi-grid">
       <div class="kpi-card"><div class="kpi-title">Purchases (In)</div><div class="kpi-val" id="daybookInAmt">₹0</div></div>
       <div class="kpi-card"><div class="kpi-title">Issued (Out)</div><div class="kpi-val" id="daybookOutAmt">₹0</div></div>
-      <div class="kpi-card"><div class="kpi-title">Paid to Suppliers</div><div class="kpi-val" id="daybookPayAmt" style="color:#c53030;">₹0</div></div>
+      <div class="kpi-card"><div class="kpi-title">Paid to Suppliers</div><div class="kpi-val" id="daybookPayAmt" style="color:#ef4444;">₹0</div></div>
     </div>
 
     <div id="daybookPrintTarget">
@@ -322,14 +434,14 @@
     </div>
   </div>
 
-  <!-- Supplier Ledger -->
+  <!-- ==================== TAB: SUPPLIER LEDGER ==================== -->
   <div class="view-box" id="ledgerView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;" id="ledgerHeadingTitle">Supplier Ledger Summary</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="openPaySupplierModal()" style="padding:5px 9px; font-size:11px; background:#e53e3e; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">💳 Pay Supplier</button>
-        <button type="button" id="ledgerBackBtn" class="hidden" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10.5px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer;">⬅ All Suppliers</button>
-        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print</button>
+        <button type="button" onclick="openPaySupplierModal()" style="padding:5px 9px; font-size:11px; background:#ef4444; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">💳 Pay Supplier</button>
+        <button type="button" id="ledgerBackBtn" class="hidden" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10.5px; background:var(--primary); color:white; border:none; border-radius:6px; cursor:pointer;">⬅ All Suppliers</button>
+        <button type="button" onclick="printTargetSection('ledgerPrintTarget', 'Supplier Ledger Statement')" style="padding:4px 8px; font-size:10.5px; background:#0f766e; color:white; border:none; border-radius:6px; cursor:pointer;">🖨️ Print</button>
       </div>
     </div>
 
@@ -346,13 +458,13 @@
     </div>
   </div>
 
-  <!-- Stock Summary View -->
+  <!-- ==================== TAB: STOCK SUMMARY ==================== -->
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="printTargetSection('summaryPrintTarget', 'Stock Inventory Summary')" style="padding:4px 8px; font-size:10.5px; background:#0f766e; color:white; border:none; border-radius:6px; cursor:pointer;">🖨️ Print</button>
+        <button type="button" onclick="hardRefreshData('Stock')" style="padding:4px 8px; font-size:10.5px; background:#475569; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
@@ -368,13 +480,13 @@
     </div>
   </div>
 
-  <!-- Month Closing View -->
+  <!-- ==================== TAB: MONTH CLOSING ==================== -->
   <div class="view-box" id="closingView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">🔒 Month Closing & Machine Report</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:10.5px; background:#319795; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️ Print Filtered</button>
-        <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="printTargetSection('closingPrintTarget', 'Month Closing & Machine Report')" style="padding:4px 8px; font-size:10.5px; background:#0f766e; color:white; border:none; border-radius:6px; cursor:pointer;">🖨️ Print</button>
+        <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10.5px; background:#475569; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
 
@@ -408,13 +520,13 @@
     </div>
   </div>
 
-  <!-- Purchase Order (PO) Tab -->
+  <!-- ==================== TAB: PURCHASE ORDER (PO) ==================== -->
   <div class="view-box" id="orderView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Purchase Order (PO) & Re-Order</h3>
       <div style="display:flex; gap:6px;">
-        <button type="button" onclick="openCreateOrderModal()" style="padding:5px 9px; background:#38a169; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:10.5px;">➕ New Order</button>
-        <button type="button" onclick="hardRefreshData('Orders')" style="padding:5px 8px; font-size:10.5px; background:#4a5568; color:white; border:none; border-radius:5px; cursor:pointer;">🔄 Refresh</button>
+        <button type="button" onclick="openCreateOrderModal()" style="padding:5px 9px; background:#059669; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:10.5px;">➕ New Order</button>
+        <button type="button" onclick="hardRefreshData('Orders')" style="padding:5px 8px; font-size:10.5px; background:#475569; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Refresh</button>
       </div>
     </div>
     <div id="orderListContent">Loading orders...</div>
@@ -423,25 +535,26 @@
   <div id="msg"></div>
 </div>
 
+<!-- ==================== MODALS ==================== -->
 <!-- Modal 1: Quick Add Supplier -->
 <div class="modal" id="addSupplierModal">
   <div class="modal-content" style="max-width:350px;">
-    <h3 style="margin-top:0; font-size:14px; color:#d69e2e;">➕ Add New Supplier / Party</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#d97706;">➕ Add New Supplier / Party</h3>
     <div class="form-group">
       <label>Supplier / Party Name</label>
       <input type="text" id="newSuppName" placeholder="e.g. Ramesh Spares" required>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="saveNewSupplierAction()" style="flex:1; background:#d69e2e; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Supplier</button>
-      <button type="button" onclick="closeAddSupplierModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" onclick="saveNewSupplierAction()" style="flex:1; background:#d97706; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Save Supplier</button>
+      <button type="button" onclick="closeAddSupplierModal()" style="flex:1; background:#64748b; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Modal 2: Quick Add Vehicle / Machine -->
+<!-- Modal 2: Quick Add Vehicle -->
 <div class="modal" id="addVehicleModal">
   <div class="modal-content" style="max-width:350px;">
-    <h3 style="margin-top:0; font-size:14px; color:#3182ce;">➕ Add New Vehicle / Machine</h3>
+    <h3 style="margin-top:0; font-size:14px; color:var(--primary);">➕ Add New Vehicle / Machine</h3>
     <div class="form-group">
       <label>Vehicle / Machine Number</label>
       <input type="text" id="newVehNumber" placeholder="e.g. SUPER-220 / BR01-1234" required>
@@ -451,8 +564,8 @@
       <select id="newVehCompany"></select>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="saveNewVehicleAction()" style="flex:1; background:#3182ce; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Machine</button>
-      <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" onclick="saveNewVehicleAction()" style="flex:1; background:var(--primary); color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Save Machine</button>
+      <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#64748b; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
@@ -460,22 +573,22 @@
 <!-- Modal 3: Quick Add Company -->
 <div class="modal" id="addCompanyModal">
   <div class="modal-content" style="max-width:350px;">
-    <h3 style="margin-top:0; font-size:14px; color:#805ad5;">➕ Add New Company</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#7c3aed;">➕ Add New Company</h3>
     <div class="form-group">
       <label>Company Name</label>
       <input type="text" id="newCompName" placeholder="e.g. NEW ROADWAYS PVT. LTD" required>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="saveNewCompanyAction()" style="flex:1; background:#805ad5; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Company</button>
-      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" onclick="saveNewCompanyAction()" style="flex:1; background:#7c3aed; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Save Company</button>
+      <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#64748b; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Modal 4: Add Product with Dual Rates -->
+<!-- Modal 4: Add Product -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:380px;">
-    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;">➕ Add Product (Purchase & Sell Rates)</h3>
+    <h3 style="margin-top:0; font-size:14px; color:var(--primary);">➕ Add Product (Purchase & Sell Rates)</h3>
     <div class="form-group">
       <label>Cheat Code / Item Name</label>
       <input type="text" id="newProdName" placeholder="e.g. S210-500-ENG-DSL">
@@ -512,16 +625,16 @@
       </div>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#38a169; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save to List</button>
-      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#059669; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Save to List</button>
+      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#64748b; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Modal 5: PAY SUPPLIER -->
+<!-- Modal 5: Pay Supplier -->
 <div class="modal" id="paySupplierModal">
   <div class="modal-content" style="max-width:360px;">
-    <h3 style="margin-top:0; font-size:14px; color:#c53030;">💳 Pay to Supplier (Ledger Payment)</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#ef4444;">💳 Pay to Supplier (Ledger Payment)</h3>
     <div class="form-group">
       <label>Select Supplier</label>
       <select id="payModalSupplierSelect"><option value="">-- Choose Supplier --</option></select>
@@ -544,8 +657,8 @@
       <input type="text" id="payModalRemarks" placeholder="e.g. UTR / Chq No">
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="savePayBtn" onclick="submitSupplierPayment()" style="flex:1; background:#e53e3e; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Confirm & Pay</button>
-      <button type="button" onclick="closePaySupplierModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" id="savePayBtn" onclick="submitSupplierPayment()" style="flex:1; background:#ef4444; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Confirm & Pay</button>
+      <button type="button" onclick="closePaySupplierModal()" style="flex:1; background:#64748b; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
@@ -555,7 +668,7 @@
   <div class="modal-content" id="scannerModalBox">
     <h4 style="margin: 0 0 10px 0; font-size:13px;">📷 Scan Barcode / QR</h4>
     <div id="reader"></div>
-    <button type="button" onclick="closeScannerModal()" style="background:#e53e3e; color:white; border:none; padding:7px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Stop Camera</button>
+    <button type="button" onclick="closeScannerModal()" style="background:#ef4444; color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Stop Camera</button>
   </div>
 </div>
 
@@ -563,11 +676,11 @@
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 Security PIN Required</h3>
-    <p style="font-size:11px; color:#718096;">Is section ko access karne ke liye PIN daalein:</p>
+    <p style="font-size:11px; color:var(--text-muted);">Enter master access PIN:</p>
     <input type="password" id="pinInput" maxlength="6" placeholder="Enter PIN" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;">
     <div style="display:flex; gap:8px;">
-      <button type="button" onclick="verifyPin()" style="flex:1; background:#2b6cb0; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Unlock</button>
-      <button type="button" onclick="closePinModal()" style="flex:1; background:#718096; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" onclick="verifyPin()" style="flex:1; background:var(--primary); color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Unlock</button>
+      <button type="button" onclick="closePinModal()" style="flex:1; background:#64748b; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
@@ -575,20 +688,20 @@
 <!-- Modal 8: Service Hours Checklist -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
-    <p style="font-size:11px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
+    <h3 style="margin-top:0; font-size:14px; color:var(--primary);" id="serviceModalTitle">Service Hours Checklist</h3>
+    <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
     <div id="serviceItemsList"></div>
-    <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
+    <div style="margin-top:10px; padding:8px; background:#f8fafc; border-radius:10px; border:1px dashed var(--border);">
       <label style="font-size:10px;">➕ Add Extra Part / Oil to this service:</label>
       <div style="display:flex; gap:6px; margin-top:4px;">
         <select id="extraPartSelect" style="flex:2; font-size:11px;"></select>
         <input type="number" id="extraPartQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
-        <button type="button" onclick="addExtraItemToService()" style="background:#3182ce; color:white; border:none; padding:0 9px; border-radius:6px; cursor:pointer; font-size:11px;">Add</button>
+        <button type="button" onclick="addExtraItemToService()" style="background:var(--primary); color:white; border:none; padding:0 9px; border-radius:7px; cursor:pointer; font-size:11px;">Add</button>
       </div>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Confirm & Issue All</button>
-      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">Cancel</button>
+      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#059669; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11.5px;">Confirm & Issue All</button>
+      <button type="button" onclick="closeServiceModal()" style="flex:1; background:#64748b; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11.5px;">Cancel</button>
     </div>
   </div>
 </div>
@@ -596,7 +709,7 @@
 <!-- Modal 9: Create Purchase Order (PO) -->
 <div class="modal" id="createOrderModal">
   <div class="modal-content">
-    <h3 style="margin-top:0; font-size:14px; color:#2d3748;">New Purchase Order (PO)</h3>
+    <h3 style="margin-top:0; font-size:14px; color:var(--text);">New Purchase Order (PO)</h3>
     <div class="form-group">
       <label>Select Supplier / Vendor</label>
       <select id="poSupplierSelect" onchange="onPoSupplierSelected(this.value)" style="font-size:11px;">
@@ -606,21 +719,21 @@
     <div id="poSupplierItemsSection" class="hidden">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <span style="font-weight:bold; font-size:11px;">Supplier History Items:</span>
-        <small style="color:#718096; font-size:10px;">(Pehle khareede gaye)</small>
+        <small style="color:var(--text-muted); font-size:10px;">(Pehle khareede gaye)</small>
       </div>
-      <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
-      <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px;">
+      <div id="poItemList" style="max-height:170px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:6px; margin-bottom:10px;"></div>
+      <div style="padding:8px; background:#f8fafc; border:1px dashed var(--border); border-radius:8px; margin-bottom:10px;">
         <label style="font-size:10.5px; font-weight:bold;">➕ Add Other Product:</label>
         <div style="display:flex; gap:6px; margin-top:4px;">
           <select id="poOtherProductSelect" style="flex:2; font-size:11px;"><option value="">-- Choose Any Product --</option></select>
           <input type="number" id="poOtherProductQty" placeholder="Qty" value="1" style="flex:1; font-size:11px;">
-          <button type="button" onclick="addOtherItemToPo()" style="background:#3182ce; color:white; border:none; padding:0 8px; border-radius:6px; font-size:11px; cursor:pointer;">Add</button>
+          <button type="button" onclick="addOtherItemToPo()" style="background:var(--primary); color:white; border:none; padding:0 8px; border-radius:7px; font-size:11px; cursor:pointer;">Add</button>
         </div>
       </div>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#38a169; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
-      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#718096; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" id="poSubmitBtn" onclick="submitPurchaseOrder()" style="flex:1; background:#059669; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Save PO</button>
+      <button type="button" onclick="closeCreateOrderModal()" style="flex:1; background:#64748b; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
@@ -628,60 +741,45 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
-  const CACHE_VERSION = "V3_CLEAN_CODES"; // Auto flush cache
+  const CACHE_VERSION = "V4_EXECUTIVE_DASH";
 
-  // Clean Cheat Codes with DUAL PRICING
+  // Exact Clean Items with DUAL PRICING
   const DEFAULT_FALLBACK_PRODUCTS = [
-    // Super-210 Prime
     { name: "S210-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "S210-500-ENG-DSL" },
     { name: "S210-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S210-500-AIR-FLT" },
     { name: "S210-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
     { name: "S-210-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
     { name: "S-210-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
-
-    // Super-200
     { name: "S200-500-ENG-DSL", unit: "Set", purchaseRate: 1150, sellRate: 1350, hsn: "8421", barcode: "S200-500-ENG-DSL" },
     { name: "S200-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S200-500-AIR-FLT" },
     { name: "S200-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
     { name: "S200-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-HYD-PLT" },
     { name: "S200-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
-
-    // ZAXIS-220
     { name: "Z220-500-ENG-DSL", unit: "Set", purchaseRate: 2800, sellRate: 3200, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
     { name: "Z220-500-AIR-FLT", unit: "Set", purchaseRate: 2900, sellRate: 3300, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
     { name: "Z220-1000-HYD-KIT", unit: "Set", purchaseRate: 5750, sellRate: 6500, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
     { name: "Z220-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
     { name: "Z220-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
-
-    // SANY-215
     { name: "S215-500-ENG-DSL", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "S215-500-ENG-DSL" },
     { name: "S215-500-AIR-FLT", unit: "Set", purchaseRate: 4300, sellRate: 4800, hsn: "8421", barcode: "S215-500-AIR-FLT" },
     { name: "S215-1000-HYD-KIT", unit: "Set", purchaseRate: 4600, sellRate: 5200, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
     { name: "S215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-HYD-PLT" },
     { name: "S215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
-
-    // JCB-215
     { name: "JCB215-500-ENG-DSL", unit: "Set", purchaseRate: 1780, sellRate: 2050, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
     { name: "JCB215-500-AIR-FLT", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
     { name: "JCB215-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
     { name: "JCB215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
     { name: "JCB215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
-
-    // XCMG-230
     { name: "XCMG230-500-ENG-DSL", unit: "Set", purchaseRate: 2450, sellRate: 2800, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
     { name: "XCMG230-500-AIR-FLT", unit: "Set", purchaseRate: 3200, sellRate: 3650, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
     { name: "XCMG230-1000-HYD-KIT", unit: "Set", purchaseRate: 4800, sellRate: 5400, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
     { name: "XCMG230-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
     { name: "XCMG230-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
-
-    // ZAXIS-140
     { name: "Z140-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
     { name: "Z140-500-AIR-FLT", unit: "Set", purchaseRate: 1200, sellRate: 1400, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
     { name: "Z140-1000-HYD-KIT", unit: "Set", purchaseRate: 2950, sellRate: 3400, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
     { name: "Z-140-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
     { name: "Z-140-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
-
-    // Oils & Grease
     { name: "CASTROL ENGINE OIL(Mobil) -210L", unit: "L", purchaseRate: 278, sellRate: 300, hsn: "2710", barcode: "CASTROL-210L" },
     { name: "PENSOL GEAR OIL", unit: "L", purchaseRate: 289, sellRate: 300, hsn: "2710", barcode: "PENSOL-GEAR-OIL" },
     { name: "PENSOL CHASSIS GREASE", unit: "Nos", purchaseRate: 3350, sellRate: 3500, hsn: "2710", barcode: "PENSOL-CHASSIS-GREASE" },
@@ -690,9 +788,8 @@
     { name: "Purana kapda", unit: "Nos", purchaseRate: 30, sellRate: 30, hsn: "5202", barcode: "COTTON-WASTE" }
   ];
 
-  // Force Master Service Kits for 0ms Instant Popup
+  // Master Service Kits
   const MASTER_SERVICE_KITS = {
-    // 1. SUPER-210 PRIME
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2400 },
@@ -712,92 +809,6 @@
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
       { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
     ],
-
-    // 2. SUPER-200
-    "SUPER-200 (500 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
-      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
-    ],
-    "SUPER-200 (1000 Hrs Service)": [
-      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
-      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
-      { itemName: "S200-1000-HYD-KIT", qty: 1, rate: 3800 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
-    ],
-
-    // 3. ZAXIS-220
-    "ZAXIS-220 (500 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
-      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
-    ],
-    "ZAXIS-220 (1000 Hrs Service)": [
-      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
-      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
-      { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 6500 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
-    ],
-
-    // 4. SANY-215
-    "SANY-215 (500 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
-      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
-    ],
-    "SANY-215 (1000 Hrs Service)": [
-      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
-      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
-      { itemName: "S215-1000-HYD-KIT", qty: 1, rate: 5200 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
-    ],
-
-    // 5. JCB-215
-    "JCB-215 (500 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
-      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
-    ],
-    "JCB-215 (1000 Hrs Service)": [
-      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
-      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
-      { itemName: "JCB215-1000-HYD-KIT", qty: 1, rate: 3800 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
-    ],
-
-    // 6. XCMG-230
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3650 },
@@ -816,27 +827,6 @@
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
       { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
-    ],
-
-    // 7. ZAXIS-140
-    "ZAXIS-140 (500 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
-      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
-    ],
-    "ZAXIS-140 (1000 Hrs Service)": [
-      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
-      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
-      { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 3400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
-      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
-      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
-      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
-      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
     ]
   };
 
@@ -850,7 +840,7 @@
     { vehicleNo: "ZAXIS-140", company: "COMRAO PVT. LTD" }
   ];
 
-  let currentTab = "IN";
+  let currentTab = "DASH";
   let productList = [];
   let vehicleMap = new Map();
   let companySet = new Set(["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"]);
@@ -872,14 +862,12 @@
   let currentScanTargetId = "barcodeInput";
   let lastPoSubmitTime = 0;
 
-  // Arrow Key Navigation variables
   let currentRecIndex = -1;
   let currentFilteredMatches = [];
 
   function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
   function getLocal(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
 
-  // 🔊 Audio Ding Sound Synthesizer
   function playSuccessSound() {
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -992,7 +980,7 @@
     if (pModal) pModal.innerHTML = pModalHtml;
   }
 
-  // 2. Real-Time Fuzzy Search with Recommendations & ⬆️ ⬇️ Keys
+  // 2. Real-Time Fuzzy Search with ⬆️ ⬇️ Keys
   function handleSearchInput(query) {
     const q = (query || "").toLowerCase().trim();
     const box = document.getElementById("recommendationsBox");
@@ -1113,7 +1101,7 @@
     calculateTotal();
   }
 
-  // 4. Tab Switching
+  // 4. Tab Switching with Dashboard Logic
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -1126,12 +1114,15 @@
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".view-box").forEach(v => v.style.display = "none");
     document.getElementById("stockForm").style.display = "none";
-    document.getElementById("recentEntriesSection").style.display = (type === "IN" || type === "OUT") ? "block" : "none";
 
     const badge = document.getElementById("rateModeBadge");
     const rateLbl = document.getElementById("rateLabel");
 
-    if (type === "IN") {
+    if (type === "DASH") {
+      document.getElementById("dashboardView").style.display = "block";
+      document.getElementById("tabDashBtn").classList.add("active");
+      renderDashboard();
+    } else if (type === "IN") {
       document.getElementById("stockForm").style.display = "block";
       document.getElementById("tabInBtn").classList.add("active");
       badge.innerText = "Mode: Purchase Price (Stock In)";
@@ -1201,57 +1192,130 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 5. Daybook Report Loader
+  // 5. Dashboard Executive Render Logic
+  function renderDashboard() {
+    // 1. Warehouse Valuation
+    const totalVal = summaryData.reduce((a, b) => a + (b.totalValue || 0), 0);
+    document.getElementById("dashTotalValue").innerText = "₹" + totalVal.toLocaleString('en-IN');
+
+    // 2. Active Machines Count
+    document.getElementById("dashActiveMachines").innerText = vehicleMap.size + " Units";
+
+    // 3. Supplier Total Due Balance
+    let totalDue = 0;
+    const summaryMap = {};
+    ledgerData.forEach(l => {
+      const p = l.party || "UNKNOWN";
+      if (!summaryMap[p]) summaryMap[p] = { totalDr: 0, totalCr: 0, balance: 0 };
+      summaryMap[p].totalDr += (l.dr || 0);
+      summaryMap[p].totalCr += (l.cr || 0);
+      summaryMap[p].balance = summaryMap[p].totalDr - summaryMap[p].totalCr;
+    });
+    for (const k in summaryMap) {
+      if (summaryMap[k].balance > 0) totalDue += summaryMap[k].balance;
+    }
+    document.getElementById("dashSupplierDue").innerText = "₹" + totalDue.toLocaleString('en-IN');
+
+    // 4. Critical Low Stock Table (< 2 balance)
+    const lowStock = summaryData.filter(s => s.balance <= 2);
+    document.getElementById("dashLowStockCount").innerText = lowStock.length + " Items";
+
+    const lowTblBox = document.getElementById("dashLowStockTableContainer");
+    if (lowStock.length === 0) {
+      lowTblBox.innerHTML = `<p style="color:#059669; font-size:11px; margin:4px 0;">✅ All inventory items are sufficiently stocked!</p>`;
+    } else {
+      let lHtml = `<table class="custom-table">
+        <thead><tr><th>Cheat Code</th><th>Balance</th><th>Action</th></tr></thead><tbody>`;
+      lowStock.slice(0, 5).forEach(ls => {
+        lHtml += `<tr>
+          <td><b>${ls.item}</b></td>
+          <td style="color:#ef4444; font-weight:800;">${ls.balance} left</td>
+          <td><button onclick="switchTab('ORDER')" style="background:#059669; color:white; border:none; padding:2px 6px; border-radius:4px; font-size:9.5px; cursor:pointer;">Order</button></td>
+        </tr>`;
+      });
+      lHtml += `</tbody></table>`;
+      lowTblBox.innerHTML = lHtml;
+    }
+
+    // 5. Recent Logs
+    const recent = getLocal("RECENT_LOGS") || [];
+    const rBox = document.getElementById("dashRecentLogsContainer");
+    if (recent.length === 0) {
+      rBox.innerHTML = `<p style="color:var(--text-muted); font-size:11px; margin:4px 0;">No operations recorded yet.</p>`;
+    } else {
+      let rHtml = `<table class="custom-table">
+        <thead><tr><th>Type</th><th>Target</th><th>Item</th><th>Amount</th></tr></thead><tbody>`;
+      recent.slice(0, 5).forEach(r => {
+        rHtml += `<tr>
+          <td><b style="color:${r.type==='IN'?'#059669':'#ef4444'};">${r.type}</b></td>
+          <td>${r.target || '-'}</td>
+          <td>${r.item}</td>
+          <td>₹${parseFloat(r.amt || 0).toLocaleString('en-IN')}</td>
+        </tr>`;
+      });
+      rHtml += `</tbody></table>`;
+      rBox.innerHTML = rHtml;
+    }
+  }
+
+  // 6. Daybook Report Loader (Bulletproof with fallback)
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
     const content = document.getElementById("daybookContent");
-    content.innerHTML = "Loading Daybook transactions...";
+    content.innerHTML = `<p style="text-align:center; padding:12px; color:var(--primary);">⏳ Loading Daybook for <b>${dVal}</b>...</p>`;
 
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getDaybook&date=${dVal}&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success") {
         let totIn = 0, totOut = 0, totPay = 0;
+        
+        if (!data.data || data.data.length === 0) {
+          content.innerHTML = `<p style="text-align:center; padding:16px; color:var(--text-muted); background:#f8fafc; border-radius:10px; margin-top:8px;">Is date (<b>${dVal}</b>) par koi transaction entry nahi mili.</p>`;
+          document.getElementById("daybookInAmt").innerText = "₹0";
+          document.getElementById("daybookOutAmt").innerText = "₹0";
+          document.getElementById("daybookPayAmt").innerText = "₹0";
+          return;
+        }
+
         let html = `<table class="custom-table">
           <thead>
             <tr><th>Time</th><th>Category</th><th>Machine / Supplier</th><th>Particulars</th><th>Qty</th><th>Rate</th><th>Amount (₹)</th></tr>
           </thead><tbody>`;
         
-        if (data.data.length === 0) {
-          html += `<tr><td colspan="7" style="text-align:center; color:#718096;">Is date par koi entry nahi mili.</td></tr>`;
-        } else {
-          data.data.forEach(r => {
-            if (r.type === "PURCHASE") totIn += r.amount;
-            if (r.type === "ISSUE") totOut += r.amount;
-            if (r.type === "PAYMENT") totPay += r.amount;
+        data.data.forEach(r => {
+          if (r.type === "PURCHASE") totIn += r.amount;
+          if (r.type === "ISSUE") totOut += r.amount;
+          if (r.type === "PAYMENT") totPay += r.amount;
 
-            var tagColor = r.type === "PURCHASE" ? "#2b6cb0" : (r.type === "ISSUE" ? "#2f855a" : "#c53030");
+          var tagColor = r.type === "PURCHASE" ? "var(--primary)" : (r.type === "ISSUE" ? "#059669" : "#ef4444");
 
-            html += `<tr>
-              <td>${r.time}</td>
-              <td><span style="font-weight:bold; color:${tagColor}; font-size:10px;">${r.category}</span></td>
-              <td><b>${r.entity || r.party}</b></td>
-              <td>${r.item}</td>
-              <td>${r.qty}</td>
-              <td>${r.rate !== '-' ? '₹' + r.rate : '-'}</td>
-              <td style="font-weight:bold;">₹${r.amount.toLocaleString('en-IN')}</td>
-            </tr>`;
-          });
-        }
+          html += `<tr>
+            <td>${r.time}</td>
+            <td><span style="font-weight:bold; color:${tagColor}; font-size:10px;">${r.category}</span></td>
+            <td><b>${r.entity || r.party}</b></td>
+            <td>${r.item}</td>
+            <td>${r.qty}</td>
+            <td>${r.rate !== '-' ? '₹' + r.rate : '-'}</td>
+            <td style="font-weight:bold;">₹${r.amount.toLocaleString('en-IN')}</td>
+          </tr>`;
+        });
         html += `</tbody></table>`;
         content.innerHTML = html;
 
         document.getElementById("daybookInAmt").innerText = "₹" + totIn.toLocaleString('en-IN');
         document.getElementById("daybookOutAmt").innerText = "₹" + totOut.toLocaleString('en-IN');
         document.getElementById("daybookPayAmt").innerText = "₹" + totPay.toLocaleString('en-IN');
+      } else {
+        content.innerHTML = `<p style="text-align:center; color:#ef4444; padding:12px;">⚠️ Server notice: ${data.message || 'Data empty'}</p>`;
       }
     } catch(e) {
-      content.innerHTML = "Daybook load karne me error aayi.";
+      content.innerHTML = `<p style="text-align:center; color:#ef4444; padding:12px;">⚠️ Network timeout or sync error. Check internet connection.</p>`;
     }
   }
 
-  // 6. Direct Supplier Payment Modal & Submit
+  // 7. Direct Supplier Payment Modal & Submit
   function openPaySupplierModal() {
     populateSupplierDropdowns();
     document.getElementById("payModalAmount").value = "";
@@ -1288,32 +1352,22 @@
         closePaySupplierModal();
         loadLedger();
       }
-    } catch(e) {
-      alert("Error: " + e.message);
-    } finally {
+    } catch(e) { alert("Error: " + e.message); }
+    finally {
       btn.disabled = false;
       btn.innerText = "Confirm & Pay";
     }
   }
 
-  // 7. Quick Add Modals (Supplier, Vehicle, Company, Product)
-  function openAddSupplierModal() {
-    document.getElementById("newSuppName").value = "";
-    document.getElementById("addSupplierModal").style.display = "flex";
-  }
+  // 8. Quick Add Handlers
+  function openAddSupplierModal() { document.getElementById("newSuppName").value = ""; document.getElementById("addSupplierModal").style.display = "flex"; }
   function closeAddSupplierModal() { document.getElementById("addSupplierModal").style.display = "none"; }
-
   function saveNewSupplierAction() {
     const sName = document.getElementById("newSuppName").value.trim();
     if (!sName) return alert("Kripya Supplier ka Naam daalein!");
-
     supplierSet.add(sName);
     let cachedSuppliers = getLocal("CACHED_SUPPLIER_LIST") || [];
-    if (!cachedSuppliers.includes(sName)) {
-      cachedSuppliers.push(sName);
-      saveLocal("CACHED_SUPPLIER_LIST", cachedSuppliers);
-    }
-
+    if (!cachedSuppliers.includes(sName)) { cachedSuppliers.push(sName); saveLocal("CACHED_SUPPLIER_LIST", cachedSuppliers); }
     populateSupplierDropdowns();
     document.getElementById("partySelectInput").value = sName;
     playSuccessSound();
@@ -1321,18 +1375,12 @@
     closeAddSupplierModal();
   }
 
-  function openAddVehicleModal() {
-    document.getElementById("newVehNumber").value = "";
-    renderCompanyDropdowns();
-    document.getElementById("addVehicleModal").style.display = "flex";
-  }
+  function openAddVehicleModal() { document.getElementById("newVehNumber").value = ""; renderCompanyDropdowns(); document.getElementById("addVehicleModal").style.display = "flex"; }
   function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
-
   function saveNewVehicleAction() {
     const vNum = document.getElementById("newVehNumber").value.trim().toUpperCase();
     const vComp = document.getElementById("newVehCompany").value;
     if (!vNum) return alert("Kripya Vehicle / Machine Number daalein!");
-
     vehicleMap.set(vNum, vComp);
     renderVehicleDropdown();
     document.getElementById("vehicleSelect").value = vNum;
@@ -1342,16 +1390,11 @@
     closeAddVehicleModal();
   }
 
-  function openAddCompanyModal() {
-    document.getElementById("newCompName").value = "";
-    document.getElementById("addCompanyModal").style.display = "flex";
-  }
+  function openAddCompanyModal() { document.getElementById("newCompName").value = ""; document.getElementById("addCompanyModal").style.display = "flex"; }
   function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
-
   function saveNewCompanyAction() {
     const cName = document.getElementById("newCompName").value.trim().toUpperCase();
     if (!cName) return alert("Kripya Company Name daalein!");
-
     companySet.add(cName);
     renderCompanyDropdowns();
     document.getElementById("companyInput").value = cName;
@@ -1367,7 +1410,6 @@
     document.getElementById("addProductModal").style.display = "flex";
   }
   function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
-
   async function saveNewProductAction() {
     const name = document.getElementById("newProdName").value.trim();
     const unit = document.getElementById("newProdUnit").value;
@@ -1377,7 +1419,6 @@
     const barcode = document.getElementById("newProdBarcode").value.trim() || name;
 
     if (!name) return alert("Product Name / Cheat Code daalein!");
-
     const btn = document.getElementById("saveProdBtn");
     btn.disabled = true;
     btn.innerText = "Saving...";
@@ -1395,7 +1436,7 @@
       document.getElementById("productSelect").value = name;
       onProductSelect(name);
       playSuccessSound();
-      alert("✅ Product Added with Purchase & Sell Rate!");
+      alert("✅ Product Added with Rates!");
       closeAddProductModal();
     } catch(e) {
       productList.unshift(newObj);
@@ -1408,7 +1449,7 @@
     }
   }
 
-  // 8. Calculations & Form Save
+  // 9. Calculations & Save
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1477,38 +1518,17 @@
     }
   });
 
-  // 9. Recent Entries Logger
   function addRecentEntry(type, target, item, qty, amt) {
     let list = getLocal("RECENT_LOGS") || [];
     list.unshift({ type, target, item, qty, amt });
     if (list.length > 5) list = list.slice(0, 5);
     saveLocal("RECENT_LOGS", list);
-    renderRecentEntries();
-  }
-
-  function renderRecentEntries() {
-    const list = getLocal("RECENT_LOGS") || [];
-    const tbody = document.getElementById("recentEntriesBody");
-    if (list.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#718096;">No recent entries.</td></tr>`;
-      return;
-    }
-    let html = "";
-    list.forEach(r => {
-      html += `<tr>
-        <td><b style="color:${r.type==='IN'?'#2f855a':'#c53030'};">${r.type}</b></td>
-        <td>${r.target || '-'}</td>
-        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.item}</td>
-        <td>${r.qty}</td>
-        <td>₹${parseFloat(r.amt||0).toLocaleString('en-IN')}</td>
-      </tr>`;
-    });
-    tbody.innerHTML = html;
+    renderDashboard();
   }
 
   function clearRecentEntries() {
     localStorage.removeItem("RECENT_LOGS");
-    renderRecentEntries();
+    renderDashboard();
   }
 
   // 10. Ledger
@@ -1520,10 +1540,8 @@
         ledgerData = data.data;
         supplierItemsMap = data.supplierItemsMap || {};
         ledgerData.forEach(l => { if (l.party) supplierSet.add(l.party); });
-        
         let localSuppliers = getLocal("CACHED_SUPPLIER_LIST") || [];
         localSuppliers.forEach(s => supplierSet.add(s));
-
         populateSupplierDropdowns();
         renderActiveLedgerView();
       }
@@ -1565,31 +1583,18 @@
       html += `<tr>
         <td><b>${name}</b></td>
         <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
-        <td style="color:#2f855a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
-        <td style="font-weight:bold; color:${item.balance > 0 ? '#c53030' : '#2f855a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
-        <td><button onclick="openSinglePartyLedger('${name}')" style="background:#2b6cb0; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">Statement</button></td>
+        <td style="color:#059669;">₹${item.totalCr.toLocaleString('en-IN')}</td>
+        <td style="font-weight:bold; color:${item.balance > 0 ? '#ef4444' : '#059669'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
+        <td><button onclick="openSinglePartyLedger('${name}')" style="background:var(--primary); color:white; border:none; padding:3px 7px; border-radius:5px; font-size:10px; cursor:pointer;">Statement</button></td>
       </tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  function openSinglePartyLedger(party) {
-    activeSelectedLedgerParty = party;
-    document.getElementById("ledgerPartyFilter").value = party;
-    renderActiveLedgerView();
-  }
-
-  function showAllSupplierSummary() {
-    activeSelectedLedgerParty = "";
-    document.getElementById("ledgerPartyFilter").value = "";
-    renderActiveLedgerView();
-  }
-
-  function onLedgerPartyDropdownChange(party) {
-    activeSelectedLedgerParty = party;
-    renderActiveLedgerView();
-  }
+  function openSinglePartyLedger(party) { activeSelectedLedgerParty = party; renderActiveLedgerView(); }
+  function showAllSupplierSummary() { activeSelectedLedgerParty = ""; document.getElementById("ledgerPartyFilter").value = ""; renderActiveLedgerView(); }
+  function onLedgerPartyDropdownChange(party) { activeSelectedLedgerParty = party; renderActiveLedgerView(); }
 
   function renderSinglePartyDetailedLedger(party) {
     document.getElementById("ledgerHeadingTitle").innerText = `Statement: ${party}`;
@@ -1615,8 +1620,8 @@
         <td>${l.displayDate || l.date}</td>
         <td>${l.particulars}</td>
         <td>${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
-        <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
-        <td style="font-weight:bold; color:${running > 0 ? '#c53030' : '#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
+        <td style="color:#059669;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
+        <td style="font-weight:bold; color:${running > 0 ? '#ef4444' : '#059669'};">₹${running.toLocaleString('en-IN')} Dr</td>
       </tr>`;
     });
     html += `</tbody></table>`;
@@ -1668,7 +1673,7 @@
 
     const container = document.getElementById("closingContent");
     if (Object.keys(grouped).length === 0) {
-      container.innerHTML = "<p style='text-align:center; color:#718096;'>No records found.</p>";
+      container.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>No records found.</p>";
       return;
     }
 
@@ -1696,7 +1701,7 @@
         items.forEach(it => {
           html += `<tr>
             <td>${it.displayDate || it.date}</td>
-            <td>${it.item} ${it.remarks ? `<br><small style="color:#718096;">${it.remarks}</small>` : ''}</td>
+            <td>${it.item} ${it.remarks ? `<br><small style="color:var(--text-muted);">${it.remarks}</small>` : ''}</td>
             <td>${it.qty} ${it.unit}</td>
             <td>${it.km || '-'}</td>
             <td>₹${it.amount.toLocaleString('en-IN')}</td>
@@ -1709,7 +1714,7 @@
     container.innerHTML = html;
   }
 
-  // 12. Purchase Orders (PO)
+  // 12. Purchase Orders
   function openCreateOrderModal() {
     populateSupplierDropdowns();
     renderProductDropdown();
@@ -1718,18 +1723,12 @@
     document.getElementById("poItemList").innerHTML = "";
     document.getElementById("createOrderModal").style.display = "flex";
   }
-
   function closeCreateOrderModal() { document.getElementById("createOrderModal").style.display = "none"; }
 
   function onPoSupplierSelected(supplier) {
     const section = document.getElementById("poSupplierItemsSection");
     const container = document.getElementById("poItemList");
-    if (!supplier) {
-      section.classList.add("hidden");
-      container.innerHTML = "";
-      return;
-    }
-
+    if (!supplier) { section.classList.add("hidden"); container.innerHTML = ""; return; }
     section.classList.remove("hidden");
     renderProductDropdown();
 
@@ -1738,16 +1737,15 @@
 
     let html = "";
     if (itemNames.length === 0) {
-      html = `<p style="font-size:10.5px; color:#718096; margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se product add karein.</p>`;
+      html = `<p style="font-size:10.5px; color:var(--text-muted); margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se product add karein.</p>`;
     } else {
       itemNames.forEach(itm => {
         const rate = pastItems[itm] || 0;
         const curStock = summaryData.find(s => s.item === itm);
         const left = curStock ? curStock.balance : 0;
         const isLow = left <= 2;
-
         html += `
-          <div class="po-item-row" style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;">
+          <div class="po-item-row" style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border); font-size:11px;">
             <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" ${isLow ? 'checked' : ''}> <b>${itm}</b> (${left} left)</label>
             <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:50px; padding:2px; font-size:10.5px;">
           </div>`;
@@ -1760,7 +1758,6 @@
     const sel = document.getElementById("poOtherProductSelect");
     const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
     if (!sel || !sel.value) return alert("Pehle item select karein!");
-
     const itm = sel.value;
     const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const prod = itemsToSearch.find(p => p.name === itm);
@@ -1771,7 +1768,7 @@
     const container = document.getElementById("poItemList");
     const newRow = document.createElement("div");
     newRow.className = "po-item-row";
-    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;";
+    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border); font-size:11px;";
     newRow.innerHTML = `
       <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" checked> <b>${itm}</b> (${left} left)</label>
       <input type="number" class="po-qty" value="${qty}" style="width:50px; padding:2px; font-size:10.5px;">
@@ -1783,7 +1780,6 @@
   async function submitPurchaseOrder() {
     const party = document.getElementById("poSupplierSelect").value.trim();
     if (!party) return alert("Kripya Supplier select karein!");
-
     const now = Date.now();
     if (now - lastPoSubmitTime < 10000) return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
 
@@ -1794,7 +1790,6 @@
       const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
       items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
     });
-
     if (items.length === 0) return alert("Kam se kam 1 item select karein!");
 
     const btn = document.getElementById("poSubmitBtn");
@@ -1814,9 +1809,7 @@
         loadOrders();
 
         let waText = `*PURCHASE ORDER: ${data.orderNo || ''}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
-        items.forEach((it, i) => {
-          waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
-        });
+        items.forEach((it, i) => { waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`; });
         waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!`;
 
         if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
@@ -1824,10 +1817,7 @@
         }
       }
     } catch(e) { alert("Order error: " + e.message); }
-    finally {
-      btn.disabled = false;
-      btn.innerText = "Save PO";
-    }
+    finally { btn.disabled = false; btn.innerText = "Save PO"; }
   }
 
   async function loadOrders() {
@@ -1845,10 +1835,10 @@
             <td><b>${o.party}</b></td>
             <td>${o.item}</td>
             <td>${o.qty} ${o.unit}</td>
-            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
+            <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#059669':'#ef4444'};">${o.status}</span></td>
             <td style="display:flex; gap:4px;">
-              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:#3182ce; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
-              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
+              ${o.status==='ORDERED' ? `<button onclick="receiveOrderToStockIn('${o.orderNo}','${o.item}',${o.qty},'${o.unit}',${o.rate},'${o.party}')" style="background:var(--primary); color:white; border:none; padding:2px 5px; border-radius:4px; font-size:10px; cursor:pointer;">Inward</button>` : ''}
+              <button onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:4px; font-size:10px; cursor:pointer;">📲 WA</button>
             </td>
           </tr>`;
         });
@@ -1865,7 +1855,6 @@
 
   async function receiveOrderToStockIn(ordNo, item, qty, unit, rate, party) {
     if (!confirm(`Kya aap ${item} (${qty} ${unit}) ko Stock Inward mein receive karna chahte hain?`)) return;
-
     try {
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
@@ -1903,11 +1892,11 @@
       html += `<div class="service-item-row">
         <div>
           <b>${p.itemName}</b>
-          <div style="font-size:10.5px; color:${isLow ? '#c53030' : '#2f855a'};">
+          <div style="font-size:10.5px; color:${isLow ? '#ef4444' : '#059669'};">
             Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:42px; padding:2px; font-size:10.5px;">
           </div>
         </div>
-        <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
+        <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#ef4444; cursor:pointer;">✖</button>
       </div>`;
     });
     container.innerHTML = html;
@@ -1917,28 +1906,16 @@
   function addExtraItemToService() {
     const sel = document.getElementById("extraPartSelect");
     const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
-    if (!sel.value) return alert("Pehle Extra Part select karein!");
-
+    if (!sel.value) return alert("Pehle item select karein!");
     const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
     const prod = itemsToSearch.find(p => p.name === sel.value);
-    activeServiceParts.push({
-      itemName: sel.value,
-      qty: qty,
-      rate: prod ? prod.sellRate : 0,
-      unit: prod ? prod.unit : "Nos"
-    });
+    activeServiceParts.push({ itemName: sel.value, qty: qty, rate: prod ? prod.sellRate : 0, unit: prod ? prod.unit : "Nos" });
     sel.value = "";
     openServiceModal();
   }
 
-  function removeServiceItem(idx) {
-    activeServiceParts.splice(idx, 1);
-    openServiceModal();
-  }
-
-  function closeServiceModal() {
-    document.getElementById("serviceHoursModal").style.display = "none";
-  }
+  function removeServiceItem(idx) { activeServiceParts.splice(idx, 1); openServiceModal(); }
+  function closeServiceModal() { document.getElementById("serviceHoursModal").style.display = "none"; }
 
   async function confirmServiceOutward() {
     const vNo = document.getElementById("vehicleSelect").value;
@@ -1987,6 +1964,7 @@
         document.getElementById("kpiStock").innerText = summaryData.reduce((a,b)=>a+(b.balance||0),0);
         document.getElementById("kpiValue").innerText = "₹" + summaryData.reduce((a,b)=>a+(b.totalValue||0),0).toLocaleString('en-IN');
         if (currentTab === "SUMMARY" || !silent) renderSummaryTable();
+        renderDashboard();
       }
     } catch(e){}
   }
@@ -2001,7 +1979,7 @@
         <td><b>${s.item}</b></td>
         <td>${s.totalIn}</td>
         <td>${s.totalOut}</td>
-        <td style="font-weight:bold; color:${s.balance<=2?'#c53030':'#2f855a'};">${s.balance}</td>
+        <td style="font-weight:bold; color:${s.balance<=2?'#ef4444':'#059669'};">${s.balance}</td>
         <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
       </tr>`;
     });
@@ -2013,28 +1991,8 @@
   function printTargetSection(targetId, title) {
     const el = document.getElementById(targetId);
     if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
-
     const printWin = window.open('', '', 'width=850,height=700');
-    printWin.document.write(`
-      <html>
-        <head>
-          <title>${title}</title>
-          <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
-            h2 { font-size: 15px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
-            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
-            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
-            th { background: #edf2f7; font-weight: bold; }
-          </style>
-        </head>
-        <body>
-          <h2>${title}</h2>
-          <div class="date-stamp">Generated on: ${new Date().toLocaleString('en-GB')}</div>
-          ${el.innerHTML}
-        </body>
-      </html>
-    `);
+    printWin.document.write(`<html><head><title>${title}</title><style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ccc;padding:6px;font-size:11px;}</style></head><body><h2>${title}</h2>${el.innerHTML}</body></html>`);
     printWin.document.close();
     printWin.focus();
     setTimeout(() => { printWin.print(); printWin.close(); }, 350);
@@ -2043,20 +2001,18 @@
   async function hardRefreshData(section) {
     const notify = document.getElementById("msg");
     notify.innerText = `🔄 Reloading fresh ${section} data...`;
-    notify.style.color = "#3182ce";
-
+    notify.style.color = "var(--primary)";
     await fetchMasterData();
     if (section === 'Stock') await loadSummary();
     if (section === 'Ledger') await loadLedger();
     if (section === 'Closing') await loadClosing();
     if (section === 'Orders') await loadOrders();
-
     notify.innerText = `✅ ${section} Refreshed Live!`;
-    notify.style.color = "#2f855a";
+    notify.style.color = "#059669";
     setTimeout(() => { notify.innerText = ""; }, 2000);
   }
 
-  // 16. Initial Master Data Fetch
+  // 16. Master Data Fetch & Cache Flushing
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -2072,24 +2028,21 @@
             companySet.add(v.company);
           });
         }
-
         renderProductDropdown();
         renderVehicleDropdown();
-        document.getElementById("syncText").innerText = "Sheets Synced Online";
+        renderDashboard();
       }
     } catch (e) {
       renderProductDropdown();
       renderVehicleDropdown();
-      document.getElementById("syncText").innerText = "Running (Cached)";
     }
   }
 
-  // 17. Startup Execution (Cache-Flusher)
+  // 17. Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     document.getElementById("daybookDate").value = new Date().toISOString().split('T')[0];
 
-    // Auto-Flush purana cache agar naya version deploy hua ho
     const savedVer = localStorage.getItem("APP_CACHE_TAG");
     if (savedVer !== CACHE_VERSION) {
       localStorage.removeItem("CACHED_PROD_LIST");
@@ -2107,12 +2060,11 @@
     renderProductDropdown();
     renderVehicleDropdown();
     populateSupplierDropdowns();
-    renderRecentEntries();
-    switchTab('IN');
+    switchTab('DASH'); // Start on Live Executive Dashboard
 
     fetchMasterData();
     loadSummary(true);
-    loadLedger(true);
+    loadLedger();
   });
 </script>
 </body>
