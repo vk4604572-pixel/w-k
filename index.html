@@ -167,6 +167,16 @@
       justify-content: space-between;
       align-items: center;
     }
+    
+    .item-truncate {
+      display: inline-block;
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -179,11 +189,11 @@
       <span id="rateModeBadge" class="rate-badge">Executive Dashboard</span>
     </div>
     <div class="brand-status">
-      ⚡ <span id="syncText">0ms Fast Direct Mode</span>
+      ⚡ <span id="syncText">Sheets Synced Online</span>
     </div>
   </div>
 
-  <!-- Modern Pill Tabs with Dashboard Tab First -->
+  <!-- Modern Pill Tabs -->
   <div class="tab-header">
     <button class="tab-btn active" id="tabDashBtn" onclick="switchTab('DASHBOARD')">📊 Dashboard</button>
     <button class="tab-btn" id="tabInBtn" onclick="switchTab('IN')">📥 Stock In</button>
@@ -210,8 +220,8 @@
       </div>
       <div class="kpi-card kpi-card-unit">
         <div class="kpi-title">Active Machinery</div>
-        <div class="kpi-val" id="dashActiveFleet">11 Units</div>
-        <div class="kpi-sub">7 Machine Models</div>
+        <div class="kpi-val" id="dashActiveFleet">0 Machines</div>
+        <div class="kpi-sub">Sheet Registered</div>
       </div>
       <div class="kpi-card kpi-card-due">
         <div class="kpi-title">Supplier Balance Due</div>
@@ -240,28 +250,29 @@
       </div>
     </div>
 
-    <!-- Critical Low Stock Alerts -->
+    <!-- Critical Low Stock Alerts (Truncated + 4 Items Max by Default) -->
     <div class="dash-section-box">
       <div class="dash-section-title">
-        <span style="color:#c53030;">⚠️ Critical Re-Order Alerts (Low In-Hand Stock)</span>
+        <span style="color:#c53030;">⚠️ Critical Low Stock (<span id="lowStockCountBadge">0</span> Items)</span>
         <button type="button" onclick="switchTab('ORDER')" style="font-size:9.5px; border:none; background:none; color:#2b6cb0; font-weight:bold; cursor:pointer;">Draft PO ➔</button>
       </div>
       <table class="custom-table" style="margin-top:4px;">
         <thead>
           <tr>
             <th>Part / Cheat Code</th>
-            <th>Balance In-Hand</th>
-            <th>Min Safe Qty</th>
+            <th>In-Hand</th>
+            <th>Min</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody id="dashLowStockTableBody">
         </tbody>
       </table>
+      <button type="button" id="dashLowStockSeeMoreBtn" class="btn-see-more" style="display:none; margin-top:6px; padding:5px;" onclick="toggleDashLowStockSeeMore()">👁️ See More Alerts</button>
     </div>
   </div>
 
-  <!-- ==================== 2. MAIN VOUCHER ENTRY FORM (STOCK IN / OUT) ==================== -->
+  <!-- ==================== 2. MAIN VOUCHER ENTRY FORM ==================== -->
   <form id="stockForm" style="display:none;">
     <div class="form-group">
       <label>Date & Time</label>
@@ -276,7 +287,6 @@
       </div>
     </div>
 
-    <!-- Product with Arrow-Key Navigation Search & ➕ Button -->
     <div class="form-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -308,7 +318,6 @@
       <input type="text" id="hsnInput" placeholder="Auto filled">
     </div>
 
-    <!-- Quantity & Units -->
     <div class="form-group">
       <label>Quantity & Unit</label>
       <div class="qty-stepper-row">
@@ -325,7 +334,6 @@
       </div>
     </div>
 
-    <!-- Rate (Purchase Rate vs Sell Rate) -->
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
       <div class="form-group">
         <label id="rateLabel">Purchase Rate (₹)</label>
@@ -337,7 +345,6 @@
       </div>
     </div>
 
-    <!-- Stock In Specific -->
     <div id="paymentGroup" class="form-group">
       <label>Payment Tracking (Purchase Paid)</label>
       <div style="display:flex; gap:8px;">
@@ -346,7 +353,7 @@
       </div>
     </div>
 
-    <!-- Supplier Dropdown with ➕ Button -->
+    <!-- Supplier Dropdown with ➕ Button (Strictly from Sheet / User Added) -->
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
       <div style="display:flex; gap:6px;">
@@ -357,21 +364,20 @@
       </div>
     </div>
 
-    <!-- Stock Out Specific: Machine with ➕ Button -->
+    <!-- Machine Dropdown (Strictly From Google Sheets / User Added) -->
     <div class="form-group hidden" id="vehicleGroup">
-      <label>Vehicle / Machine Number (All Units & Models)</label>
+      <label>Vehicle / Machine Number</label>
       <div style="display:flex; gap:6px;">
         <select id="vehicleSelect" onchange="onVehicleSelect(this.value)" style="flex:1;">
-          <option value="">-- Select Machine --</option>
+          <option value="">-- Select Machine (Loading from Sheet...) --</option>
         </select>
         <button type="button" class="btn-add-veh" onclick="openAddVehicleModal()" title="Add New Machine">➕</button>
       </div>
       <div id="nextServiceBanner" class="service-alert-banner hidden" style="margin-top:6px;">
-        <span>⏳ Model: <b id="modelBannerText">-</b> | Next Recommended: <b id="nextServiceReading">500 / 1000 Hrs</b></span>
+        <span>⏳ Selected: <b id="modelBannerText">-</b> | Service Due: <b id="nextServiceReading">500 / 1000 Hrs</b></span>
       </div>
     </div>
 
-    <!-- Company with ➕ Button (Open for both companies) -->
     <div class="form-group hidden" id="companyGroup">
       <label>Company</label>
       <div style="display:flex; gap:6px;">
@@ -423,7 +429,7 @@
     </table>
   </div>
 
-  <!-- ==================== 3. DAYBOOK TAB ==================== -->
+  <!-- ==================== 3. DAYBOOK TAB (ZERO FAKE DATA) ==================== -->
   <div class="view-box" id="daybookView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">📅 KANPA STORE - Daily Daybook</h3>
@@ -567,29 +573,16 @@
   </div>
 </div>
 
-<!-- Modal 2: Quick Add Vehicle / Machine -->
+<!-- Modal 2: Quick Add Vehicle / Machine (Direct to Excel) -->
 <div class="modal" id="addVehicleModal">
   <div class="modal-content" style="max-width:360px;">
-    <h3 style="margin-top:0; font-size:14px; color:#3182ce;">➕ Add New Machine Unit</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#3182ce;">➕ Add New Machine</h3>
     <div class="form-group">
-      <label>Select Machine Model / Type</label>
-      <select id="newVehModelSelect">
-        <option value="SUPER-210">SUPER-210</option>
-        <option value="SUPER-200">SUPER-200</option>
-        <option value="ZAXIS-220">ZAXIS-220</option>
-        <option value="SANY-215">SANY-215</option>
-        <option value="JCB-215">JCB-215</option>
-        <option value="XCMG-230">XCMG-230</option>
-        <option value="ZAXIS-140">ZAXIS-140</option>
-        <option value="HYVA / DUMPER">HYVA / DUMPER</option>
-      </select>
+      <label>Machine / Vehicle Number</label>
+      <input type="text" id="newVehNumber" placeholder="e.g. SUPER-210 / BR01-1234" required>
     </div>
     <div class="form-group">
-      <label>Unit / Fleet / Reg Number</label>
-      <input type="text" id="newVehNumber" placeholder="e.g. SUPER-210 #03 / BR01-GA-1234" required>
-    </div>
-    <div class="form-group">
-      <label>Default Company Assignment</label>
+      <label>Company Assignment</label>
       <select id="newVehCompany"></select>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
@@ -787,60 +780,45 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
-  const CACHE_VERSION = "V9_DASHBOARD_LIVE_STABLE";
+  const CACHE_VERSION = "V11_STRICT_SHEET_DRIVEN";
 
-  // Clean Cheat Codes with DUAL PRICING
+  // Products Fallback
   const DEFAULT_FALLBACK_PRODUCTS = [
-    // Super-210 Prime
     { name: "S210-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "S210-500-ENG-DSL" },
     { name: "S210-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S210-500-AIR-FLT" },
     { name: "S210-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
     { name: "S-210-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
     { name: "S-210-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
-
-    // Super-200
     { name: "S200-500-ENG-DSL", unit: "Set", purchaseRate: 1150, sellRate: 1350, hsn: "8421", barcode: "S200-500-ENG-DSL" },
     { name: "S200-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S200-500-AIR-FLT" },
     { name: "S200-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
     { name: "S200-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-HYD-PLT" },
     { name: "S200-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
-
-    // ZAXIS-220
     { name: "Z220-500-ENG-DSL", unit: "Set", purchaseRate: 2800, sellRate: 3200, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
     { name: "Z220-500-AIR-FLT", unit: "Set", purchaseRate: 2900, sellRate: 3300, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
     { name: "Z220-1000-HYD-KIT", unit: "Set", purchaseRate: 5750, sellRate: 6500, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
     { name: "Z220-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
     { name: "Z220-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
-
-    // SANY-215
     { name: "S215-500-ENG-DSL", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "S215-500-ENG-DSL" },
     { name: "S215-500-AIR-FLT", unit: "Set", purchaseRate: 4300, sellRate: 4800, hsn: "8421", barcode: "S215-500-AIR-FLT" },
     { name: "S215-1000-HYD-KIT", unit: "Set", purchaseRate: 4600, sellRate: 5200, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
     { name: "S215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-HYD-PLT" },
     { name: "S215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
-
-    // JCB-215
     { name: "JCB215-500-ENG-DSL", unit: "Set", purchaseRate: 1780, sellRate: 2050, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
     { name: "JCB215-500-AIR-FLT", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
     { name: "JCB215-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
     { name: "JCB215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
     { name: "JCB215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
-
-    // XCMG-230
     { name: "XCMG230-500-ENG-DSL", unit: "Set", purchaseRate: 2450, sellRate: 2800, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
     { name: "XCMG230-500-AIR-FLT", unit: "Set", purchaseRate: 3200, sellRate: 3650, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
     { name: "XCMG230-1000-HYD-KIT", unit: "Set", purchaseRate: 4800, sellRate: 5400, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
     { name: "XCMG230-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
     { name: "XCMG230-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
-
-    // ZAXIS-140
     { name: "Z140-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
     { name: "Z140-500-AIR-FLT", unit: "Set", purchaseRate: 1200, sellRate: 1400, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
     { name: "Z140-1000-HYD-KIT", unit: "Set", purchaseRate: 2950, sellRate: 3400, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
     { name: "Z-140-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
     { name: "Z-140-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
-
-    // Oils & Grease
     { name: "CASTROL ENGINE OIL(Mobil) -210L", unit: "L", purchaseRate: 278, sellRate: 300, hsn: "2710", barcode: "CASTROL-210L" },
     { name: "PENSOL GEAR OIL", unit: "L", purchaseRate: 289, sellRate: 300, hsn: "2710", barcode: "PENSOL-GEAR-OIL" },
     { name: "PENSOL CHASSIS GREASE", unit: "Nos", purchaseRate: 3350, sellRate: 3500, hsn: "2710", barcode: "PENSOL-CHASSIS-GREASE" },
@@ -948,7 +926,7 @@
     ],
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
-      { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3650 },
+      { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
       { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
@@ -956,7 +934,7 @@
     ],
     "XCMG-230 (1000 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
-      { itemName: "XCMG230-500-AIR-FLT", qty: 1, rate: 3650 },
+      { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
       { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 5400 },
       { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
       { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
@@ -986,26 +964,12 @@
     ]
   };
 
-  // Fleet Units Mapped to Machine Models
-  const INITIAL_VEHICLE_FLEET = [
-    { vehicleNo: "SUPER-210 #01", model: "SUPER-210", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "SUPER-210 #02", model: "SUPER-210", company: "COMRAO PVT. LTD" },
-    { vehicleNo: "SUPER-200 #01", model: "SUPER-200", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "SUPER-200 #02", model: "SUPER-200", company: "COMRAO PVT. LTD" },
-    { vehicleNo: "ZAXIS-220 #01", model: "ZAXIS-220", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "ZAXIS-220 #02", model: "ZAXIS-220", company: "COMRAO PVT. LTD" },
-    { vehicleNo: "SANY-215 #01", model: "SANY-215", company: "COMRAO PVT. LTD" },
-    { vehicleNo: "SANY-215 #02", model: "SANY-215", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "JCB-215 #01", model: "JCB-215", company: "COMRAO PVT. LTD" },
-    { vehicleNo: "XCMG-230 #01", model: "XCMG-230", company: "GOKULESHWAR RD PVT. LTD" },
-    { vehicleNo: "ZAXIS-140 #01", model: "ZAXIS-140", company: "COMRAO PVT. LTD" }
-  ];
-
   let currentTab = "DASHBOARD";
   let productList = [];
+  
+  // STRICTLY SHEET-DRIVEN VEHICLES & SUPPLIERS (No hardcoded fake lists)
   let vehicleMap = new Map();
   let companySet = new Set(["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"]);
-  
   let supplierSet = new Set();
   let supplierItemsMap = {};
   
@@ -1013,9 +977,10 @@
   let closingData = [];
   let ledgerData = [];
   let poData = [];
-  let daybookTransactions = [];
+  let daybookTransactions = []; // STRICTLY USER/SHEET DRIVEN
 
   let isStockExpanded = false;
+  let isDashLowStockExpanded = false;
   let pendingTab = "";
   let isAuthenticated = false;
   let activeSelectedLedgerParty = "";
@@ -1070,24 +1035,25 @@
     if (sel) sel.innerHTML = mainHtml;
   }
 
+  // Strictly Sheet Driven Vehicle Dropdown
   function renderVehicleDropdown() {
     const vSel = document.getElementById("vehicleSelect");
     const fSel = document.getElementById("closingVehFilter");
     if (!vSel || !fSel) return;
 
-    if (vehicleMap.size === 0) {
-      INITIAL_VEHICLE_FLEET.forEach(v => {
-        vehicleMap.set(v.vehicleNo, { company: v.company, model: v.model });
-        companySet.add(v.company);
-      });
+    const vKeys = Array.from(vehicleMap.keys()).sort();
+
+    if (vKeys.length === 0) {
+      vSel.innerHTML = '<option value="">-- No Machines in Sheet (Use ➕ to Add) --</option>';
+      fSel.innerHTML = '<option value="">-- All Machines --</option>';
+      return;
     }
 
-    let html = '<option value="">-- Select Machine Unit --</option>';
+    let html = '<option value="">-- Select Machine --</option>';
     let fHtml = '<option value="">-- All Machines --</option>';
 
-    Array.from(vehicleMap.keys()).sort().forEach(v => {
-      const info = vehicleMap.get(v);
-      html += `<option value="${v}">${v} [${info.model}]</option>`;
+    vKeys.forEach(v => {
+      html += `<option value="${v}">${v}</option>`;
       fHtml += `<option value="${v}">${v}</option>`;
     });
 
@@ -1144,18 +1110,21 @@
     const modelText = document.getElementById("modelBannerText");
     const compIn = document.getElementById("companyInput");
 
-    if (!vNo || !vehicleMap.has(vNo)) {
+    if (!vNo) {
       if (banner) banner.classList.add("hidden");
       return;
     }
 
-    const info = vehicleMap.get(vNo);
-    if (compIn && info.company) compIn.value = info.company;
-    if (modelText) modelText.innerText = info.model || "Universal";
+    if (vehicleMap.has(vNo)) {
+      const vObj = vehicleMap.get(vNo);
+      if (vObj && vObj.company && compIn) compIn.value = vObj.company;
+    }
+
+    if (modelText) modelText.innerText = vNo;
     if (banner) banner.classList.remove("hidden");
   }
 
-  // 3. Live Fuzzy Search with Arrow Keys (Main Form)
+  // 3. Live Fuzzy Search with Arrow Keys
   function handleSearchInput(query) {
     const q = (query || "").toLowerCase().trim();
     const box = document.getElementById("recommendationsBox");
@@ -1269,7 +1238,7 @@
     calculateTotal();
   }
 
-  // 5. Fixed Tab Switching & Form Field Management
+  // 5. Tab Switching
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -1370,7 +1339,7 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 6. Camera Scanner Lifecycle Fix
+  // 6. Camera Scanner Lifecycle
   function openScannerModal(targetInputId) {
     currentScanTargetId = targetInputId || "barcodeInput";
     document.getElementById("scannerModal").style.display = "flex";
@@ -1414,7 +1383,7 @@
     document.getElementById("scannerModal").style.display = "none";
   }
 
-  // 7. Executive Dashboard Logic
+  // 7. Executive Dashboard Logic (Truncated + 4 Items Max + See More)
   function renderDashboard() {
     if (!summaryData || summaryData.length === 0) initDefaultSummary();
 
@@ -1423,17 +1392,17 @@
     document.getElementById("dashSKUs").innerText = summaryData.length + " Catalog Items";
 
     const todayStr = new Date().toISOString().split('T')[0];
-    const todayIssues = daybookTransactions.filter(d => (d.type === "ISSUE" || (d.category && d.category.includes("OUT"))) && (!d.date || d.date === todayStr));
+    const todayIssues = daybookTransactions.filter(d => (d.type === "ISSUE" || (d.category && d.category.includes("OUT"))) && d.date === todayStr);
     const todayIssuedAmt = todayIssues.reduce((a,b) => a + Number(b.amount || 0), 0);
     document.getElementById("dashTodayIssued").innerText = "₹" + todayIssuedAmt.toLocaleString('en-IN');
     document.getElementById("dashIssueEntries").innerText = todayIssues.length + " Issue entries today";
 
-    document.getElementById("dashActiveFleet").innerText = vehicleMap.size + " Units";
+    document.getElementById("dashActiveFleet").innerText = vehicleMap.size + " Machines";
 
     const totalDue = ledgerData.reduce((acc, l) => acc + ((l.dr || 0) - (l.cr || 0)), 0);
     document.getElementById("dashSupplierDue").innerText = "₹" + Math.max(0, totalDue).toLocaleString('en-IN');
 
-    // Machine-wise Spend Breakdown
+    // Machine Spend Matrix
     const spendMap = {};
     daybookTransactions.forEach(d => {
       if ((d.type === "ISSUE" || (d.category && d.category.includes("OUT"))) && d.entity) {
@@ -1445,7 +1414,7 @@
     let spendHtml = "";
     const spendKeys = Object.keys(spendMap);
     if (spendKeys.length === 0) {
-      spendHtml = `<div style="font-size:10.5px; color:#718096; padding:4px;">Abhi koi machine issue log nahi hua hai.</div>`;
+      spendHtml = `<div style="font-size:10.5px; color:#718096; padding:4px;">Koi machine issue record nahi hai.</div>`;
     } else {
       spendKeys.sort().forEach(veh => {
         spendHtml += `
@@ -1457,39 +1426,45 @@
     }
     spendGrid.innerHTML = spendHtml;
 
-    // Critical Low Stock Alerts
+    // Critical Low Stock Alerts (Truncated to 22 chars + 4 Items Max)
     const lowStockBody = document.getElementById("dashLowStockTableBody");
     const lowItems = summaryData.filter(s => s.balance <= 3);
+    document.getElementById("lowStockCountBadge").innerText = lowItems.length;
+
+    const itemsToDisplay = isDashLowStockExpanded ? lowItems : lowItems.slice(0, 4);
+
     let lowHtml = "";
     if (lowItems.length === 0) {
       lowHtml = `<tr><td colspan="4" style="text-align:center; color:#2f855a; font-weight:bold;">✅ Sabhi items safe stock level par hain!</td></tr>`;
+      document.getElementById("dashLowStockSeeMoreBtn").style.display = "none";
     } else {
-      lowItems.forEach(item => {
+      itemsToDisplay.forEach(item => {
+        const shortName = item.item.length > 22 ? item.item.substring(0, 20) + '..' : item.item;
         lowHtml += `<tr>
-          <td><b>${item.item}</b></td>
+          <td><span class="item-truncate" title="${item.item}"><b>${shortName}</b></span></td>
           <td style="color:#c53030; font-weight:bold;">${item.balance}</td>
           <td>3</td>
           <td><button type="button" onclick="switchTab('ORDER')" style="background:#3182ce; color:white; border:none; padding:2px 6px; border-radius:4px; font-size:9.5px; cursor:pointer;">Order</button></td>
         </tr>`;
       });
+
+      const seeMoreBtn = document.getElementById("dashLowStockSeeMoreBtn");
+      if (lowItems.length > 4) {
+        seeMoreBtn.style.display = "block";
+        seeMoreBtn.innerText = isDashLowStockExpanded ? "▲ Show Less Alerts" : `👁️ See More Alerts (+${lowItems.length - 4} More)`;
+      } else {
+        seeMoreBtn.style.display = "none";
+      }
     }
     lowStockBody.innerHTML = lowHtml;
   }
 
-  // 8. Daybook Logic
-  function initFallbackDaybook() {
-    const cached = getLocal("KANPA_DAYBOOK_DATA");
-    if (cached && cached.length > 0) {
-      daybookTransactions = cached;
-    } else {
-      daybookTransactions = [
-        { time: "10:15 AM", type: "ISSUE", category: "STOCK OUT", entity: "SUPER-210 #01", item: "CASTROL ENGINE OIL(Mobil) -210L", qty: "20 L", rate: 300, amount: 6000, date: new Date().toISOString().split('T')[0] },
-        { time: "02:30 PM", type: "ISSUE", category: "STOCK OUT", entity: "ZAXIS-220 #01", item: "SAVSOL HYDRAULIC OIL 46", qty: "26 L", rate: 205, amount: 5330, date: new Date().toISOString().split('T')[0] }
-      ];
-      saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
-    }
+  function toggleDashLowStockSeeMore() {
+    isDashLowStockExpanded = !isDashLowStockExpanded;
+    renderDashboard();
   }
 
+  // 8. Daybook Logic (Strictly User/Sheet Driven - Zero Fake Entries)
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1505,8 +1480,9 @@
       }
     } catch(e) {}
 
-    const filtered = daybookTransactions.filter(d => !d.date || d.date === dVal);
-    renderDaybookTable(filtered.length > 0 ? filtered : daybookTransactions);
+    // Only render what user actually logged locally for that date
+    const filtered = daybookTransactions.filter(d => d.date === dVal);
+    renderDaybookTable(filtered);
   }
 
   function renderDaybookTable(dataList) {
@@ -1517,7 +1493,7 @@
       </thead><tbody>`;
     
     if (!dataList || dataList.length === 0) {
-      html += `<tr><td colspan="7" style="text-align:center; color:#718096;">Is date par koi entry nahi hai.</td></tr>`;
+      html += `<tr><td colspan="7" style="text-align:center; color:#718096; padding:12px;">Is date par koi entry nahi hai.</td></tr>`;
     } else {
       dataList.forEach(r => {
         if (r.type === "PURCHASE" || (r.category && r.category.includes("IN"))) totIn += Number(r.amount || 0);
@@ -1545,7 +1521,7 @@
     document.getElementById("daybookPayAmt").innerText = "₹" + totPay.toLocaleString('en-IN');
   }
 
-  // 9. Stock Summary with "See More" Button
+  // 9. Stock Summary
   async function loadSummary(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
@@ -1619,7 +1595,7 @@
     renderSummaryTable();
   }
 
-  // 10. Popup Search Inside Modals (Service Modal & PO Modal)
+  // 10. Popup Search Inside Modals
   function handleExtraSearchInput(query) {
     const q = (query || "").toLowerCase().trim();
     const box = document.getElementById("extraRecBox");
@@ -1816,6 +1792,8 @@
     const rate = parseFloat(document.getElementById("rateInput").value) || 0;
     const target = currentTab === "IN" ? document.getElementById("partySelectInput").value : document.getElementById("vehicleSelect").value;
 
+    const todayStr = new Date().toISOString().split('T')[0];
+
     const payload = {
       type: currentTab,
       barcode: document.getElementById("barcodeInput").value,
@@ -1844,7 +1822,7 @@
       qty: `${qty} ${unit}`,
       rate: rate,
       amount: amt,
-      date: new Date().toISOString().split('T')[0]
+      date: todayStr
     });
     saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
 
@@ -1921,6 +1899,8 @@
     btn.disabled = true;
     btn.innerText = "Paying...";
 
+    const todayStr = new Date().toISOString().split('T')[0];
+
     daybookTransactions.unshift({
       time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
       type: "PAYMENT",
@@ -1930,7 +1910,7 @@
       qty: "-",
       rate: "-",
       amount: amount,
-      date: new Date().toISOString().split('T')[0]
+      date: todayStr
     });
     saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
 
@@ -2002,7 +1982,7 @@
 
     const keys = Object.keys(summaryMap).sort();
     if (keys.length === 0) {
-      html += `<tr><td colspan="5" style="text-align:center; color:#718096;">Koi supplier ledger entry nahi mili.</td></tr>`;
+      html += `<tr><td colspan="5" style="text-align:center; color:#718096; padding:12px;">Koi supplier ledger entry nahi mili.</td></tr>`;
     } else {
       for (const name of keys) {
         const item = summaryMap[name];
@@ -2117,7 +2097,7 @@
 
     const container = document.getElementById("closingContent");
     if (Object.keys(grouped).length === 0) {
-      container.innerHTML = "<p style='text-align:center; color:#718096;'>No records found.</p>";
+      container.innerHTML = "<p style='text-align:center; color:#718096; padding:12px;'>No records found.</p>";
       return;
     }
 
@@ -2209,6 +2189,7 @@
     btn.innerText = "Deducting from KANPA STORE...";
 
     const totalAmt = activeServiceParts.reduce((a,b)=>a+(b.rate*b.qty),0);
+    const todayStr = new Date().toISOString().split('T')[0];
 
     daybookTransactions.unshift({
       time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
@@ -2219,7 +2200,7 @@
       qty: "1 Full Kit",
       rate: totalAmt,
       amount: totalAmt,
-      date: new Date().toISOString().split('T')[0]
+      date: todayStr
     });
     saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
 
@@ -2349,7 +2330,7 @@
     let html = `<table class="custom-table">
       <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
     if (poData.length === 0) {
-      html += `<tr><td colspan="6" style="text-align:center; color:#718096;">Koi active purchase order nahi hai.</td></tr>`;
+      html += `<tr><td colspan="6" style="text-align:center; color:#718096; padding:12px;">Koi active purchase order nahi hai.</td></tr>`;
     } else {
       poData.forEach(o => {
         html += `<tr>
@@ -2373,7 +2354,7 @@
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   }
 
-  // 16. Quick Add Modals
+  // 16. Quick Add Modals (Direct to Sheet)
   function openAddSupplierModal() {
     document.getElementById("newSuppName").value = "";
     document.getElementById("addSupplierModal").style.display = "flex";
@@ -2408,15 +2389,20 @@
   function saveNewVehicleAction() {
     const vNum = document.getElementById("newVehNumber").value.trim().toUpperCase();
     const vComp = document.getElementById("newVehCompany").value;
-    const vModel = document.getElementById("newVehModelSelect").value;
-    if (!vNum) return alert("Kripya Machine / Unit Number daalein!");
+    if (!vNum) return alert("Kripya Machine Number daalein!");
 
-    vehicleMap.set(vNum, { company: vComp, model: vModel });
+    vehicleMap.set(vNum, { vehicleNo: vNum, company: vComp });
+    
+    // Save to local cache
+    let cachedVehicles = getLocal("KANPA_VEHICLES_LIST") || [];
+    cachedVehicles.push({ vehicleNo: vNum, company: vComp });
+    saveLocal("KANPA_VEHICLES_LIST", cachedVehicles);
+
     renderVehicleDropdown();
     document.getElementById("vehicleSelect").value = vNum;
     onVehicleSelect(vNum);
     playSuccessSound();
-    alert("✅ Nayi Machine Unit Add Ho Gayi!");
+    alert("✅ Nayi Machine Add Ho Gayi!");
     closeAddVehicleModal();
   }
 
@@ -2521,7 +2507,7 @@
     setTimeout(() => { notify.innerText = ""; }, 2000);
   }
 
-  // Master Data Initialization
+  // Master Data Initialization (Reads Vehicles and Suppliers directly from your Sheet)
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -2531,41 +2517,68 @@
           productList = data.products;
           saveLocal("KANPA_PROD_LIST", productList);
         }
+        if (data.vehicles && data.vehicles.length > 0) {
+          vehicleMap.clear();
+          data.vehicles.forEach(v => {
+            if (v.vehicleNo && v.vehicleNo.trim()) {
+              vehicleMap.set(v.vehicleNo.trim(), v);
+              if (v.company) companySet.add(v.company.trim());
+            }
+          });
+          saveLocal("KANPA_VEHICLES_LIST", Array.from(vehicleMap.values()));
+        }
         if (data.suppliers && data.suppliers.length > 0) {
+          supplierSet.clear();
           data.suppliers.forEach(s => { if(s && s.trim()) supplierSet.add(s.trim()); });
           saveLocal("KANPA_SUPPLIERS", Array.from(supplierSet));
         }
         document.getElementById("syncText").innerText = "Sheets Synced Online";
       }
     } catch (e) {
-      document.getElementById("syncText").innerText = "Running (0ms Local Mode)";
+      document.getElementById("syncText").innerText = "Running (Offline/Local Cache)";
     }
     renderProductDropdown();
     renderVehicleDropdown();
     populateSupplierDropdowns();
   }
 
-  // Startup Execution (Runs seamlessly on load)
+  // Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     document.getElementById("daybookDate").value = new Date().toISOString().split('T')[0];
 
+    // Auto-Flush fake preloads
     const savedVer = localStorage.getItem("APP_CACHE_TAG");
     if (savedVer !== CACHE_VERSION) {
       localStorage.removeItem("KANPA_SUPPLIERS");
       localStorage.removeItem("KANPA_DAYBOOK_DATA");
+      localStorage.removeItem("KANPA_VEHICLES_LIST");
       localStorage.setItem("APP_CACHE_TAG", CACHE_VERSION);
     }
 
     const cached = getLocal("KANPA_PROD_LIST");
     if (cached && cached.length > 0) productList = cached;
 
+    // Load actual cached vehicles if present
+    const cachedVehicles = getLocal("KANPA_VEHICLES_LIST");
+    if (cachedVehicles && Array.isArray(cachedVehicles)) {
+      cachedVehicles.forEach(v => {
+        if (v.vehicleNo) vehicleMap.set(v.vehicleNo, v);
+      });
+    }
+
     const cachedSuppliers = getLocal("KANPA_SUPPLIERS");
     if (cachedSuppliers && cachedSuppliers.length > 0) {
       cachedSuppliers.forEach(s => { if (s && s.trim()) supplierSet.add(s.trim()); });
     }
 
-    initFallbackDaybook();
+    const cachedDaybook = getLocal("KANPA_DAYBOOK_DATA");
+    if (cachedDaybook && Array.isArray(cachedDaybook)) {
+      daybookTransactions = cachedDaybook;
+    } else {
+      daybookTransactions = [];
+    }
+
     initDefaultSummary();
     renderProductDropdown();
     renderVehicleDropdown();
