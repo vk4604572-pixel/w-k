@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KANPA STORE - Inventory</title>
+  <title>KANPA STORE - Fleet & Inventory</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
@@ -176,7 +176,7 @@
   <div class="brand-bar">
     <div class="brand-title">
       🏪 KANPA STORE
-      <span id="rateModeBadge" class="rate-badge rate-buy">Mode: Purchase (Stock In)</span>
+      <span id="rateModeBadge" class="rate-badge">Executive Dashboard</span>
     </div>
     <div class="brand-status">
       ⚡ <span id="syncText">0ms Fast Direct Mode</span>
@@ -220,7 +220,7 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- Quick Shortcuts -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <span style="font-size:11px; font-weight:700; color:#2b6cb0;">⚡ Fast Shortcuts</span>
       <div style="display:flex; gap:6px;">
@@ -237,7 +237,6 @@
         <button type="button" onclick="switchTab('CLOSING')" style="font-size:9.5px; border:none; background:none; color:#2b6cb0; font-weight:bold; cursor:pointer;">View Detailed Report ➔</button>
       </div>
       <div id="dashFleetSpendGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:6px;">
-        <!-- Filled dynamically -->
       </div>
     </div>
 
@@ -257,7 +256,6 @@
           </tr>
         </thead>
         <tbody id="dashLowStockTableBody">
-          <!-- Filled dynamically -->
         </tbody>
       </table>
     </div>
@@ -348,7 +346,7 @@
       </div>
     </div>
 
-    <!-- Supplier Dropdown with ➕ Button (Strictly from Sheet / User Added) -->
+    <!-- Supplier Dropdown with ➕ Button -->
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
       <div style="display:flex; gap:6px;">
@@ -474,7 +472,7 @@
     </div>
   </div>
 
-  <!-- ==================== 5. STOCK SUMMARY TAB (WITH "SEE MORE" TOGGLE) ==================== -->
+  <!-- ==================== 5. STOCK SUMMARY TAB ==================== -->
   <div class="view-box" id="summaryView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">Live Inventory Stock (KANPA STORE)</h3>
@@ -717,14 +715,13 @@
   </div>
 </div>
 
-<!-- Modal 8: Service Hours Checklist (With Live Search Inside) -->
+<!-- Modal 8: Service Hours Checklist -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2b6cb0;" id="serviceModalTitle">Service Hours Checklist</h3>
     <p style="font-size:11px; color:#718096; margin-bottom:8px;">Yeh parts machine ke account se auto-deduct honge:</p>
     <div id="serviceItemsList"></div>
     
-    <!-- Add Extra Part with Live Fuzzy Search & Arrow Keys -->
     <div style="margin-top:10px; padding:8px; background:#f7fafc; border-radius:8px; border:1px dashed #cbd5e0;">
       <label style="font-size:10px; font-weight:bold;">➕ Search & Add Extra Part / Oil:</label>
       <div style="position:relative; margin-top:4px;">
@@ -765,7 +762,6 @@
       </div>
       <div id="poItemList" style="max-height:160px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px; padding:6px; margin-bottom:10px;"></div>
       
-      <!-- PO Search for any product -->
       <div style="padding:8px; background:#f7fafc; border:1px dashed #cbd5e0; border-radius:7px; margin-bottom:10px; position:relative;">
         <label style="font-size:10.5px; font-weight:bold;">➕ Search & Add Any Product:</label>
         <div style="display:flex; gap:6px; margin-top:4px;">
@@ -791,7 +787,7 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
-  const CACHE_VERSION = "V7_DASHBOARD_KANPA";
+  const CACHE_VERSION = "V9_DASHBOARD_LIVE_STABLE";
 
   // Clean Cheat Codes with DUAL PRICING
   const DEFAULT_FALLBACK_PRODUCTS = [
@@ -1010,7 +1006,6 @@
   let vehicleMap = new Map();
   let companySet = new Set(["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"]);
   
-  // Clean: No fake/dummy suppliers
   let supplierSet = new Set();
   let supplierItemsMap = {};
   
@@ -1274,7 +1269,7 @@
     calculateTotal();
   }
 
-  // 5. Tab Switching
+  // 5. Fixed Tab Switching & Form Field Management
   function switchTab(type) {
     if ((type === "CLOSING" || type === "LEDGER") && !isAuthenticated) {
       pendingTab = type;
@@ -1286,11 +1281,14 @@
     currentTab = type;
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".view-box").forEach(v => v.style.display = "none");
-    document.getElementById("stockForm").style.display = "none";
-    document.getElementById("recentEntriesSection").style.display = (type === "IN" || type === "OUT") ? "block" : "none";
-
+    
+    const stockForm = document.getElementById("stockForm");
+    const recentSec = document.getElementById("recentEntriesSection");
     const badge = document.getElementById("rateModeBadge");
     const rateLbl = document.getElementById("rateLabel");
+
+    stockForm.style.display = "none";
+    recentSec.style.display = "none";
 
     if (type === "DASHBOARD") {
       document.getElementById("dashboardView").style.display = "block";
@@ -1301,7 +1299,8 @@
       badge.style.color = "#2d3748";
       renderDashboard();
     } else if (type === "IN") {
-      document.getElementById("stockForm").style.display = "block";
+      stockForm.style.display = "block";
+      recentSec.style.display = "block";
       document.getElementById("tabInBtn").classList.add("active");
       badge.innerText = "Mode: Purchase (Stock In)";
       badge.className = "rate-badge rate-buy";
@@ -1309,7 +1308,8 @@
       toggleFormFields(true);
       refreshSelectedProductRate();
     } else if (type === "OUT") {
-      document.getElementById("stockForm").style.display = "block";
+      stockForm.style.display = "block";
+      recentSec.style.display = "block";
       document.getElementById("tabOutBtn").classList.add("active");
       badge.innerText = "Mode: Sell / Issue (Stock Out)";
       badge.className = "rate-badge rate-sell";
@@ -1416,26 +1416,24 @@
 
   // 7. Executive Dashboard Logic
   function renderDashboard() {
-    // 1. Valuation & Stock Items
+    if (!summaryData || summaryData.length === 0) initDefaultSummary();
+
     const totalVal = summaryData.reduce((a,b) => a + (b.totalValue || 0), 0);
     document.getElementById("dashValuation").innerText = "₹" + totalVal.toLocaleString('en-IN');
     document.getElementById("dashSKUs").innerText = summaryData.length + " Catalog Items";
 
-    // 2. Today's Issue Total
     const todayStr = new Date().toISOString().split('T')[0];
     const todayIssues = daybookTransactions.filter(d => (d.type === "ISSUE" || (d.category && d.category.includes("OUT"))) && (!d.date || d.date === todayStr));
     const todayIssuedAmt = todayIssues.reduce((a,b) => a + Number(b.amount || 0), 0);
     document.getElementById("dashTodayIssued").innerText = "₹" + todayIssuedAmt.toLocaleString('en-IN');
     document.getElementById("dashIssueEntries").innerText = todayIssues.length + " Issue entries today";
 
-    // 3. Active Fleet Count
     document.getElementById("dashActiveFleet").innerText = vehicleMap.size + " Units";
 
-    // 4. Supplier Due
     const totalDue = ledgerData.reduce((acc, l) => acc + ((l.dr || 0) - (l.cr || 0)), 0);
     document.getElementById("dashSupplierDue").innerText = "₹" + Math.max(0, totalDue).toLocaleString('en-IN');
 
-    // 5. Machine-wise Spend Breakdown
+    // Machine-wise Spend Breakdown
     const spendMap = {};
     daybookTransactions.forEach(d => {
       if ((d.type === "ISSUE" || (d.category && d.category.includes("OUT"))) && d.entity) {
@@ -1459,7 +1457,7 @@
     }
     spendGrid.innerHTML = spendHtml;
 
-    // 6. Low Stock Alerts
+    // Critical Low Stock Alerts
     const lowStockBody = document.getElementById("dashLowStockTableBody");
     const lowItems = summaryData.filter(s => s.balance <= 3);
     let lowHtml = "";
@@ -1471,7 +1469,7 @@
           <td><b>${item.item}</b></td>
           <td style="color:#c53030; font-weight:bold;">${item.balance}</td>
           <td>3</td>
-          <td><button onclick="switchTab('ORDER')" style="background:#3182ce; color:white; border:none; padding:2px 6px; border-radius:4px; font-size:9.5px; cursor:pointer;">Order</button></td>
+          <td><button type="button" onclick="switchTab('ORDER')" style="background:#3182ce; color:white; border:none; padding:2px 6px; border-radius:4px; font-size:9.5px; cursor:pointer;">Order</button></td>
         </tr>`;
       });
     }
@@ -1664,4 +1662,923 @@
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       extraRecIndex = (extraRecIndex - 1) < 0 ? max - 1 : extraRecIndex - 1;
-      updateHighlight("extra
+      updateHighlight("extraRec_", max, extraRecIndex);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (extraRecIndex >= 0 && extraRecIndex < max) {
+        selectExtraSearchItem(extraFilteredMatches[extraRecIndex].name);
+      }
+    } else if (e.key === "Escape") {
+      box.style.display = "none";
+    }
+  }
+
+  function selectExtraSearchItem(itemName) {
+    document.getElementById("extraSearchInput").value = itemName;
+    document.getElementById("extraRecBox").style.display = "none";
+  }
+
+  function addSelectedExtraItem() {
+    const itm = document.getElementById("extraSearchInput").value.trim();
+    const qty = parseFloat(document.getElementById("extraPartQty").value) || 1;
+    if (!itm) return alert("Pehle Extra Part search karke select karein!");
+
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === itm);
+
+    activeServiceParts.push({
+      itemName: itm,
+      qty: qty,
+      rate: prod ? (prod.sellRate || prod.purchaseRate) : 0,
+      unit: prod ? prod.unit : "Nos"
+    });
+
+    document.getElementById("extraSearchInput").value = "";
+    document.getElementById("extraRecBox").style.display = "none";
+    openServiceModal();
+  }
+
+  function handlePoSearchInput(query) {
+    const q = (query || "").toLowerCase().trim();
+    const box = document.getElementById("poRecBox");
+    poRecIndex = -1;
+    poFilteredMatches = [];
+
+    if (!q || q.length < 2) { box.style.display = "none"; return; }
+
+    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    items.forEach(p => {
+      if (p.name.toLowerCase().includes(q)) poFilteredMatches.push(p);
+    });
+
+    if (poFilteredMatches.length === 0) {
+      box.innerHTML = `<div style="padding:6px; font-size:10.5px; color:#718096;">Product nahi mila...</div>`;
+      box.style.display = "block";
+      return;
+    }
+
+    let html = "";
+    poFilteredMatches.slice(0, 6).forEach((p, idx) => {
+      html += `<div class="recommendation-item" id="poRec_${idx}" onclick="selectPoSearchItem('${p.name.replace(/'/g, "\\'")}')">
+        <span><b>${p.name}</b></span>
+        <span class="rec-tag rec-tag-part">₹${p.purchaseRate}</span>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.style.display = "block";
+  }
+
+  function handlePoSearchKeydown(e) {
+    const box = document.getElementById("poRecBox");
+    if (box.style.display !== "block" || poFilteredMatches.length === 0) return;
+    const max = Math.min(poFilteredMatches.length, 6);
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      poRecIndex = (poRecIndex + 1) >= max ? 0 : poRecIndex + 1;
+      updateHighlight("poRec_", max, poRecIndex);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      poRecIndex = (poRecIndex - 1) < 0 ? max - 1 : poRecIndex - 1;
+      updateHighlight("poRec_", max, poRecIndex);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (poRecIndex >= 0 && poRecIndex < max) {
+        selectPoSearchItem(poFilteredMatches[poRecIndex].name);
+      }
+    } else if (e.key === "Escape") {
+      box.style.display = "none";
+    }
+  }
+
+  function selectPoSearchItem(name) {
+    document.getElementById("poSearchInput").value = name;
+    document.getElementById("poRecBox").style.display = "none";
+  }
+
+  function addSelectedPoSearchItem() {
+    const itm = document.getElementById("poSearchInput").value.trim();
+    const qty = parseFloat(document.getElementById("poOtherProductQty").value) || 1;
+    if (!itm) return alert("Pehle item search karein!");
+
+    const itemsToSearch = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = itemsToSearch.find(p => p.name === itm);
+    const rate = prod ? prod.purchaseRate : 0;
+    const curStock = summaryData.find(s => s.item === itm);
+    const left = curStock ? curStock.balance : 0;
+
+    const container = document.getElementById("poItemList");
+    const newRow = document.createElement("div");
+    newRow.className = "po-item-row";
+    newRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;";
+    newRow.innerHTML = `
+      <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" checked> <b>${itm}</b> (${left} left)</label>
+      <input type="number" class="po-qty" value="${qty}" style="width:50px; padding:2px; font-size:10.5px;">
+    `;
+    container.appendChild(newRow);
+
+    document.getElementById("poSearchInput").value = "";
+    document.getElementById("poRecBox").style.display = "none";
+  }
+
+  // 11. Form Submissions & Calculations
+  function calculateTotal() {
+    const q = parseFloat(document.getElementById("qtyInput").value) || 0;
+    const r = parseFloat(document.getElementById("rateInput").value) || 0;
+    document.getElementById("totalAmountInput").value = (q * r).toFixed(2);
+    calculateDue();
+  }
+
+  function calculateDue() {
+    const tot = parseFloat(document.getElementById("totalAmountInput").value) || 0;
+    const paid = parseFloat(document.getElementById("paidAmountInput").value) || 0;
+    document.getElementById("dueAmountInput").value = (tot - paid).toFixed(2);
+  }
+
+  function stepQty(c) {
+    const q = document.getElementById("qtyInput");
+    let val = (parseFloat(q.value) || 1) + c;
+    if (val < 0.1) val = 0.1;
+    q.value = val;
+    calculateTotal();
+  }
+
+  document.getElementById("stockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving to KANPA STORE...";
+
+    const itm = document.getElementById("productSelect").value;
+    const qty = document.getElementById("qtyInput").value;
+    const unit = document.getElementById("unitSelect").value;
+    const amt = parseFloat(document.getElementById("totalAmountInput").value) || 0;
+    const rate = parseFloat(document.getElementById("rateInput").value) || 0;
+    const target = currentTab === "IN" ? document.getElementById("partySelectInput").value : document.getElementById("vehicleSelect").value;
+
+    const payload = {
+      type: currentTab,
+      barcode: document.getElementById("barcodeInput").value,
+      itemName: itm,
+      hsn: document.getElementById("hsnInput").value,
+      qty: qty,
+      unit: unit,
+      rate: rate,
+      totalAmount: amt,
+      paidAmount: document.getElementById("paidAmountInput").value || 0,
+      dueAmount: document.getElementById("dueAmountInput").value || 0,
+      partyName: document.getElementById("partySelectInput").value,
+      vehicleNo: document.getElementById("vehicleSelect").value,
+      companyName: document.getElementById("companyInput").value,
+      kmReading: document.getElementById("kmInput").value,
+      driverName: document.getElementById("driverInput").value,
+      remarks: document.getElementById("remarksInput").value
+    };
+
+    daybookTransactions.unshift({
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      type: currentTab === "IN" ? "PURCHASE" : "ISSUE",
+      category: currentTab === "IN" ? "STOCK IN" : "STOCK OUT",
+      entity: target || "Direct Store",
+      item: itm,
+      qty: `${qty} ${unit}`,
+      rate: rate,
+      amount: amt,
+      date: new Date().toISOString().split('T')[0]
+    });
+    saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
+
+    try {
+      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+      const data = await res.json();
+      playSuccessSound();
+      alert("✅ KANPA STORE: " + (data.message || "Entry Successfully Saved!"));
+    } catch(err) {
+      playSuccessSound();
+      alert("✅ Entry locally recorded in KANPA STORE!");
+    } finally {
+      addRecentEntry(currentTab, target, itm, `${qty} ${unit}`, amt);
+      document.getElementById("stockForm").reset();
+      document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
+      btn.disabled = false;
+      btn.innerText = "Save Entry to KANPA STORE";
+    }
+  });
+
+  // Recent Entries Logger
+  function addRecentEntry(type, target, item, qty, amt) {
+    let list = getLocal("KANPA_RECENT_LOGS") || [];
+    list.unshift({ type, target, item, qty, amt });
+    if (list.length > 5) list = list.slice(0, 5);
+    saveLocal("KANPA_RECENT_LOGS", list);
+    renderRecentEntries();
+  }
+
+  function renderRecentEntries() {
+    const list = getLocal("KANPA_RECENT_LOGS") || [];
+    const tbody = document.getElementById("recentEntriesBody");
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#718096;">No recent entries.</td></tr>`;
+      return;
+    }
+    let html = "";
+    list.forEach(r => {
+      html += `<tr>
+        <td><b style="color:${r.type==='IN'?'#2f855a':'#c53030'};">${r.type}</b></td>
+        <td>${r.target || '-'}</td>
+        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.item}</td>
+        <td>${r.qty}</td>
+        <td>₹${parseFloat(r.amt||0).toLocaleString('en-IN')}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  }
+
+  function clearRecentEntries() {
+    localStorage.removeItem("KANPA_RECENT_LOGS");
+    renderRecentEntries();
+  }
+
+  // 12. Supplier Ledger & Direct Payment
+  function openPaySupplierModal() {
+    populateSupplierDropdowns();
+    document.getElementById("payModalAmount").value = "";
+    document.getElementById("payModalRemarks").value = "";
+    document.getElementById("paySupplierModal").style.display = "flex";
+  }
+  function closePaySupplierModal() { document.getElementById("paySupplierModal").style.display = "none"; }
+
+  async function submitSupplierPayment() {
+    const party = document.getElementById("payModalSupplierSelect").value;
+    const amount = parseFloat(document.getElementById("payModalAmount").value) || 0;
+    const mode = document.getElementById("payModalMode").value;
+    const remarks = document.getElementById("payModalRemarks").value;
+
+    if (!party) return alert("Pehle Supplier select karein!");
+    if (amount <= 0) return alert("Valid payment amount daalein!");
+
+    const btn = document.getElementById("savePayBtn");
+    btn.disabled = true;
+    btn.innerText = "Paying...";
+
+    daybookTransactions.unshift({
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      type: "PAYMENT",
+      category: "SUPPLIER PAY",
+      entity: party,
+      item: `Paid via ${mode} (${remarks || 'Direct'})`,
+      qty: "-",
+      rate: "-",
+      amount: amount,
+      date: new Date().toISOString().split('T')[0]
+    });
+    saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "PAY_SUPPLIER", partyName: party, amount: amount, paymentMode: mode, remarks: remarks })
+      });
+      playSuccessSound();
+      alert("✅ KANPA STORE: Payment recorded to " + party);
+    } catch(e) {
+      playSuccessSound();
+      alert("✅ Payment recorded locally!");
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Confirm & Pay";
+      closePaySupplierModal();
+      loadLedger();
+    }
+  }
+
+  async function loadLedger() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success" && data.data) {
+        ledgerData = data.data;
+        supplierItemsMap = data.supplierItemsMap || {};
+        ledgerData.forEach(l => { if (l.party && l.party.trim()) supplierSet.add(l.party.trim()); });
+        populateSupplierDropdowns();
+        renderActiveLedgerView();
+        return;
+      }
+    } catch(e){}
+
+    populateSupplierDropdowns();
+    renderActiveLedgerView();
+  }
+
+  function renderActiveLedgerView() {
+    if (activeSelectedLedgerParty) renderSinglePartyDetailedLedger(activeSelectedLedgerParty);
+    else renderAllSuppliersSummary();
+  }
+
+  function renderAllSuppliersSummary() {
+    document.getElementById("ledgerHeadingTitle").innerText = "Supplier Balances Summary";
+    document.getElementById("ledgerBackBtn").classList.add("hidden");
+
+    const sDate = document.getElementById("ledgerSDate").value;
+    const eDate = document.getElementById("ledgerEDate").value;
+
+    const filtered = ledgerData.filter(l => {
+      if (sDate && l.date < sDate) return false;
+      if (eDate && l.date > eDate) return false;
+      return true;
+    });
+
+    const summaryMap = {};
+    filtered.forEach(l => {
+      const p = l.party || "UNKNOWN";
+      if (!summaryMap[p]) summaryMap[p] = { totalDr: 0, totalCr: 0, balance: 0 };
+      summaryMap[p].totalDr += (l.dr || 0);
+      summaryMap[p].totalCr += (l.cr || 0);
+      summaryMap[p].balance = summaryMap[p].totalDr - summaryMap[p].totalCr;
+    });
+
+    let html = `<table class="custom-table">
+      <thead><tr><th>Supplier Name</th><th>Purchases (Dr)</th><th>Payments (Cr)</th><th>Balance Due</th><th>Action</th></tr></thead><tbody>`;
+
+    const keys = Object.keys(summaryMap).sort();
+    if (keys.length === 0) {
+      html += `<tr><td colspan="5" style="text-align:center; color:#718096;">Koi supplier ledger entry nahi mili.</td></tr>`;
+    } else {
+      for (const name of keys) {
+        const item = summaryMap[name];
+        html += `<tr>
+          <td><b>${name}</b></td>
+          <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
+          <td style="color:#2f855a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
+          <td style="font-weight:bold; color:${item.balance > 0 ? '#c53030' : '#2f855a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
+          <td><button type="button" onclick="openSinglePartyLedger('${name}')" style="background:#2b6cb0; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">Statement</button></td>
+        </tr>`;
+      }
+    }
+    html += `</tbody></table>`;
+    document.getElementById("ledgerContent").innerHTML = html;
+  }
+
+  function openSinglePartyLedger(party) {
+    activeSelectedLedgerParty = party;
+    document.getElementById("ledgerPartyFilter").value = party;
+    renderActiveLedgerView();
+  }
+
+  function showAllSupplierSummary() {
+    activeSelectedLedgerParty = "";
+    document.getElementById("ledgerPartyFilter").value = "";
+    renderActiveLedgerView();
+  }
+
+  function onLedgerPartyDropdownChange(party) {
+    activeSelectedLedgerParty = party;
+    renderActiveLedgerView();
+  }
+
+  function renderSinglePartyDetailedLedger(party) {
+    document.getElementById("ledgerHeadingTitle").innerText = `Statement: ${party}`;
+    document.getElementById("ledgerBackBtn").classList.remove("hidden");
+
+    const sDate = document.getElementById("ledgerSDate").value;
+    const eDate = document.getElementById("ledgerEDate").value;
+
+    const filtered = ledgerData.filter(l => {
+      if (l.party !== party) return false;
+      if (sDate && l.date < sDate) return false;
+      if (eDate && l.date > eDate) return false;
+      return true;
+    });
+
+    let running = 0;
+    let html = `<table class="custom-table">
+      <thead><tr><th>Date</th><th>Particulars</th><th>Dr (Purchases)</th><th>Cr (Payments)</th><th>Balance Due</th></tr></thead><tbody>`;
+    
+    filtered.forEach(l => {
+      running += ((l.dr || 0) - (l.cr || 0));
+      html += `<tr>
+        <td>${l.displayDate || l.date}</td>
+        <td>${l.particulars}</td>
+        <td>${l.dr > 0 ? '₹' + l.dr.toLocaleString('en-IN') : '-'}</td>
+        <td style="color:#2f855a;">${l.cr > 0 ? '₹' + l.cr.toLocaleString('en-IN') : '-'}</td>
+        <td style="font-weight:bold; color:${running > 0 ? '#c53030' : '#2f855a'};">₹${running.toLocaleString('en-IN')} Dr</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("ledgerContent").innerHTML = html;
+  }
+
+  // 13. Month Closing Report
+  async function loadClosing() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        closingData = data.data;
+        renderClosingReport();
+        return;
+      }
+    } catch(e){}
+
+    closingData = [];
+    renderClosingReport();
+  }
+
+  function renderClosingReport() {
+    const sDate = document.getElementById("closingSDate").value;
+    const eDate = document.getElementById("closingEDate").value;
+    const compFilter = document.getElementById("closingCompFilter").value;
+    const vehFilter = document.getElementById("closingVehFilter").value;
+    const serviceOnly = document.getElementById("serviceOnlyToggle").checked;
+
+    const filtered = closingData.filter(c => {
+      if (sDate && c.date < sDate) return false;
+      if (eDate && c.date > eDate) return false;
+      if (compFilter && c.company !== compFilter) return false;
+      if (vehFilter && c.vehicle !== vehFilter) return false;
+      if (serviceOnly && !c.remarks.includes("Hrs Service") && !c.item.includes("Kit") && !c.item.includes("Oil")) return false;
+      return true;
+    });
+
+    const uniqueVehs = new Set(filtered.map(f => f.vehicle));
+    const totalCost = filtered.reduce((a,b) => a + (b.amount||0), 0);
+    document.getElementById("closingTotalVehs").innerText = uniqueVehs.size;
+    document.getElementById("closingTotalItems").innerText = filtered.length;
+    document.getElementById("closingTotalCost").innerText = "₹" + totalCost.toLocaleString('en-IN');
+
+    const grouped = {};
+    filtered.forEach(item => {
+      const comp = item.company || "OTHER";
+      const veh = item.vehicle || "UNKNOWN";
+      if (!grouped[comp]) grouped[comp] = {};
+      if (!grouped[comp][veh]) grouped[comp][veh] = [];
+      grouped[comp][veh].push(item);
+    });
+
+    const container = document.getElementById("closingContent");
+    if (Object.keys(grouped).length === 0) {
+      container.innerHTML = "<p style='text-align:center; color:#718096;'>No records found.</p>";
+      return;
+    }
+
+    let html = "";
+    for (const [company, vehs] of Object.entries(grouped)) {
+      html += `<div class="company-block">
+        <div class="company-header">
+          <span>🏢 ${company}</span>
+          <span>Machines: ${Object.keys(vehs).length}</span>
+        </div>`;
+
+      for (const [vehicle, items] of Object.entries(vehs)) {
+        const vCost = items.reduce((a,b) => a + (b.amount||0), 0);
+        html += `
+          <div class="vehicle-card">
+            <div class="vehicle-head-row">
+              <span class="vehicle-title">🚜 ${vehicle}</span>
+              <span class="vehicle-cost">Total: ₹${vCost.toLocaleString('en-IN')}</span>
+            </div>
+            <table class="custom-table" style="margin-top:6px;">
+              <thead>
+                <tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Reading</th><th>Cost (₹)</th></tr>
+              </thead>
+              <tbody>`;
+        items.forEach(it => {
+          html += `<tr>
+            <td>${it.displayDate || it.date}</td>
+            <td>${it.item} ${it.remarks ? `<br><small style="color:#718096;">${it.remarks}</small>` : ''}</td>
+            <td>${it.qty} ${it.unit}</td>
+            <td>${it.km || '-'}</td>
+            <td>₹${it.amount.toLocaleString('en-IN')}</td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+      html += `</div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  // 14. Service Modal Management
+  function openServiceModal() {
+    document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
+    const container = document.getElementById("serviceItemsList");
+    let html = "";
+    activeServiceParts.forEach((p, idx) => {
+      const st = summaryData.find(s => s.item === p.itemName);
+      const left = st ? st.balance : 0;
+      const isLow = left < p.qty;
+
+      html += `<div class="service-item-row">
+        <div>
+          <b>${p.itemName}</b>
+          <div style="font-size:10.5px; color:${isLow ? '#c53030' : '#2f855a'};">
+            Left: ${left} | Req: <input type="number" value="${p.qty}" onchange="activeServiceParts[${idx}].qty=this.value" style="width:42px; padding:2px; font-size:10.5px;">
+          </div>
+        </div>
+        <button type="button" onclick="removeServiceItem(${idx})" style="border:none; background:none; color:#e53e3e; cursor:pointer;">✖</button>
+      </div>`;
+    });
+    container.innerHTML = html;
+    document.getElementById("serviceHoursModal").style.display = "flex";
+  }
+
+  function removeServiceItem(idx) {
+    activeServiceParts.splice(idx, 1);
+    openServiceModal();
+  }
+  function closeServiceModal() { document.getElementById("serviceHoursModal").style.display = "none"; }
+
+  async function confirmServiceOutward() {
+    const vNo = document.getElementById("vehicleSelect").value;
+    if (!vNo) return alert("Pehle Machine select karein!");
+
+    const payload = {
+      type: "OUT",
+      serviceName: activeServiceName,
+      vehicleNo: vNo,
+      companyName: document.getElementById("companyInput").value,
+      kmReading: document.getElementById("kmInput").value,
+      driverName: document.getElementById("driverInput").value,
+      remarks: document.getElementById("remarksInput").value || activeServiceName,
+      items: activeServiceParts
+    };
+
+    closeServiceModal();
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Deducting from KANPA STORE...";
+
+    const totalAmt = activeServiceParts.reduce((a,b)=>a+(b.rate*b.qty),0);
+
+    daybookTransactions.unshift({
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      type: "ISSUE",
+      category: "SERVICE KIT",
+      entity: vNo,
+      item: activeServiceName,
+      qty: "1 Full Kit",
+      rate: totalAmt,
+      amount: totalAmt,
+      date: new Date().toISOString().split('T')[0]
+    });
+    saveLocal("KANPA_DAYBOOK_DATA", daybookTransactions);
+
+    try {
+      await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+      playSuccessSound();
+      alert("✅ KANPA STORE: " + activeServiceName + " successfully issued!");
+    } catch(e) {
+      playSuccessSound();
+      alert("✅ Service kit recorded locally!");
+    } finally {
+      addRecentEntry("OUT", vNo, activeServiceName, "1 Kit", totalAmt);
+      document.getElementById("stockForm").reset();
+      document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
+      btn.disabled = false;
+      btn.innerText = "Save Entry to KANPA STORE";
+    }
+  }
+
+  // 15. Purchase Orders (PO)
+  function openCreateOrderModal() {
+    populateSupplierDropdowns();
+    renderProductDropdown();
+    document.getElementById("poSupplierSelect").value = "";
+    document.getElementById("poSupplierItemsSection").classList.add("hidden");
+    document.getElementById("poItemList").innerHTML = "";
+    document.getElementById("createOrderModal").style.display = "flex";
+  }
+  function closeCreateOrderModal() { document.getElementById("createOrderModal").style.display = "none"; }
+
+  function onPoSupplierSelected(supplier) {
+    const section = document.getElementById("poSupplierItemsSection");
+    const container = document.getElementById("poItemList");
+    if (!supplier) {
+      section.classList.add("hidden");
+      container.innerHTML = "";
+      return;
+    }
+
+    section.classList.remove("hidden");
+    const pastItems = supplierItemsMap[supplier] || {};
+    const itemNames = Object.keys(pastItems);
+
+    let html = "";
+    if (itemNames.length === 0) {
+      html = `<p style="font-size:10.5px; color:#718096; margin:4px 0;">Is supplier se pehle koi part purchase nahi kiya gaya hai. Neeche se search karke product add karein.</p>`;
+    } else {
+      itemNames.forEach(itm => {
+        const rate = pastItems[itm] || 0;
+        const curStock = summaryData.find(s => s.item === itm);
+        const left = curStock ? curStock.balance : 0;
+        const isLow = left <= 2;
+
+        html += `
+          <div class="po-item-row" style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #edf2f7; font-size:11px;">
+            <label><input type="checkbox" class="po-chk" data-item="${itm}" data-rate="${rate}" ${isLow ? 'checked' : ''}> <b>${itm}</b> (${left} left)</label>
+            <input type="number" class="po-qty" value="${isLow ? 5 : 1}" style="width:50px; padding:2px; font-size:10.5px;">
+          </div>`;
+      });
+    }
+    container.innerHTML = html;
+  }
+
+  async function submitPurchaseOrder() {
+    const party = document.getElementById("poSupplierSelect").value.trim();
+    if (!party) return alert("Kripya Supplier select karein!");
+
+    const now = Date.now();
+    if (now - lastPoSubmitTime < 10000) return alert("⚠️ Thoda rukein! Order already submit ho raha hai.");
+
+    const chks = document.querySelectorAll(".po-chk:checked");
+    const items = [];
+    chks.forEach(c => {
+      const itemRow = c.closest(".po-item-row");
+      const qty = parseFloat(itemRow.querySelector(".po-qty").value) || 1;
+      items.push({ itemName: c.dataset.item, qty: qty, rate: c.dataset.rate, unit: "Nos" });
+    });
+
+    if (items.length === 0) return alert("Kam se kam 1 item select karein!");
+
+    const btn = document.getElementById("poSubmitBtn");
+    btn.disabled = true;
+    btn.innerText = "Placing PO...";
+    lastPoSubmitTime = now;
+
+    const ordNo = "PO-" + Math.floor(1000 + Math.random() * 9000);
+
+    let waText = `*KANPA STORE - PURCHASE ORDER: ${ordNo}*\nTo: *${party}*\n\nKripya neeche diye gaye items dispatch karein:\n`;
+    items.forEach((it, i) => {
+      waText += `${i+1}. ${it.itemName} - *${it.qty} ${it.unit}*\n`;
+    });
+    waText += `\nKripya bill ke sath gaadi me maal bhejein.\nDhanyawad!\n*KANPA STORE*`;
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "CREATE_PO", partyName: party, items: items, orderNo: ordNo })
+      });
+    } catch(e) {}
+
+    playSuccessSound();
+    closeCreateOrderModal();
+    if (confirm("✅ Order Save Ho Gaya!\n\nKya aap ise abhi Supplier ko WhatsApp par bhejna chahte hain?")) {
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`, '_blank');
+    }
+    btn.disabled = false;
+    btn.innerText = "Save & WhatsApp PO";
+  }
+
+  async function loadOrders() {
+    const container = document.getElementById("orderListContent");
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getPurchaseOrders&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.status === "success" && data.data && data.data.length > 0) {
+        poData = data.data;
+        renderOrdersTable();
+        return;
+      }
+    } catch(e) {}
+    poData = [];
+    renderOrdersTable();
+  }
+
+  function renderOrdersTable() {
+    const container = document.getElementById("orderListContent");
+    let html = `<table class="custom-table">
+      <thead><tr><th>Order No</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+    if (poData.length === 0) {
+      html += `<tr><td colspan="6" style="text-align:center; color:#718096;">Koi active purchase order nahi hai.</td></tr>`;
+    } else {
+      poData.forEach(o => {
+        html += `<tr>
+          <td>${o.orderNo}</td>
+          <td><b>${o.party}</b></td>
+          <td>${o.item}</td>
+          <td>${o.qty} ${o.unit}</td>
+          <td><span style="font-weight:bold; color:${o.status==='RECEIVED'?'#2f855a':'#c53030'};">${o.status}</span></td>
+          <td style="display:flex; gap:4px;">
+            <button type="button" onclick="shareSinglePoWhatsApp('${o.orderNo}','${o.party}','${o.item}',${o.qty},'${o.unit}')" style="background:#25D366; color:white; border:none; padding:2px 5px; border-radius:3px; font-size:10px; cursor:pointer;">📲 WA</button>
+          </td>
+        </tr>`;
+      });
+    }
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+  }
+
+  function shareSinglePoWhatsApp(ordNo, party, item, qty, unit) {
+    const text = `*KANPA STORE - PURCHASE ORDER*\nOrder No: ${ordNo}\nTo: *${party}*\n\nKripya ye material jald dispatch karein:\n- ${item}: *${qty} ${unit}*\n\nDhanyawad!`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  // 16. Quick Add Modals
+  function openAddSupplierModal() {
+    document.getElementById("newSuppName").value = "";
+    document.getElementById("addSupplierModal").style.display = "flex";
+  }
+  function closeAddSupplierModal() { document.getElementById("addSupplierModal").style.display = "none"; }
+
+  function saveNewSupplierAction() {
+    const sName = document.getElementById("newSuppName").value.trim();
+    if (!sName) return alert("Kripya Supplier ka Naam daalein!");
+
+    supplierSet.add(sName);
+    let cachedSuppliers = getLocal("KANPA_SUPPLIERS") || [];
+    if (!cachedSuppliers.includes(sName)) {
+      cachedSuppliers.push(sName);
+      saveLocal("KANPA_SUPPLIERS", cachedSuppliers);
+    }
+
+    populateSupplierDropdowns();
+    document.getElementById("partySelectInput").value = sName;
+    playSuccessSound();
+    alert("✅ Naya Supplier KANPA STORE mein Add Ho Gaya!");
+    closeAddSupplierModal();
+  }
+
+  function openAddVehicleModal() {
+    document.getElementById("newVehNumber").value = "";
+    renderCompanyDropdowns();
+    document.getElementById("addVehicleModal").style.display = "flex";
+  }
+  function closeAddVehicleModal() { document.getElementById("addVehicleModal").style.display = "none"; }
+
+  function saveNewVehicleAction() {
+    const vNum = document.getElementById("newVehNumber").value.trim().toUpperCase();
+    const vComp = document.getElementById("newVehCompany").value;
+    const vModel = document.getElementById("newVehModelSelect").value;
+    if (!vNum) return alert("Kripya Machine / Unit Number daalein!");
+
+    vehicleMap.set(vNum, { company: vComp, model: vModel });
+    renderVehicleDropdown();
+    document.getElementById("vehicleSelect").value = vNum;
+    onVehicleSelect(vNum);
+    playSuccessSound();
+    alert("✅ Nayi Machine Unit Add Ho Gayi!");
+    closeAddVehicleModal();
+  }
+
+  function openAddCompanyModal() {
+    document.getElementById("newCompName").value = "";
+    document.getElementById("addCompanyModal").style.display = "flex";
+  }
+  function closeAddCompanyModal() { document.getElementById("addCompanyModal").style.display = "none"; }
+
+  function saveNewCompanyAction() {
+    const cName = document.getElementById("newCompName").value.trim().toUpperCase();
+    if (!cName) return alert("Kripya Company Name daalein!");
+
+    companySet.add(cName);
+    renderCompanyDropdowns();
+    document.getElementById("companyInput").value = cName;
+    playSuccessSound();
+    alert("✅ Nayi Company Add Ho Gayi!");
+    closeAddCompanyModal();
+  }
+
+  function openAddProductModal() {
+    document.getElementById("newProdName").value = "";
+    document.getElementById("newProdPurchaseRate").value = "";
+    document.getElementById("newProdSellRate").value = "";
+    document.getElementById("addProductModal").style.display = "flex";
+  }
+  function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
+
+  async function saveNewProductAction() {
+    const name = document.getElementById("newProdName").value.trim();
+    const unit = document.getElementById("newProdUnit").value;
+    const pRate = parseFloat(document.getElementById("newProdPurchaseRate").value) || 0;
+    const sRate = parseFloat(document.getElementById("newProdSellRate").value) || pRate;
+    const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
+    const barcode = document.getElementById("newProdBarcode").value.trim() || name;
+
+    if (!name) return alert("Product Name / Cheat Code daalein!");
+
+    const btn = document.getElementById("saveProdBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const newObj = { name: name, unit: unit, purchaseRate: pRate, sellRate: sRate, hsn: hsn, barcode: barcode };
+
+    productList.unshift(newObj);
+    saveLocal("KANPA_PROD_LIST", productList);
+    renderProductDropdown();
+    document.getElementById("productSelect").value = name;
+    onProductSelect(name);
+
+    playSuccessSound();
+    alert("✅ Product Added to KANPA STORE!");
+    closeAddProductModal();
+    btn.disabled = false;
+    btn.innerText = "Save to List";
+  }
+
+  // 17. Print & Refresh
+  function printTargetSection(targetId, title) {
+    const el = document.getElementById(targetId);
+    if (!el || !el.innerHTML.trim()) return alert("Print karne ke liye koi data nahi hai!");
+
+    const printWin = window.open('', '', 'width=850,height=700');
+    printWin.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #1a202c; }
+            h2 { font-size: 16px; margin: 0 0 4px 0; border-bottom: 2px solid #2b6cb0; padding-bottom: 6px; }
+            .date-stamp { font-size: 10px; color: #718096; margin-bottom: 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
+            th, td { border: 1px solid #cbd5e0; padding: 5px 7px; text-align: left; }
+            th { background: #edf2f7; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h2>${title}</h2>
+          <div class="date-stamp">Generated by KANPA STORE on: ${new Date().toLocaleString('en-GB')}</div>
+          ${el.innerHTML}
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 350);
+  }
+
+  async function hardRefreshData(section) {
+    const notify = document.getElementById("msg");
+    notify.innerText = `🔄 Reloading ${section} data...`;
+    notify.style.color = "#3182ce";
+
+    if (section === 'Stock') await loadSummary();
+    if (section === 'Ledger') await loadLedger();
+    if (section === 'Closing') await loadClosing();
+    if (section === 'Orders') await loadOrders();
+
+    notify.innerText = `✅ KANPA STORE ${section} Refreshed!`;
+    notify.style.color = "#2f855a";
+    setTimeout(() => { notify.innerText = ""; }, 2000);
+  }
+
+  // Master Data Initialization
+  async function fetchMasterData() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
+      const data = await res.json();
+      if (data && data.status === "success") {
+        if (data.products && data.products.length > 0) {
+          productList = data.products;
+          saveLocal("KANPA_PROD_LIST", productList);
+        }
+        if (data.suppliers && data.suppliers.length > 0) {
+          data.suppliers.forEach(s => { if(s && s.trim()) supplierSet.add(s.trim()); });
+          saveLocal("KANPA_SUPPLIERS", Array.from(supplierSet));
+        }
+        document.getElementById("syncText").innerText = "Sheets Synced Online";
+      }
+    } catch (e) {
+      document.getElementById("syncText").innerText = "Running (0ms Local Mode)";
+    }
+    renderProductDropdown();
+    renderVehicleDropdown();
+    populateSupplierDropdowns();
+  }
+
+  // Startup Execution (Runs seamlessly on load)
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
+    document.getElementById("daybookDate").value = new Date().toISOString().split('T')[0];
+
+    const savedVer = localStorage.getItem("APP_CACHE_TAG");
+    if (savedVer !== CACHE_VERSION) {
+      localStorage.removeItem("KANPA_SUPPLIERS");
+      localStorage.removeItem("KANPA_DAYBOOK_DATA");
+      localStorage.setItem("APP_CACHE_TAG", CACHE_VERSION);
+    }
+
+    const cached = getLocal("KANPA_PROD_LIST");
+    if (cached && cached.length > 0) productList = cached;
+
+    const cachedSuppliers = getLocal("KANPA_SUPPLIERS");
+    if (cachedSuppliers && cachedSuppliers.length > 0) {
+      cachedSuppliers.forEach(s => { if (s && s.trim()) supplierSet.add(s.trim()); });
+    }
+
+    initFallbackDaybook();
+    initDefaultSummary();
+    renderProductDropdown();
+    renderVehicleDropdown();
+    populateSupplierDropdowns();
+    renderRecentEntries();
+    
+    // Default open on Dashboard
+    switchTab('DASHBOARD');
+
+    fetchMasterData();
+    loadSummary(true);
+    loadLedger();
+  });
+</script>
+</body>
+</html>
