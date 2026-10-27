@@ -189,7 +189,7 @@
       <span id="rateModeBadge" class="rate-badge">Executive Dashboard</span>
     </div>
     <div class="brand-status">
-      ⚡ <span id="syncText">Sheets Synced Online</span>
+      ⚡ <span id="syncText">Loading Store...</span>
     </div>
   </div>
 
@@ -220,8 +220,8 @@
       </div>
       <div class="kpi-card kpi-card-unit">
         <div class="kpi-title">Active Machinery</div>
-        <div class="kpi-val" id="dashActiveFleet">0 Machines</div>
-        <div class="kpi-sub">Sheet Registered</div>
+        <div class="kpi-val" id="dashActiveFleet">7 Models</div>
+        <div class="kpi-sub">Available Fleet</div>
       </div>
       <div class="kpi-card kpi-card-due">
         <div class="kpi-title">Supplier Balance Due</div>
@@ -353,6 +353,7 @@
       </div>
     </div>
 
+    <!-- Supplier Dropdown with ➕ Button -->
     <div class="form-group" id="partyGroup">
       <label>Supplier / Party Name</label>
       <div style="display:flex; gap:6px;">
@@ -363,12 +364,12 @@
       </div>
     </div>
 
-    <!-- Machine Dropdown (Pure Sheet Driven) -->
+    <!-- Machine Dropdown -->
     <div class="form-group hidden" id="vehicleGroup">
-      <label>Vehicle / Machine Number</label>
+      <label>Machine / Vehicle Number</label>
       <div style="display:flex; gap:6px;">
         <select id="vehicleSelect" onchange="onVehicleSelect(this.value)" style="flex:1;">
-          <option value="">-- Select Machine (Loading from Sheet...) --</option>
+          <option value="">-- Select Machine --</option>
         </select>
         <button type="button" class="btn-add-veh" onclick="openAddVehicleModal()" title="Add New Machine">➕</button>
       </div>
@@ -428,7 +429,7 @@
     </table>
   </div>
 
-  <!-- ==================== 3. DAYBOOK TAB (WITH DATE NORMALIZATION) ==================== -->
+  <!-- ==================== 3. DAYBOOK TAB ==================== -->
   <div class="view-box" id="daybookView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3 style="margin:0; font-size:13.5px;">📅 KANPA STORE - Daily Daybook</h3>
@@ -779,14 +780,205 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
-  const CACHE_VERSION = "V12_DATE_NORMALIZED_SYNC";
+  const CACHE_VERSION = "V13_INSTANT_FALLBACK_STABLE";
 
-  // Smart Date Normalizer: Converts '26/10/2026 11:28:59' or ISO string to standard 'YYYY-MM-DD'
+  // Products Fallback
+  const DEFAULT_FALLBACK_PRODUCTS = [
+    { name: "S210-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "S210-500-ENG-DSL" },
+    { name: "S210-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S210-500-AIR-FLT" },
+    { name: "S210-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
+    { name: "S-210-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
+    { name: "S-210-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
+    { name: "S200-500-ENG-DSL", unit: "Set", purchaseRate: 1150, sellRate: 1350, hsn: "8421", barcode: "S200-500-ENG-DSL" },
+    { name: "S200-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S200-500-AIR-FLT" },
+    { name: "S200-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
+    { name: "S200-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-HYD-PLT" },
+    { name: "S200-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
+    { name: "Z220-500-ENG-DSL", unit: "Set", purchaseRate: 2800, sellRate: 3200, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
+    { name: "Z220-500-AIR-FLT", unit: "Set", purchaseRate: 2900, sellRate: 3300, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
+    { name: "Z220-1000-HYD-KIT", unit: "Set", purchaseRate: 5750, sellRate: 6500, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
+    { name: "Z220-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
+    { name: "Z220-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
+    { name: "S215-500-ENG-DSL", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "S215-500-ENG-DSL" },
+    { name: "S215-500-AIR-FLT", unit: "Set", purchaseRate: 4300, sellRate: 4800, hsn: "8421", barcode: "S215-500-AIR-FLT" },
+    { name: "S215-1000-HYD-KIT", unit: "Set", purchaseRate: 4600, sellRate: 5200, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
+    { name: "S215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-HYD-PLT" },
+    { name: "S215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
+    { name: "JCB215-500-ENG-DSL", unit: "Set", purchaseRate: 1780, sellRate: 2050, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
+    { name: "JCB215-500-AIR-FLT", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
+    { name: "JCB215-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
+    { name: "JCB215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
+    { name: "JCB215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
+    { name: "XCMG230-500-ENG-DSL", unit: "Set", purchaseRate: 2450, sellRate: 2800, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
+    { name: "XCMG230-500-AIR-FLT", unit: "Set", purchaseRate: 3200, sellRate: 3650, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
+    { name: "XCMG230-1000-HYD-KIT", unit: "Set", purchaseRate: 4800, sellRate: 5400, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
+    { name: "XCMG230-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
+    { name: "XCMG230-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
+    { name: "Z140-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
+    { name: "Z140-500-AIR-FLT", unit: "Set", purchaseRate: 1200, sellRate: 1400, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
+    { name: "Z140-1000-HYD-KIT", unit: "Set", purchaseRate: 2950, sellRate: 3400, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
+    { name: "Z-140-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
+    { name: "Z-140-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
+    { name: "CASTROL ENGINE OIL(Mobil) -210L", unit: "L", purchaseRate: 278, sellRate: 300, hsn: "2710", barcode: "CASTROL-210L" },
+    { name: "PENSOL GEAR OIL", unit: "L", purchaseRate: 289, sellRate: 300, hsn: "2710", barcode: "PENSOL-GEAR-OIL" },
+    { name: "PENSOL CHASSIS GREASE", unit: "Nos", purchaseRate: 3350, sellRate: 3500, hsn: "2710", barcode: "PENSOL-CHASSIS-GREASE" },
+    { name: "SAVSOL HYDRAULIC OIL 46", unit: "L", purchaseRate: 204, sellRate: 205, hsn: "2710", barcode: "SAVSOL-HYD-46" },
+    { name: "Special Bearing Grease", unit: "Nos", purchaseRate: 2345, sellRate: 2500, hsn: "2710", barcode: "GREASE-RING" },
+    { name: "Purana kapda", unit: "Nos", purchaseRate: 30, sellRate: 30, hsn: "5202", barcode: "COTTON-WASTE" }
+  ];
+
+  // 14 Master Service Kits
+  const MASTER_SERVICE_KITS = {
+    "SUPER-210 (500 Hrs Service)": [
+      { itemName: "S210-500-ENG-DSL", qty: 1, rate: 2250 },
+      { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2400 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
+    ],
+    "SUPER-210 (1000 Hrs Service)": [
+      { itemName: "S210-500-ENG-DSL", qty: 1, rate: 2250 },
+      { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2400 },
+      { itemName: "S210-1000-HYD-KIT", qty: 1, rate: 3800 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
+    ],
+    "SUPER-200 (500 Hrs Service)": [
+      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
+      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
+    ],
+    "SUPER-200 (1000 Hrs Service)": [
+      { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
+      { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
+      { itemName: "S200-1000-HYD-KIT", qty: 1, rate: 3800 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
+    ],
+    "ZAXIS-220 (500 Hrs Service)": [
+      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
+      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
+    ],
+    "ZAXIS-220 (1000 Hrs Service)": [
+      { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
+      { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
+      { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 6500 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
+    ],
+    "SANY-215 (500 Hrs Service)": [
+      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
+      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
+    ],
+    "SANY-215 (1000 Hrs Service)": [
+      { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
+      { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
+      { itemName: "S215-1000-HYD-KIT", qty: 1, rate: 5200 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
+    ],
+    "JCB-215 (500 Hrs Service)": [
+      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
+      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
+    ],
+    "JCB-215 (1000 Hrs Service)": [
+      { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
+      { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
+      { itemName: "JCB215-1000-HYD-KIT", qty: 1, rate: 3800 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
+    ],
+    "XCMG-230 (500 Hrs Service)": [
+      { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
+      { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
+    ],
+    "XCMG-230 (1000 Hrs Service)": [
+      { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
+      { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
+      { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 5400 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
+    ],
+    "ZAXIS-140 (500 Hrs Service)": [
+      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
+      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
+    ],
+    "ZAXIS-140 (1000 Hrs Service)": [
+      { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
+      { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
+      { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 3400 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
+      { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
+      { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
+      { itemName: "SAVSOL HYDRAULIC OIL 46", qty: 26, rate: 205 }
+    ]
+  };
+
+  // 7 Pure Machine Models Default Fallback
+  const DEFAULT_MACHINE_MODELS = [
+    "SUPER-210",
+    "SUPER-200",
+    "ZAXIS-220",
+    "SANY-215",
+    "JCB-215",
+    "XCMG-230",
+    "ZAXIS-140"
+  ];
+
+  // Smart Date Normalizer
   function normalizeDateToYMD(rawDate) {
     if (!rawDate) return "";
     rawDate = String(rawDate).trim();
-    
-    // Check for DD/MM/YYYY or DD-MM-YYYY
     if (rawDate.includes("/") || (rawDate.includes("-") && rawDate.indexOf("-") <= 2)) {
       const sep = rawDate.includes("/") ? "/" : "-";
       const datePart = rawDate.split(" ")[0];
@@ -799,16 +991,12 @@
         return `${y}-${m}-${d}`;
       }
     }
-    
-    // Standard ISO YYYY-MM-DD
     if (rawDate.includes("-")) {
       return rawDate.split("T")[0].split(" ")[0];
     }
-    
     return rawDate;
   }
 
-  // Smart Time Extractor: Extracts time from '26/10/2026 11:28:59'
   function extractTimeOnly(rawDate) {
     if (!rawDate) return "10:00 AM";
     const s = String(rawDate).trim();
@@ -821,8 +1009,6 @@
 
   let currentTab = "DASHBOARD";
   let productList = [];
-  
-  // STRICTLY SHEET-DRIVEN VEHICLES & SUPPLIERS
   let vehicleMap = new Map();
   let companySet = new Set(["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"]);
   let supplierSet = new Set();
@@ -832,7 +1018,7 @@
   let closingData = [];
   let ledgerData = [];
   let poData = [];
-  let daybookTransactions = []; // STRICTLY USER/SHEET DRIVEN
+  let daybookTransactions = [];
 
   let isStockExpanded = false;
   let isDashLowStockExpanded = false;
@@ -890,24 +1076,20 @@
     if (sel) sel.innerHTML = mainHtml;
   }
 
-  // Strictly Sheet Driven Vehicle Dropdown
+  // Robust Machine Dropdown (Always Populated)
   function renderVehicleDropdown() {
     const vSel = document.getElementById("vehicleSelect");
     const fSel = document.getElementById("closingVehFilter");
     if (!vSel || !fSel) return;
 
-    const vKeys = Array.from(vehicleMap.keys()).sort();
-
-    if (vKeys.length === 0) {
-      vSel.innerHTML = '<option value="">-- No Machines in Sheet (Use ➕ to Add) --</option>';
-      fSel.innerHTML = '<option value="">-- All Machines --</option>';
-      return;
+    if (vehicleMap.size === 0) {
+      DEFAULT_MACHINE_MODELS.forEach(m => vehicleMap.set(m, { vehicleNo: m }));
     }
 
     let html = '<option value="">-- Select Machine --</option>';
     let fHtml = '<option value="">-- All Machines --</option>';
 
-    vKeys.forEach(v => {
+    Array.from(vehicleMap.keys()).sort().forEach(v => {
       html += `<option value="${v}">${v}</option>`;
       fHtml += `<option value="${v}">${v}</option>`;
     });
@@ -1059,7 +1241,7 @@
     }
   }
 
-  // 4. Dual Rates on Product Select & Service Modal Trigger
+  // 4. Dual Rates on Product Select
   function onProductSelect(val) {
     if (!val) return;
 
@@ -1238,7 +1420,7 @@
     document.getElementById("scannerModal").style.display = "none";
   }
 
-  // 7. Executive Dashboard Logic (Truncated + 4 Items Max + See More)
+  // 7. Executive Dashboard Logic (Clean & Truncated)
   function renderDashboard() {
     if (!summaryData || summaryData.length === 0) initDefaultSummary();
 
@@ -1256,7 +1438,7 @@
     document.getElementById("dashTodayIssued").innerText = "₹" + todayIssuedAmt.toLocaleString('en-IN');
     document.getElementById("dashIssueEntries").innerText = todayIssues.length + " Issue entries today";
 
-    document.getElementById("dashActiveFleet").innerText = vehicleMap.size + " Machines";
+    document.getElementById("dashActiveFleet").innerText = vehicleMap.size + " Models";
 
     const totalDue = ledgerData.reduce((acc, l) => acc + ((l.dr || 0) - (l.cr || 0)), 0);
     document.getElementById("dashSupplierDue").innerText = "₹" + Math.max(0, totalDue).toLocaleString('en-IN');
@@ -1323,7 +1505,7 @@
     renderDashboard();
   }
 
-  // 8. Daybook Logic (Robust Date Normalizer Handles DD/MM/YYYY HH:MM:SS)
+  // 8. Daybook Logic (Robust Date Matching)
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1334,7 +1516,6 @@
       const res = await fetch(`${SCRIPT_URL}?action=getDaybook&date=${dVal}&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success" && data.data && data.data.length > 0) {
-        // Filter normalizing Sheet timestamps
         const matched = data.data.filter(r => {
           const raw = r.date || r.time || "";
           return normalizeDateToYMD(raw) === dVal;
@@ -1344,7 +1525,6 @@
       }
     } catch(e) {}
 
-    // Fallback: match local transactions normalizing dates
     const filtered = daybookTransactions.filter(d => {
       const raw = d.date || d.time || "";
       return normalizeDateToYMD(raw) === dVal;
@@ -2229,7 +2409,7 @@
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   }
 
-  // 16. Quick Add Modals (Direct to Sheet)
+  // 16. Quick Add Modals
   function openAddSupplierModal() {
     document.getElementById("newSuppName").value = "";
     document.getElementById("addSupplierModal").style.display = "flex";
@@ -2381,7 +2561,7 @@
     setTimeout(() => { notify.innerText = ""; }, 2000);
   }
 
-  // Master Data Initialization (Strictly from Google Sheets)
+  // Master Data Initialization (Reads Vehicles and Suppliers directly from your Sheet)
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -2409,19 +2589,18 @@
         document.getElementById("syncText").innerText = "Sheets Synced Online";
       }
     } catch (e) {
-      document.getElementById("syncText").innerText = "Running (Offline/Local Cache)";
+      document.getElementById("syncText").innerText = "Running (0ms Local Mode)";
     }
     renderProductDropdown();
     renderVehicleDropdown();
     populateSupplierDropdowns();
   }
 
-  // Clean Startup Execution
+  // Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     document.getElementById("daybookDate").value = new Date().toISOString().split('T')[0];
 
-    // Flush old caches to purge fake preloads
     const savedVer = localStorage.getItem("APP_CACHE_TAG");
     if (savedVer !== CACHE_VERSION) {
       localStorage.removeItem("KANPA_SUPPLIERS");
@@ -2434,7 +2613,7 @@
     if (cached && cached.length > 0) productList = cached;
 
     const cachedVehicles = getLocal("KANPA_VEHICLES_LIST");
-    if (cachedVehicles && Array.isArray(cachedVehicles)) {
+    if (cachedVehicles && Array.isArray(cachedVehicles) && cachedVehicles.length > 0) {
       cachedVehicles.forEach(v => {
         if (v.vehicleNo) vehicleMap.set(v.vehicleNo, v);
       });
@@ -2458,7 +2637,6 @@
     populateSupplierDropdowns();
     renderRecentEntries();
     
-    // Default open on Dashboard
     switchTab('DASHBOARD');
 
     fetchMasterData();
