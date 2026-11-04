@@ -86,7 +86,6 @@
     .btn-submit { width: 100%; padding: 13px; background: #16a34a; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }
     .hidden { display: none !important; }
 
-    /* Sticky Header Table for Stock & Reports */
     .table-container-sticky {
       max-height: 420px;
       overflow-y: auto;
@@ -105,7 +104,6 @@
       z-index: 10;
     }
 
-    /* Combobox Styling */
     .combobox-container { position: relative; width: 100%; }
     .combobox-input { width: 100%; padding: 9px 11px; border: 1.5px solid #2563eb; border-radius: 8px; font-size: 12px; background: #fffdf5; }
     .combobox-dropdown {
@@ -137,7 +135,6 @@
     .badge-tag-kit { background: #fef3c7; color: #92400e; }
     .badge-tag-part { background: #e2e8f0; color: #334155; }
 
-    /* Closing Two-Tier Summary Cards */
     .summary-veh-card {
       background: #ffffff;
       border: 1px solid #cbd5e1;
@@ -258,7 +255,7 @@
       🏪 KANPA STORE
       <span id="rateModeBadge" style="font-size:10px; background:#1e293b; color:#94a3b8; padding:2px 8px; border-radius:8px;">Executive Feed</span>
     </div>
-    <div class="top-badge" id="syncStatusBadge">⚡ Local Ready</div>
+    <div class="top-badge" id="syncStatusBadge">⚡ Ready</div>
   </div>
 
   <div class="content-area">
@@ -288,7 +285,6 @@
         </div>
       </div>
 
-      <!-- Live Daybook Movements with Accurate Date Match -->
       <div class="card-box">
         <div class="card-title">
           <span>📅 Today's Live Daybook Movements</span>
@@ -307,7 +303,6 @@
         </div>
       </div>
 
-      <!-- Machine Fleet Spend Matrix -->
       <div class="card-box">
         <div class="card-title">
           <span>🚜 Fleet Spend Matrix</span>
@@ -340,7 +335,6 @@
             </div>
           </div>
 
-          <!-- Restored Standard Select Dropdown + Search Input + Direct ➕ Button -->
           <div class="form-group">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <label>Select Item / Spare Part / Service Kit</label>
@@ -354,7 +348,6 @@
               <button type="button" class="btn-add-mini" onclick="openAddProductModal()" title="Add Product">➕</button>
             </div>
 
-            <!-- Quick Search Input with Arrow Keys (Optional Helper) -->
             <div class="combobox-container">
               <input type="text" id="prodComboboxInput" class="combobox-input"
                      placeholder="🔍 Or type to search (⬇️ ⬆️ Enter supported)..."
@@ -452,7 +445,7 @@
       </div>
     </div>
 
-    <!-- 3. STOCK INVENTORY TAB (WITH STICKY HEADER & VALUATION CARD) -->
+    <!-- 3. STOCK INVENTORY TAB -->
     <div id="viewStock" style="display:none;">
       <div class="card-box">
         <div class="card-title">
@@ -479,7 +472,7 @@
       </div>
     </div>
 
-    <!-- 4. SUPPLIER LEDGER TAB (ORIGINAL CLEAN SUMMARY VIEW RESTORED) -->
+    <!-- 4. SUPPLIER LEDGER TAB (FAIL-SAFE, NEVER FREEZES) -->
     <div id="viewLedger" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="ledgerHeadingTitle">
@@ -502,13 +495,13 @@
       </div>
     </div>
 
-    <!-- 5. MONTH CLOSING (TWO-TIER DRILL-DOWN: SUMMARY FIRST) -->
+    <!-- 5. MONTH CLOSING (TWO-TIER DRILL-DOWN, FAIL-SAFE) -->
     <div id="viewClosing" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="closingHeaderTitle">
           <span>🔒 Month Closing (Machine Summary)</span>
           <div style="display:flex; gap:6px;">
-            <button type="button" id="closingBackBtn" class="hidden" onclick="renderClosingSummaryView()" style="padding:4px 8px; font-size:10px; background:#2563eb; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⬅ Back to Summary</button>
+            <button type="button" id="closingBackBtn" class="hidden" onclick="renderClosingSummaryView()" style="padding:4px 8px; font-size:10px; background:#2563eb; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⬅ Back</button>
             <button type="button" onclick="printTargetSection('closingPrintTarget', 'KANPA STORE - Month Closing')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print</button>
             <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10px; background:#475569; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🔄</button>
           </div>
@@ -526,7 +519,7 @@
     </div>
   </div>
 
-  <!-- NATIVE BOTTOM APP BAR (72px) -->
+  <!-- BOTTOM APP BAR -->
   <div class="bottom-nav">
     <button type="button" class="nav-item active" id="navHome" onclick="switchNav('HOME')">
       <span class="nav-icon">📊</span>
@@ -591,13 +584,13 @@
 <!-- Quick Modals -->
 <div class="modal" id="addSupplierModal">
   <div class="modal-content" style="max-width:350px;">
-    <h3 style="margin-top:0; font-size:14px; color:#d97706;">➕ Add New Supplier / Party</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#d97706;">➕ Add New Supplier</h3>
     <div class="form-group">
       <label>Supplier / Party Name</label>
       <input type="text" id="newSuppName" placeholder="Enter supplier name" required>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="saveNewSupplierAction()" style="flex:1; background:#d97706; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Supplier</button>
+      <button type="button" onclick="saveNewSupplierAction()" style="flex:1; background:#d97706; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save</button>
       <button type="button" onclick="closeAddSupplierModal()" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
@@ -607,7 +600,7 @@
   <div class="modal-content" style="max-width:350px;">
     <h3 style="margin-top:0; font-size:14px; color:#2563eb;">➕ Add New Machine</h3>
     <div class="form-group">
-      <label>Machine / Vehicle Number</label>
+      <label>Machine Number</label>
       <input type="text" id="newVehNumber" placeholder="e.g. SUPER-210" required>
     </div>
     <div class="form-group">
@@ -615,7 +608,7 @@
       <select id="newVehCompany"></select>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="saveNewVehicleAction()" style="flex:1; background:#2563eb; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Machine</button>
+      <button type="button" onclick="saveNewVehicleAction()" style="flex:1; background:#2563eb; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save</button>
       <button type="button" onclick="closeAddVehicleModal()" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
@@ -629,7 +622,7 @@
       <input type="text" id="newCompName" placeholder="Enter company name" required>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="saveNewCompanyAction()" style="flex:1; background:#7c3aed; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Company</button>
+      <button type="button" onclick="saveNewCompanyAction()" style="flex:1; background:#7c3aed; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save</button>
       <button type="button" onclick="closeAddCompanyModal()" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
@@ -637,7 +630,7 @@
 
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:380px;">
-    <h3 style="margin-top:0; font-size:14px; color:#2563eb;">➕ Add Product (Purchase & Sell Rates)</h3>
+    <h3 style="margin-top:0; font-size:14px; color:#2563eb;">➕ Add Product</h3>
     <div class="form-group">
       <label>Cheat Code / Item Name</label>
       <input type="text" id="newProdName" placeholder="e.g. S210-500-ENG-DSL">
@@ -658,8 +651,8 @@
         <input type="number" id="newProdPurchaseRate" placeholder="Kharid Rate">
       </div>
       <div class="form-group">
-        <label>Sell / Issue Price (₹)</label>
-        <input type="number" id="newProdSellRate" placeholder="Bikri/Issue Rate">
+        <label>Sell Price (₹)</label>
+        <input type="number" id="newProdSellRate" placeholder="Bikri Rate">
       </div>
     </div>
     <div class="form-group">
@@ -669,18 +662,18 @@
     <div class="form-group">
       <label>Barcode</label>
       <div class="barcode-row">
-        <input type="text" id="newProdBarcode" placeholder="Scan or type barcode...">
-        <button type="button" class="btn-scan" onclick="openScannerModal('newProdBarcode')">📷 Scan</button>
+        <input type="text" id="newProdBarcode" placeholder="Barcode...">
+        <button type="button" class="btn-scan" onclick="openScannerModal('newProdBarcode')">📷</button>
       </div>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#16a34a; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save to List</button>
+      <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#16a34a; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save</button>
       <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- PAY SUPPLIER MODAL (GUARANTEED POPULATED DROPDOWN) -->
+<!-- PAY SUPPLIER MODAL -->
 <div class="modal" id="paySupplierModal">
   <div class="modal-content" style="max-width:360px;">
     <h3 style="margin-top:0; font-size:14px; color:#dc2626;">💳 Pay to Supplier</h3>
@@ -717,14 +710,14 @@
     <h4 style="margin: 0 0 10px 0; font-size:13px; color:#0f172a;">📷 Scan Barcode / QR</h4>
     <div id="reader"></div>
     <div style="font-size:10px; color:#64748b; margin-bottom:8px;">Camera ko barcode ke samne rakhein</div>
-    <button type="button" onclick="closeScannerModal()" style="background:#dc2626; color:white; border:none; padding:7px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Stop Camera</button>
+    <button type="button" onclick="closeScannerModal()" style="background:#dc2626; color:white; border:none; padding:7px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Stop</button>
   </div>
 </div>
 
 <div class="modal" id="pinModal">
   <div class="modal-content" style="max-width:290px; text-align:center;">
     <h3 style="margin-top:0; font-size:15px;">🔒 KANPA STORE PIN</h3>
-    <p style="font-size:11px; color:#64748b;">Is section ko access karne ke liye PIN daalein:</p>
+    <p style="font-size:11px; color:#64748b;">Access PIN daalein:</p>
     <input type="password" id="pinInput" maxlength="6" placeholder="Enter PIN" style="text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:12px;" onkeydown="if(event.key==='Enter') verifyPin()">
     <div style="display:flex; gap:8px;">
       <button type="button" onclick="verifyPin()" style="flex:1; background:#2563eb; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Unlock</button>
@@ -733,20 +726,18 @@
   </div>
 </div>
 
-<!-- Service Kit Modal (Standard Select Dropdown & ➕ Button Restored) -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2563eb;" id="serviceModalTitle">Service Hours Checklist</h3>
-    <p style="font-size:11px; color:#64748b; margin-bottom:8px;">Rates verify karein (Excel me exact rate save hoga):</p>
+    <p style="font-size:11px; color:#64748b; margin-bottom:8px;">Rates verify karein:</p>
     
     <div id="serviceItemsList"></div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:6px 8px; background:#eff6ff; border-radius:8px; font-weight:bold; font-size:12px; color:#1e40af;">
-      <span>Total Service Kit Cost:</span>
+      <span>Total Cost:</span>
       <span id="serviceModalGrandTotal">₹0</span>
     </div>
 
-    <!-- Restored Dropdown + ➕ Button inside Service Modal -->
     <div style="margin-top:10px; padding:8px; background:#f8fafc; border-radius:8px; border:1px dashed #cbd5e1;">
       <label style="font-size:10.5px; font-weight:bold; margin-bottom:4px;">➕ Select Extra Part / Oil:</label>
       <div style="display:flex; gap:5px; margin-bottom:4px;">
@@ -757,12 +748,12 @@
       </div>
       <div style="display:flex; gap:5px;">
         <input type="number" id="modalExtraPartQty" placeholder="Qty" value="1" style="width:55px; font-size:11px;">
-        <button type="button" onclick="addSelectedModalExtraItem()" style="flex:1; background:#16a34a; color:white; border:none; border-radius:6px; font-weight:bold; font-size:11px; cursor:pointer;">Add Item to Kit</button>
+        <button type="button" onclick="addSelectedModalExtraItem()" style="flex:1; background:#16a34a; color:white; border:none; border-radius:6px; font-weight:bold; font-size:11px; cursor:pointer;">Add</button>
       </div>
     </div>
     
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#16a34a; color:white; border:none; padding:10px; border-radius:7px; font-weight:bold; cursor:pointer; font-size:12px;">Confirm & Issue All</button>
+      <button type="button" onclick="confirmServiceOutward()" style="flex:1; background:#16a34a; color:white; border:none; padding:10px; border-radius:7px; font-weight:bold; cursor:pointer; font-size:12px;">Confirm & Issue</button>
       <button type="button" onclick="closeServiceModal()" style="flex:1; background:#64748b; color:white; border:none; padding:10px; border-radius:7px; font-weight:bold; cursor:pointer; font-size:12px;">Cancel</button>
     </div>
   </div>
@@ -771,7 +762,6 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
-  const CACHE_VERSION = "V18_DRILL_DOWN_STICKY_AUTO_PRICE";
 
   const DEFAULT_FALLBACK_PRODUCTS = [
     { name: "S210-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "S210-500-ENG-DSL" },
@@ -916,8 +906,8 @@
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 500 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 400 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 500 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -925,8 +915,8 @@
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
       { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 5400 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 500 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 400 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 500 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -935,8 +925,8 @@
     "ZAXIS-140 (500 Hrs Service)": [
       { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 450 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 400 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 450 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -944,8 +934,8 @@
       { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
       { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 3400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 450 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 400 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 450 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -963,7 +953,6 @@
     { vehicleNo: "ZAXIS-140", company: "GOKULESHWAR RD PVT. LTD" }
   ];
 
-  // Accurate Date Normalization (DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD -> YYYY-MM-DD)
   function normalizeDateToYMD(rawDate) {
     if (!rawDate) return "";
     rawDate = String(rawDate).trim();
@@ -1010,7 +999,7 @@
 
   let isAuthenticated = false;
   let activeSelectedLedgerParty = "";
-  let activeDrillDownVehicle = ""; // For Two-Tier Closing
+  let activeDrillDownVehicle = "";
 
   let activeServiceParts = [];
   let activeServiceName = "";
@@ -1040,7 +1029,6 @@
     } catch(e) {}
   }
 
-  // 1. Navigation Controller (Fixed PIN & High Contrast Active Indicator)
   function switchNav(tabName) {
     if ((tabName === "CLOSING" || tabName === "LEDGER") && !isAuthenticated) {
       pendingNav = tabName;
@@ -1145,7 +1133,6 @@
     document.getElementById("driverGroup").classList.toggle("hidden", isIn);
   }
 
-  // 2. Dropdowns Management
   function renderProductDropdowns() {
     const sel = document.getElementById("productSelect");
     const modalSel = document.getElementById("modalExtraPartSelect");
@@ -1225,7 +1212,6 @@
     }
   }
 
-  // 3. Combobox & Auto-Price Cascading
   function handleComboboxInput(query) {
     const q = (query || "").toLowerCase().trim();
     const dropdown = document.getElementById("comboboxDropdown");
@@ -1286,7 +1272,6 @@
     }
   }
 
-  // Stock Out Auto Price & Total Calculation
   function selectComboboxItem(val, type) {
     document.getElementById("prodComboboxInput").value = val;
     document.getElementById("comboboxDropdown").style.display = "none";
@@ -1306,7 +1291,6 @@
       document.getElementById("hsnInput").value = prod.hsn || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
-      // Robust Auto Price Fetch (Sell Rate with Purchase Fallback)
       let autoRate = 0;
       if (voucherMode === "IN") {
         autoRate = Number(prod.purchaseRate) || 0;
@@ -1335,7 +1319,6 @@
     }
   }
 
-  // 4. Calculations
   function calculateTotal() {
     const q = parseFloat(document.getElementById("qtyInput").value) || 0;
     const r = parseFloat(document.getElementById("rateInput").value) || 0;
@@ -1357,7 +1340,6 @@
     calculateTotal();
   }
 
-  // 5. Executive Dashboard Logic (Zero Delay Metrics)
   function renderDashboard() {
     if (!summaryData || summaryData.length === 0) initDefaultSummary();
 
@@ -1380,7 +1362,6 @@
     const totalDue = ledgerData.reduce((acc, l) => acc + ((Number(l.dr) || 0) - (Number(l.cr) || 0)), 0);
     document.getElementById("dashSupplierDue").innerText = "₹" + Math.max(0, totalDue).toLocaleString('en-IN');
 
-    // Fleet Spend Matrix
     const spendMap = {};
     daybookTransactions.forEach(d => {
       if ((d.type === "ISSUE" || (d.category && d.category.includes("OUT"))) && d.entity) {
@@ -1405,7 +1386,6 @@
     spendGrid.innerHTML = spendHtml;
   }
 
-  // 6. Daybook Logic (Accurate Date Match)
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1456,7 +1436,6 @@
     document.getElementById("daybookContent").innerHTML = html;
   }
 
-  // 7. Service Kit Modal (Standard Select & Rates Displayed)
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     const container = document.getElementById("serviceItemsList");
@@ -1574,7 +1553,6 @@
     }
   }
 
-  // 8. Supplier Payment (Guaranteed Populated Dropdown & 0ms Sync)
   function openPaySupplierModal() {
     populateSupplierDropdowns();
     document.getElementById("payModalAmount").value = "";
@@ -1640,7 +1618,6 @@
     }
   }
 
-  // 9. Standard Form Submissions (Stock In / Out)
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
@@ -1704,22 +1681,28 @@
     }
   });
 
-  // 10. Ledger Logic (Original Clean Summary View Restored)
+  // ==================== FAIL-SAFE LEDGER FUNCTIONS ====================
   async function loadLedger() {
     renderActiveLedgerView();
 
-    const fetchPromise = fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`).then(r => r.json());
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 1500));
-
     try {
-      const data = await Promise.race([fetchPromise, timeoutPromise]);
-      if (data && data.status === "success" && data.data) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
+      const data = await res.json();
+      if (data && data.status === "success" && Array.isArray(data.data)) {
         ledgerData = data.data;
         saveLocal("KANPA_LEDGER_DATA", ledgerData);
         ledgerData.forEach(l => { if (l.party && l.party.trim()) supplierSet.add(l.party.trim()); });
         populateSupplierDropdowns();
       }
-    } catch(e) {}
+    } catch (err) {
+      console.warn("Ledger online sync skipped, rendered from cache.");
+    }
+
     renderActiveLedgerView();
     renderDashboard();
   }
@@ -1730,13 +1713,20 @@
   }
 
   function renderAllSuppliersSummary() {
-    document.getElementById("ledgerHeadingTitle").innerHTML = `<span>Supplier Ledger Summary</span><div style="display:flex; gap:6px;"><button type="button" onclick="openPaySupplierModal()" style="padding:4px 8px; font-size:10px; background:#dc2626; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">💳 Pay</button><button type="button" onclick="printTargetSection('ledgerPrintTarget', 'KANPA STORE - Ledger')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️</button></div>`;
-    document.getElementById("ledgerBackBtn").classList.add("hidden");
+    const container = document.getElementById("ledgerContent");
+    if (!container) return;
+
+    document.getElementById("ledgerHeadingTitle").innerHTML = `<span>Supplier Ledger Summary</span><div style="display:flex; gap:6px;"><button type="button" onclick="openPaySupplierModal()" style="padding:4px 8px; font-size:10px; background:#dc2626; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">💳 Pay</button><button type="button" onclick="loadLedger()" style="padding:4px 8px; font-size:10px; background:#475569; color:white; border:none; border-radius:5px; cursor:pointer;">🔄</button><button type="button" onclick="printTargetSection('ledgerPrintTarget', 'KANPA STORE - Ledger')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️</button></div>`;
+    const backBtn = document.getElementById("ledgerBackBtn");
+    if (backBtn) backBtn.classList.add("hidden");
 
     const sDate = document.getElementById("ledgerSDate").value;
     const eDate = document.getElementById("ledgerEDate").value;
 
-    const filtered = ledgerData.filter(l => {
+    const safeData = (Array.isArray(ledgerData) && ledgerData.length > 0) ? ledgerData : [];
+
+    const filtered = safeData.filter(l => {
+      if (!l) return false;
       const lDate = normalizeDateToYMD(l.date || l.displayDate);
       if (sDate && lDate < sDate) return false;
       if (eDate && lDate > eDate) return false;
@@ -1745,33 +1735,40 @@
 
     const summaryMap = {};
     filtered.forEach(l => {
-      const p = l.party || "UNKNOWN";
+      const p = (l.party || "Unknown Supplier").trim();
       if (!summaryMap[p]) summaryMap[p] = { totalDr: 0, totalCr: 0, balance: 0 };
       summaryMap[p].totalDr += Number(l.dr || 0);
       summaryMap[p].totalCr += Number(l.cr || 0);
       summaryMap[p].balance = summaryMap[p].totalDr - summaryMap[p].totalCr;
     });
 
+    const keys = Object.keys(summaryMap).sort();
+    if (keys.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:24px 10px; color:#64748b;">
+          <div style="font-size:24px; margin-bottom:6px;">📂</div>
+          <b>Koi Supplier Ledger Data Nahi Hai</b>
+          <div style="font-size:10px; margin-top:4px;">Stock In voucher ya supplier payment karein.</div>
+        </div>`;
+      return;
+    }
+
     let html = `<table class="custom-table">
       <thead><tr><th>Supplier</th><th>Purchases</th><th>Payments</th><th>Due</th><th>Action</th></tr></thead><tbody>`;
 
-    const keys = Object.keys(summaryMap).sort();
-    if (keys.length === 0) {
-      html += `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:12px;">Koi supplier ledger entry nahi mili.</td></tr>`;
-    } else {
-      for (const name of keys) {
-        const item = summaryMap[name];
-        html += `<tr>
-          <td><b>${name}</b></td>
-          <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
-          <td style="color:#16a34a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
-          <td style="font-weight:bold; color:${item.balance > 0 ? '#dc2626' : '#16a34a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
-          <td><button type="button" onclick="openSinglePartyLedger('${name}')" style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:5px; font-size:10.5px; cursor:pointer;">Statement</button></td>
-        </tr>`;
-      }
-    }
+    keys.forEach(name => {
+      const item = summaryMap[name];
+      html += `<tr>
+        <td><b>${name}</b></td>
+        <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
+        <td style="color:#16a34a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
+        <td style="font-weight:bold; color:${item.balance > 0 ? '#dc2626' : '#16a34a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
+        <td><button type="button" onclick="openSinglePartyLedger('${name.replace(/'/g, "\\'")}')" style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:5px; font-size:10px; cursor:pointer;">Statement</button></td>
+      </tr>`;
+    });
+
     html += `</tbody></table>`;
-    document.getElementById("ledgerContent").innerHTML = html;
+    container.innerHTML = html;
   }
 
   function openSinglePartyLedger(party) {
@@ -1785,13 +1782,18 @@
   }
 
   function renderSinglePartyDetailedLedger(party) {
+    const container = document.getElementById("ledgerContent");
+    if (!container) return;
+
     document.getElementById("ledgerHeadingTitle").innerHTML = `<span>Statement: ${party}</span><div style="display:flex; gap:6px;"><button type="button" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10px; background:#2563eb; color:white; border:none; border-radius:5px; cursor:pointer;">⬅ All</button><button type="button" onclick="printTargetSection('ledgerPrintTarget', 'KANPA STORE - Statement')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️</button></div>`;
 
     const sDate = document.getElementById("ledgerSDate").value;
     const eDate = document.getElementById("ledgerEDate").value;
 
-    const filtered = ledgerData.filter(l => {
-      if (l.party !== party) return false;
+    const safeData = (Array.isArray(ledgerData) && ledgerData.length > 0) ? ledgerData : [];
+
+    const filtered = safeData.filter(l => {
+      if (!l || l.party !== party) return false;
       const lDate = normalizeDateToYMD(l.date || l.displayDate);
       if (sDate && lDate < sDate) return false;
       if (eDate && lDate > eDate) return false;
@@ -1813,21 +1815,30 @@
       </tr>`;
     });
     html += `</tbody></table>`;
-    document.getElementById("ledgerContent").innerHTML = html;
+    container.innerHTML = html;
   }
 
-  // 11. Two-Tier Month Closing (Summary First ➔ Drill-Down Details)
+  // ==================== FAIL-SAFE CLOSING FUNCTIONS ====================
   async function loadClosing() {
     renderClosingCurrentState();
+
     try {
-      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
       const data = await res.json();
-      if (data && data.status === "success") {
+      if (data && data.status === "success" && Array.isArray(data.data)) {
         closingData = data.data;
         saveLocal("KANPA_CLOSING_DATA", closingData);
-        renderClosingCurrentState();
       }
-    } catch(e){}
+    } catch (err) {
+      console.warn("Closing online sync skipped, rendered from cache.");
+    }
+
+    renderClosingCurrentState();
   }
 
   function renderClosingCurrentState() {
@@ -1837,35 +1848,44 @@
 
   function renderClosingSummaryView() {
     activeDrillDownVehicle = "";
+    const container = document.getElementById("closingContent");
+    if (!container) return;
+
     document.getElementById("closingHeaderTitle").innerHTML = `<span>🔒 Month Closing (Machine Summary)</span>`;
-    document.getElementById("closingBackBtn").classList.add("hidden");
+    const backBtn = document.getElementById("closingBackBtn");
+    if (backBtn) backBtn.classList.add("hidden");
 
     const sDate = document.getElementById("closingSDate").value;
     const eDate = document.getElementById("closingEDate").value;
 
-    const filtered = closingData.filter(c => {
+    const safeData = (Array.isArray(closingData) && closingData.length > 0) ? closingData : [];
+
+    const filtered = safeData.filter(c => {
+      if (!c) return false;
       const cDate = normalizeDateToYMD(c.date || c.displayDate);
       if (sDate && cDate < sDate) return false;
       if (eDate && cDate > eDate) return false;
       return true;
     });
 
-    // Grouping by Machine
     const summaryMap = {};
     filtered.forEach(item => {
-      const veh = item.vehicle || "UNKNOWN";
+      const veh = (item.vehicle || "GENERAL FLEET").trim();
       if (!summaryMap[veh]) {
-        let comp = item.company || (vehicleMap.has(veh) ? vehicleMap.get(veh).company : "GENERAL FLEET");
+        let comp = item.company || (vehicleMap.has(veh) ? vehicleMap.get(veh).company : "GOKULESHWAR / COMRAO");
         summaryMap[veh] = { vehicle: veh, company: comp, count: 0, totalCost: 0 };
       }
       summaryMap[veh].count += 1;
       summaryMap[veh].totalCost += Number(item.amount || 0);
     });
 
-    const container = document.getElementById("closingContent");
     const keys = Object.keys(summaryMap).sort();
     if (keys.length === 0) {
-      container.innerHTML = "<p style='text-align:center; color:#64748b; padding:12px;'>No records found for selected period.</p>";
+      container.innerHTML = `
+        <div style="text-align:center; padding:24px 10px; color:#64748b;">
+          <div style="font-size:24px; margin-bottom:6px;">🚜</div>
+          <b>Is Selected Period Me Koi Machine Issue Record Nahi Hai</b>
+        </div>`;
       return;
     }
 
@@ -1877,23 +1897,22 @@
       html += `
         <div class="summary-veh-card">
           <div>
-            <div style="font-size:12.5px; font-weight:800; color:#0f172a;">🚜 ${row.vehicle}</div>
+            <div style="font-size:13px; font-weight:800; color:#0f172a;">🚜 ${row.vehicle}</div>
             <div style="font-size:10px; color:#64748b;">${row.company} • ${row.count} parts issued</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:12.5px; font-weight:800; color:#2563eb; margin-bottom:3px;">₹${row.totalCost.toLocaleString('en-IN')}</div>
-            <button type="button" class="btn-detail-drill" onclick="drillDownMachineClosing('${row.vehicle}')">👁️ View Details</button>
+            <div style="font-size:13px; font-weight:800; color:#2563eb; margin-bottom:3px;">₹${row.totalCost.toLocaleString('en-IN')}</div>
+            <button type="button" class="btn-detail-drill" onclick="drillDownMachineClosing('${row.vehicle.replace(/'/g, "\\'")}')">👁️ View Details</button>
           </div>
         </div>`;
     });
 
     container.innerHTML = `
-      <div style="padding:8px 10px; background:#eff6ff; border-radius:8px; margin-bottom:10px; font-weight:bold; font-size:12px; color:#1e40af; display:flex; justify-content:space-between;">
+      <div style="padding:10px 12px; background:#eff6ff; border-radius:8px; margin-bottom:10px; font-weight:bold; font-size:12px; color:#1e40af; display:flex; justify-content:space-between;">
         <span>Total Fleet Spend:</span>
         <span>₹${grandTot.toLocaleString('en-IN')}</span>
       </div>
-      ${html}
-    `;
+      ${html}`;
   }
 
   function drillDownMachineClosing(veh) {
@@ -1902,14 +1921,20 @@
   }
 
   function renderClosingDetailedView(veh) {
+    const container = document.getElementById("closingContent");
+    if (!container) return;
+
     document.getElementById("closingHeaderTitle").innerHTML = `<span>Slip: 🚜 ${veh}</span>`;
-    document.getElementById("closingBackBtn").classList.remove("hidden");
+    const backBtn = document.getElementById("closingBackBtn");
+    if (backBtn) backBtn.classList.remove("hidden");
 
     const sDate = document.getElementById("closingSDate").value;
     const eDate = document.getElementById("closingEDate").value;
 
-    const filtered = closingData.filter(c => {
-      if ((c.vehicle || "UNKNOWN") !== veh) return false;
+    const safeData = (Array.isArray(closingData) && closingData.length > 0) ? closingData : [];
+
+    const filtered = safeData.filter(c => {
+      if (!c || (c.vehicle || "GENERAL FLEET").trim() !== veh) return false;
       const cDate = normalizeDateToYMD(c.date || c.displayDate);
       if (sDate && cDate < sDate) return false;
       if (eDate && cDate > eDate) return false;
@@ -1935,10 +1960,10 @@
     });
     html += `</tbody></table>`;
 
-    document.getElementById("closingContent").innerHTML = html;
+    container.innerHTML = html;
   }
 
-  // 12. Stock Summary (Sticky Header Table & Valuation Card)
+  // Stock Summary
   async function loadSummary(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
@@ -1986,7 +2011,7 @@
     document.getElementById("summaryTableContent").innerHTML = html;
   }
 
-  // 13. Scanner
+  // Scanner
   function openScannerModal(targetInputId) {
     currentScanTargetId = targetInputId || "barcodeInput";
     document.getElementById("scannerModal").style.display = "flex";
@@ -2022,7 +2047,7 @@
     document.getElementById("scannerModal").style.display = "none";
   }
 
-  // 14. Quick Modals
+  // Quick Add Modals
   function openAddSupplierModal() { document.getElementById("newSuppName").value = ""; document.getElementById("addSupplierModal").style.display = "flex"; }
   function closeAddSupplierModal() { document.getElementById("addSupplierModal").style.display = "none"; }
   function saveNewSupplierAction() {
@@ -2101,7 +2126,6 @@
     alert(`✅ KANPA STORE ${section} Refreshed!`);
   }
 
-  // Master Data Initialization
   async function fetchMasterData() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getInitialData&t=${Date.now()}`);
@@ -2124,17 +2148,16 @@
           supplierSet.clear();
           data.suppliers.forEach(s => { if(s && s.trim()) supplierSet.add(s.trim()); });
         }
-        document.getElementById("syncStatusBadge").innerText = "⚡ Sheets Synced";
+        document.getElementById("syncStatusBadge").innerText = "⚡ Synced";
       }
     } catch (e) {
-      document.getElementById("syncStatusBadge").innerText = "⚡ Local Storage";
+      document.getElementById("syncStatusBadge").innerText = "⚡ Local Ready";
     }
     renderProductDropdowns();
     renderVehicleDropdown();
     populateSupplierDropdowns();
   }
 
-  // Startup Execution
   window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
     document.getElementById("daybookDate").value = new Date().toISOString().split('T')[0];
