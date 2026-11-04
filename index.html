@@ -11,7 +11,6 @@
     
     .app-shell { max-width: 640px; margin: auto; background: #ffffff; min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.06); }
     
-    /* Top Header Bar */
     .top-bar {
       position: sticky;
       top: 0;
@@ -29,7 +28,6 @@
 
     .content-area { padding: 14px; }
 
-    /* Executive KPI Cards */
     .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
     .kpi-card { 
       background: #f8fafc; 
@@ -64,7 +62,6 @@
       margin-bottom: 10px;
     }
 
-    /* Forms */
     .form-group { margin-bottom: 11px; position: relative; }
     label { display: block; margin-bottom: 4px; font-weight: 700; font-size: 11px; color: #475569; }
     input, select { 
@@ -89,11 +86,26 @@
     .btn-submit { width: 100%; padding: 13px; background: #16a34a; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }
     .hidden { display: none !important; }
 
-    .custom-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px; }
-    .custom-table th, .custom-table td { border: 1px solid #e2e8f0; padding: 7px 8px; text-align: left; }
-    .custom-table th { background: #0f172a; color: #fff; font-weight: 700; font-size: 11px; }
+    /* Sticky Header Table for Stock & Reports */
+    .table-container-sticky {
+      max-height: 420px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    .custom-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .custom-table th, .custom-table td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+    .custom-table th { 
+      background: #0f172a; 
+      color: #fff; 
+      font-weight: 700; 
+      font-size: 11px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-    /* Searchable Dropdown with Arrow Keys (⬆️ ⬇️) Navigation */
+    /* Combobox Styling */
     .combobox-container { position: relative; width: 100%; }
     .combobox-input { width: 100%; padding: 9px 11px; border: 1.5px solid #2563eb; border-radius: 8px; font-size: 12px; background: #fffdf5; }
     .combobox-dropdown {
@@ -125,40 +137,29 @@
     .badge-tag-kit { background: #fef3c7; color: #92400e; }
     .badge-tag-part { background: #e2e8f0; color: #334155; }
 
-    /* Company-Wise Closing Blocks */
-    .company-closing-card {
+    /* Closing Two-Tier Summary Cards */
+    .summary-veh-card {
       background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 12px;
-      margin-bottom: 14px;
-      overflow: hidden;
-    }
-    .company-closing-header {
-      background: #1e293b;
-      color: #ffffff;
-      padding: 9px 12px;
-      font-weight: 800;
-      font-size: 12.5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .vehicle-section-row {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
       padding: 10px 12px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .vehicle-section-row:last-child { border-bottom: none; }
-    .vehicle-head-label {
-      font-size: 12px;
-      font-weight: 800;
-      color: #2563eb;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
+    }
+    .btn-detail-drill {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 10.5px;
+      cursor: pointer;
     }
 
-    /* Bada & Handy Bottom Navigation Bar (72px Height) */
+    /* Bottom App Bar (72px) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -203,7 +204,6 @@
     }
     .nav-icon { font-size: 22px; transition: all 0.15s; }
 
-    /* Center Elevated Floating ➕ Button */
     .fab-center {
       position: relative;
       top: -20px;
@@ -224,7 +224,6 @@
     }
     .fab-center:active { transform: scale(0.92); }
 
-    /* Modals */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
     .modal-content { background: white; padding: 16px; border-radius: 14px; width: 92%; max-width: 440px; max-height: 90vh; overflow-y: auto; }
 
@@ -249,28 +248,26 @@
     .action-row-btn:active { background: #e2e8f0; }
 
     #reader { width: 100%; min-height: 240px; background: #000; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-    .btn-see-more { width: 100%; background: #f1f5f9; border: 1.5px solid #cbd5e1; color: #2563eb; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; margin-top: 8px; }
   </style>
 </head>
 <body>
 
 <div class="app-shell">
-  <!-- Top App Bar -->
   <div class="top-bar">
     <div class="top-brand">
       🏪 KANPA STORE
       <span id="rateModeBadge" style="font-size:10px; background:#1e293b; color:#94a3b8; padding:2px 8px; border-radius:8px;">Executive Feed</span>
     </div>
-    <div class="top-badge" id="syncStatusBadge">⚡ Sheets Synced</div>
+    <div class="top-badge" id="syncStatusBadge">⚡ Local Ready</div>
   </div>
 
   <div class="content-area">
 
-    <!-- ==================== 1. HOME / DASHBOARD (MERGED WITH DAYBOOK) ==================== -->
+    <!-- 1. HOME / DASHBOARD (MERGED WITH DAYBOOK) -->
     <div id="viewHome">
       <div class="kpi-grid">
         <div class="kpi-card kpi-card-val">
-          <div class="kpi-title">Asset Valuation</div>
+          <div class="kpi-title">Total Store Valuation</div>
           <div class="kpi-val" id="dashValuation">₹0</div>
           <div class="kpi-sub" id="dashSKUs">0 Catalog Items</div>
         </div>
@@ -291,7 +288,7 @@
         </div>
       </div>
 
-      <!-- Live Daybook Movements -->
+      <!-- Live Daybook Movements with Accurate Date Match -->
       <div class="card-box">
         <div class="card-title">
           <span>📅 Today's Live Daybook Movements</span>
@@ -321,7 +318,7 @@
       </div>
     </div>
 
-    <!-- ==================== 2. MAIN VOUCHER ENTRY FORM ==================== -->
+    <!-- 2. MAIN VOUCHER ENTRY FORM -->
     <div id="viewVoucher" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="voucherFormTitle">
@@ -343,30 +340,29 @@
             </div>
           </div>
 
-          <!-- Searchable Combobox + Classic Dropdown Select (Up/Down Arrow Navigation Supported) -->
+          <!-- Restored Standard Select Dropdown + Search Input + Direct ➕ Button -->
           <div class="form-group">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label>Search or Select Item / Kit</label>
+              <label>Select Item / Spare Part / Service Kit</label>
               <span id="stockInHandBadge" class="stock-badge hidden"></span>
             </div>
             
-            <div class="combobox-container">
-              <div style="display:flex; gap:6px;">
-                <input type="text" id="prodComboboxInput" class="combobox-input"
-                       placeholder="🔍 Search (Type code or use ⬇️ ⬆️ Enter)..."
-                       oninput="handleComboboxInput(this.value)"
-                       onkeydown="handleComboboxKeydown(event)"
-                       onclick="handleComboboxInput(this.value)"
-                       autocomplete="off">
-                <button type="button" class="btn-add-mini" onclick="openAddProductModal()" title="Add Product">➕</button>
-              </div>
-              <div id="comboboxDropdown" class="combobox-dropdown"></div>
+            <div style="display:flex; gap:6px; margin-bottom:6px;">
+              <select id="productSelect" onchange="onStandardProductSelect(this.value)" style="flex:1;">
+                <option value="">-- Choose From Standard Dropdown --</option>
+              </select>
+              <button type="button" class="btn-add-mini" onclick="openAddProductModal()" title="Add Product">➕</button>
             </div>
 
-            <!-- Standard Select Fallback -->
-            <select id="productSelect" onchange="onStandardProductSelect(this.value)" style="margin-top:6px;">
-              <option value="">-- Or Choose From Standard Dropdown --</option>
-            </select>
+            <!-- Quick Search Input with Arrow Keys (Optional Helper) -->
+            <div class="combobox-container">
+              <input type="text" id="prodComboboxInput" class="combobox-input"
+                     placeholder="🔍 Or type to search (⬇️ ⬆️ Enter supported)..."
+                     oninput="handleComboboxInput(this.value)"
+                     onkeydown="handleComboboxKeydown(event)"
+                     autocomplete="off">
+              <div id="comboboxDropdown" class="combobox-dropdown"></div>
+            </div>
           </div>
 
           <div class="form-group">
@@ -456,7 +452,7 @@
       </div>
     </div>
 
-    <!-- ==================== 3. STOCK INVENTORY TAB ==================== -->
+    <!-- 3. STOCK INVENTORY TAB (WITH STICKY HEADER & VALUATION CARD) -->
     <div id="viewStock" style="display:none;">
       <div class="card-box">
         <div class="card-title">
@@ -467,17 +463,23 @@
           </div>
         </div>
 
-        <input type="text" id="summarySearch" placeholder="🔍 Search part or oil (Auto-expands list)..." oninput="onSummarySearchInput(this.value)" style="margin-bottom:8px;">
-        
-        <div id="summaryPrintTarget">
-          <div id="summaryTableContent">Loading stock...</div>
+        <div style="padding:10px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:10px; font-weight:bold; color:#166534;">TOTAL STOCK VALUATION</div>
+            <div style="font-size:18px; font-weight:900; color:#15803d;" id="stockTabValuationText">₹0</div>
+          </div>
+          <span style="font-size:11px; font-weight:bold; color:#15803d;" id="stockTabItemCount">0 Items</span>
         </div>
 
-        <button type="button" id="stockSeeMoreBtn" class="btn-see-more" onclick="toggleStockSeeMore()">👁️ See More Items (+15 More)</button>
+        <input type="text" id="summarySearch" placeholder="🔍 Search part or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
+        
+        <div id="summaryPrintTarget">
+          <div class="table-container-sticky" id="summaryTableContent">Loading stock...</div>
+        </div>
       </div>
     </div>
 
-    <!-- ==================== 4. SUPPLIER LEDGER TAB ==================== -->
+    <!-- 4. SUPPLIER LEDGER TAB (ORIGINAL CLEAN SUMMARY VIEW RESTORED) -->
     <div id="viewLedger" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="ledgerHeadingTitle">
@@ -500,30 +502,31 @@
       </div>
     </div>
 
-    <!-- ==================== 5. MONTH CLOSING (COMPANY-WISE DEDICATED BLOCKS) ==================== -->
+    <!-- 5. MONTH CLOSING (TWO-TIER DRILL-DOWN: SUMMARY FIRST) -->
     <div id="viewClosing" style="display:none;">
       <div class="card-box">
-        <div class="card-title">
-          <span>🔒 Company-Wise Month Closing</span>
+        <div class="card-title" id="closingHeaderTitle">
+          <span>🔒 Month Closing (Machine Summary)</span>
           <div style="display:flex; gap:6px;">
+            <button type="button" id="closingBackBtn" class="hidden" onclick="renderClosingSummaryView()" style="padding:4px 8px; font-size:10px; background:#2563eb; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⬅ Back to Summary</button>
             <button type="button" onclick="printTargetSection('closingPrintTarget', 'KANPA STORE - Month Closing')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print</button>
             <button type="button" onclick="hardRefreshData('Closing')" style="padding:4px 8px; font-size:10px; background:#475569; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🔄</button>
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
-          <input type="date" id="closingSDate" onchange="renderClosingReport()">
-          <input type="date" id="closingEDate" onchange="renderClosingReport()">
+          <input type="date" id="closingSDate" onchange="renderClosingCurrentState()">
+          <input type="date" id="closingEDate" onchange="renderClosingCurrentState()">
         </div>
 
         <div id="closingPrintTarget">
-          <div id="closingContent">Loading company-wise closing data...</div>
+          <div id="closingContent">Loading closing data...</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== BADA & HANDY BOTTOM APP BAR (72px) ==================== -->
+  <!-- NATIVE BOTTOM APP BAR (72px) -->
   <div class="bottom-nav">
     <button type="button" class="nav-item active" id="navHome" onclick="switchNav('HOME')">
       <span class="nav-icon">📊</span>
@@ -677,6 +680,7 @@
   </div>
 </div>
 
+<!-- PAY SUPPLIER MODAL (GUARANTEED POPULATED DROPDOWN) -->
 <div class="modal" id="paySupplierModal">
   <div class="modal-content" style="max-width:360px;">
     <h3 style="margin-top:0; font-size:14px; color:#dc2626;">💳 Pay to Supplier</h3>
@@ -729,7 +733,7 @@
   </div>
 </div>
 
-<!-- Service Kit Modal -->
+<!-- Service Kit Modal (Standard Select Dropdown & ➕ Button Restored) -->
 <div class="modal" id="serviceHoursModal">
   <div class="modal-content">
     <h3 style="margin-top:0; font-size:14px; color:#2563eb;" id="serviceModalTitle">Service Hours Checklist</h3>
@@ -740,6 +744,21 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:6px 8px; background:#eff6ff; border-radius:8px; font-weight:bold; font-size:12px; color:#1e40af;">
       <span>Total Service Kit Cost:</span>
       <span id="serviceModalGrandTotal">₹0</span>
+    </div>
+
+    <!-- Restored Dropdown + ➕ Button inside Service Modal -->
+    <div style="margin-top:10px; padding:8px; background:#f8fafc; border-radius:8px; border:1px dashed #cbd5e1;">
+      <label style="font-size:10.5px; font-weight:bold; margin-bottom:4px;">➕ Select Extra Part / Oil:</label>
+      <div style="display:flex; gap:5px; margin-bottom:4px;">
+        <select id="modalExtraPartSelect" style="flex:2; font-size:11px;">
+          <option value="">-- Choose Extra Part --</option>
+        </select>
+        <button type="button" class="btn-add-mini" style="background:#2563eb;" onclick="openAddProductModal()" title="Add New Product">➕</button>
+      </div>
+      <div style="display:flex; gap:5px;">
+        <input type="number" id="modalExtraPartQty" placeholder="Qty" value="1" style="width:55px; font-size:11px;">
+        <button type="button" onclick="addSelectedModalExtraItem()" style="flex:1; background:#16a34a; color:white; border:none; border-radius:6px; font-weight:bold; font-size:11px; cursor:pointer;">Add Item to Kit</button>
+      </div>
     </div>
     
     <div style="display:flex; gap:8px; margin-top:12px;">
@@ -752,44 +771,44 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_kDNcWcQHLII-U1IRt-TLcY5ZtbKdE-lsAQH9u9dpclOjjy1GPHhi_OuvNO92zQo/exec";
   const APP_PIN = "4251"; 
-  const CACHE_VERSION = "V16_CLOSING_COMPANY_SPLIT_STABLE";
+  const CACHE_VERSION = "V18_DRILL_DOWN_STICKY_AUTO_PRICE";
 
   const DEFAULT_FALLBACK_PRODUCTS = [
     { name: "S210-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "S210-500-ENG-DSL" },
     { name: "S210-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S210-500-AIR-FLT" },
     { name: "S210-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S210-1000-HYD-KIT" },
-    { name: "S-210-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
-    { name: "S-210-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
+    { name: "S-210-500-HYD-PLT", unit: "Nos", purchaseRate: 450, sellRate: 500, hsn: "8421", barcode: "S-210-500-HYD-PLT" },
+    { name: "S-210-500-AIR-BRTH", unit: "Nos", purchaseRate: 350, sellRate: 400, hsn: "8421", barcode: "S-210-500-AIR-BRTH" },
     { name: "S200-500-ENG-DSL", unit: "Set", purchaseRate: 1150, sellRate: 1350, hsn: "8421", barcode: "S200-500-ENG-DSL" },
     { name: "S200-500-AIR-FLT", unit: "Set", purchaseRate: 2050, sellRate: 2400, hsn: "8421", barcode: "S200-500-AIR-FLT" },
     { name: "S200-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "S200-1000-HYD-KIT" },
-    { name: "S200-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-HYD-PLT" },
-    { name: "S200-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
+    { name: "S200-500-HYD-PLT", unit: "Nos", purchaseRate: 450, sellRate: 500, hsn: "8421", barcode: "S200-500-HYD-PLT" },
+    { name: "S200-500-AIR-BRTH", unit: "Nos", purchaseRate: 350, sellRate: 400, hsn: "8421", barcode: "S200-500-AIR-BRTH" },
     { name: "Z220-500-ENG-DSL", unit: "Set", purchaseRate: 2800, sellRate: 3200, hsn: "8421", barcode: "Z220-500-ENG-DSL" },
     { name: "Z220-500-AIR-FLT", unit: "Set", purchaseRate: 2900, sellRate: 3300, hsn: "8421", barcode: "Z220-500-AIR-FLT" },
     { name: "Z220-1000-HYD-KIT", unit: "Set", purchaseRate: 5750, sellRate: 6500, hsn: "8421", barcode: "Z220-1000-HYD-KIT" },
-    { name: "Z220-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
-    { name: "Z220-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
+    { name: "Z220-500-HYD-PLT", unit: "Nos", purchaseRate: 550, sellRate: 600, hsn: "8421", barcode: "Z220-500-HYD-PLT" },
+    { name: "Z220-500-AIR-BRTH", unit: "Nos", purchaseRate: 400, sellRate: 450, hsn: "8421", barcode: "Z220-500-AIR-BRTH" },
     { name: "S215-500-ENG-DSL", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "S215-500-ENG-DSL" },
     { name: "S215-500-AIR-FLT", unit: "Set", purchaseRate: 4300, sellRate: 4800, hsn: "8421", barcode: "S215-500-AIR-FLT" },
     { name: "S215-1000-HYD-KIT", unit: "Set", purchaseRate: 4600, sellRate: 5200, hsn: "8421", barcode: "S215-1000-HYD-KIT" },
-    { name: "S215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-HYD-PLT" },
-    { name: "S215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
+    { name: "S215-500-HYD-PLT", unit: "Nos", purchaseRate: 450, sellRate: 500, hsn: "8421", barcode: "S215-500-HYD-PLT" },
+    { name: "S215-500-AIR-BRTH", unit: "Nos", purchaseRate: 350, sellRate: 400, hsn: "8421", barcode: "S215-500-AIR-BRTH" },
     { name: "JCB215-500-ENG-DSL", unit: "Set", purchaseRate: 1780, sellRate: 2050, hsn: "8421", barcode: "JCB215-500-ENG-DSL" },
     { name: "JCB215-500-AIR-FLT", unit: "Set", purchaseRate: 2300, sellRate: 2650, hsn: "8421", barcode: "JCB215-500-AIR-FLT" },
     { name: "JCB215-1000-HYD-KIT", unit: "Set", purchaseRate: 3300, sellRate: 3800, hsn: "8421", barcode: "JCB215-1000-HYD-KIT" },
-    { name: "JCB215-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
-    { name: "JCB215-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
+    { name: "JCB215-500-HYD-PLT", unit: "Nos", purchaseRate: 450, sellRate: 500, hsn: "8421", barcode: "JCB215-500-HYD-PLT" },
+    { name: "JCB215-500-AIR-BRTH", unit: "Nos", purchaseRate: 350, sellRate: 400, hsn: "8421", barcode: "JCB215-500-AIR-BRTH" },
     { name: "XCMG230-500-ENG-DSL", unit: "Set", purchaseRate: 2450, sellRate: 2800, hsn: "8421", barcode: "XCMG230-500-ENG-DSL" },
     { name: "XCMG230-500-AIR-FLT", unit: "Set", purchaseRate: 3200, sellRate: 3650, hsn: "8421", barcode: "XCMG230-500-AIR-FLT" },
     { name: "XCMG230-1000-HYD-KIT", unit: "Set", purchaseRate: 4800, sellRate: 5400, hsn: "8421", barcode: "XCMG230-1000-HYD-KIT" },
-    { name: "XCMG230-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
-    { name: "XCMG230-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
+    { name: "XCMG230-500-HYD-PLT", unit: "Nos", purchaseRate: 450, sellRate: 500, hsn: "8421", barcode: "XCMG230-500-HYD-PLT" },
+    { name: "XCMG230-500-AIR-BRTH", unit: "Nos", purchaseRate: 350, sellRate: 400, hsn: "8421", barcode: "XCMG230-500-AIR-BRTH" },
     { name: "Z140-500-ENG-DSL", unit: "Set", purchaseRate: 1950, sellRate: 2250, hsn: "8421", barcode: "Z140-500-ENG-DSL" },
     { name: "Z140-500-AIR-FLT", unit: "Set", purchaseRate: 1200, sellRate: 1400, hsn: "8421", barcode: "Z140-500-AIR-FLT" },
     { name: "Z140-1000-HYD-KIT", unit: "Set", purchaseRate: 2950, sellRate: 3400, hsn: "8421", barcode: "Z140-1000-HYD-KIT" },
-    { name: "Z-140-500-HYD-PLT", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
-    { name: "Z-140-500-AIR-BRTH", unit: "Nos", purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
+    { name: "Z-140-500-HYD-PLT", unit: "Nos", purchaseRate: 400, sellRate: 450, hsn: "8421", barcode: "Z-140-500-HYD-PLT" },
+    { name: "Z-140-500-AIR-BRTH", unit: "Nos", purchaseRate: 350, sellRate: 400, hsn: "8421", barcode: "Z-140-500-AIR-BRTH" },
     { name: "CASTROL ENGINE OIL(Mobil) -210L", unit: "L", purchaseRate: 278, sellRate: 300, hsn: "2710", barcode: "CASTROL-210L" },
     { name: "PENSOL GEAR OIL", unit: "L", purchaseRate: 289, sellRate: 300, hsn: "2710", barcode: "PENSOL-GEAR-OIL" },
     { name: "PENSOL CHASSIS GREASE", unit: "Nos", purchaseRate: 3350, sellRate: 3500, hsn: "2710", barcode: "PENSOL-CHASSIS-GREASE" },
@@ -802,8 +821,8 @@
     "SUPER-210 (500 Hrs Service)": [
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2400 },
-      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -811,8 +830,8 @@
       { itemName: "S210-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "S210-500-AIR-FLT", qty: 1, rate: 2400 },
       { itemName: "S210-1000-HYD-KIT", qty: 1, rate: 3800 },
-      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "S-210-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "S-210-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -821,8 +840,8 @@
     "SUPER-200 (500 Hrs Service)": [
       { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
       { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -830,8 +849,8 @@
       { itemName: "S200-500-ENG-DSL", qty: 1, rate: 1350 },
       { itemName: "S200-500-AIR-FLT", qty: 1, rate: 2400 },
       { itemName: "S200-1000-HYD-KIT", qty: 1, rate: 3800 },
-      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "S200-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "S200-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -840,8 +859,8 @@
     "ZAXIS-220 (500 Hrs Service)": [
       { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
       { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 600 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 450 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -849,8 +868,8 @@
       { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
       { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
       { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 6500 },
-      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 600 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 450 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -859,8 +878,8 @@
     "SANY-215 (500 Hrs Service)": [
       { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
       { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -868,8 +887,8 @@
       { itemName: "S215-500-ENG-DSL", qty: 1, rate: 2650 },
       { itemName: "S215-500-AIR-FLT", qty: 1, rate: 4800 },
       { itemName: "S215-1000-HYD-KIT", qty: 1, rate: 5200 },
-      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "S215-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "S215-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -878,8 +897,8 @@
     "JCB-215 (500 Hrs Service)": [
       { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
       { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -887,8 +906,8 @@
       { itemName: "JCB215-500-ENG-DSL", qty: 1, rate: 2050 },
       { itemName: "JCB215-500-AIR-FLT", qty: 1, rate: 2650 },
       { itemName: "JCB215-1000-HYD-KIT", qty: 1, rate: 3800 },
-      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "JCB215-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "JCB215-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -897,8 +916,8 @@
     "XCMG-230 (500 Hrs Service)": [
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -906,8 +925,8 @@
       { itemName: "XCMG230-500-ENG-DSL", qty: 1, rate: 2800 },
       { itemName: "XCMG230-500-AIR-FLT", qty: 3650 },
       { itemName: "XCMG230-1000-HYD-KIT", qty: 1, rate: 5400 },
-      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "XCMG230-500-HYD-PLT", qty: 1, rate: 500 },
+      { itemName: "XCMG230-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -916,8 +935,8 @@
     "ZAXIS-140 (500 Hrs Service)": [
       { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 450 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -925,8 +944,8 @@
       { itemName: "Z140-500-ENG-DSL", qty: 1, rate: 2250 },
       { itemName: "Z140-500-AIR-FLT", qty: 1, rate: 1400 },
       { itemName: "Z140-1000-HYD-KIT", qty: 1, rate: 3400 },
-      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 0 },
-      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 0 },
+      { itemName: "Z-140-500-HYD-PLT", qty: 1, rate: 450 },
+      { itemName: "Z-140-500-AIR-BRTH", qty: 1, rate: 400 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -944,6 +963,7 @@
     { vehicleNo: "ZAXIS-140", company: "GOKULESHWAR RD PVT. LTD" }
   ];
 
+  // Accurate Date Normalization (DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD -> YYYY-MM-DD)
   function normalizeDateToYMD(rawDate) {
     if (!rawDate) return "";
     rawDate = String(rawDate).trim();
@@ -982,16 +1002,15 @@
   let vehicleMap = new Map();
   let companySet = new Set(["GOKULESHWAR RD PVT. LTD", "COMRAO PVT. LTD"]);
   let supplierSet = new Set();
-  let supplierItemsMap = {};
   
   let summaryData = [];
   let closingData = [];
   let ledgerData = [];
   let daybookTransactions = [];
 
-  let isStockExpanded = false;
   let isAuthenticated = false;
   let activeSelectedLedgerParty = "";
+  let activeDrillDownVehicle = ""; // For Two-Tier Closing
 
   let activeServiceParts = [];
   let activeServiceName = "";
@@ -1063,6 +1082,7 @@
       document.getElementById("viewClosing").style.display = "block";
       document.getElementById("navClosing").classList.add("active");
       badge.innerText = "Company Closing";
+      activeDrillDownVehicle = "";
       loadClosing();
     }
   }
@@ -1110,6 +1130,7 @@
       toggleFormFields(false);
     }
 
+    document.getElementById("productSelect").value = "";
     document.getElementById("prodComboboxInput").value = "";
     document.getElementById("stockForm").reset();
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
@@ -1124,9 +1145,10 @@
     document.getElementById("driverGroup").classList.toggle("hidden", isIn);
   }
 
-  // 2. Machine & Product Dropdowns
+  // 2. Dropdowns Management
   function renderProductDropdowns() {
     const sel = document.getElementById("productSelect");
+    const modalSel = document.getElementById("modalExtraPartSelect");
     const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
 
     let html = '<option value="">-- Choose From Standard Dropdown --</option>';
@@ -1136,7 +1158,11 @@
     items.forEach(p => { html += `<option value="${p.name}">${p.name}</option>`; });
     html += '</optgroup>';
 
-    sel.innerHTML = html;
+    if (sel) sel.innerHTML = html;
+
+    let modalHtml = '<option value="">-- Choose Extra Part --</option>';
+    items.forEach(p => { modalHtml += `<option value="${p.name}">${p.name} (₹${p.sellRate || p.purchaseRate})</option>`; });
+    if (modalSel) modalSel.innerHTML = modalHtml;
   }
 
   function onStandardProductSelect(val) {
@@ -1174,10 +1200,14 @@
     const pIn = document.getElementById("partySelectInput");
     const pModal = document.getElementById("payModalSupplierSelect");
 
+    const allSupps = new Set(supplierSet);
+    ledgerData.forEach(l => { if (l.party && l.party.trim()) allSupps.add(l.party.trim()); });
+    daybookTransactions.forEach(d => { if (d.type === 'PURCHASE' && d.entity) allSupps.add(d.entity.trim()); });
+
     let pInHtml = '<option value="">-- Select Supplier --</option>';
     let pModalHtml = '<option value="">-- Choose Supplier --</option>';
 
-    Array.from(supplierSet).filter(s => s && s.trim()).sort().forEach(s => {
+    Array.from(allSupps).filter(s => s && s.trim()).sort().forEach(s => {
       pInHtml += `<option value="${s}">${s}</option>`;
       pModalHtml += `<option value="${s}">${s}</option>`;
     });
@@ -1195,7 +1225,7 @@
     }
   }
 
-  // 3. Searchable Combobox (With Up/Down Arrow & Enter Key Selection)
+  // 3. Combobox & Auto-Price Cascading
   function handleComboboxInput(query) {
     const q = (query || "").toLowerCase().trim();
     const dropdown = document.getElementById("comboboxDropdown");
@@ -1256,6 +1286,7 @@
     }
   }
 
+  // Stock Out Auto Price & Total Calculation
   function selectComboboxItem(val, type) {
     document.getElementById("prodComboboxInput").value = val;
     document.getElementById("comboboxDropdown").style.display = "none";
@@ -1275,8 +1306,14 @@
       document.getElementById("hsnInput").value = prod.hsn || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
-      var rateToApply = (voucherMode === "IN") ? (prod.purchaseRate || 0) : (prod.sellRate || prod.purchaseRate || 0);
-      document.getElementById("rateInput").value = rateToApply;
+      // Robust Auto Price Fetch (Sell Rate with Purchase Fallback)
+      let autoRate = 0;
+      if (voucherMode === "IN") {
+        autoRate = Number(prod.purchaseRate) || 0;
+      } else {
+        autoRate = Number(prod.sellRate) || Number(prod.purchaseRate) || 0;
+      }
+      document.getElementById("rateInput").value = autoRate;
 
       const itemStock = summaryData.find(s => s.item === val);
       const badge = document.getElementById("stockInHandBadge");
@@ -1320,11 +1357,11 @@
     calculateTotal();
   }
 
-  // 5. Executive Dashboard Logic
+  // 5. Executive Dashboard Logic (Zero Delay Metrics)
   function renderDashboard() {
     if (!summaryData || summaryData.length === 0) initDefaultSummary();
 
-    const totalVal = summaryData.reduce((a,b) => a + (b.totalValue || 0), 0);
+    const totalVal = summaryData.reduce((a,b) => a + Number(b.totalValue || 0), 0);
     document.getElementById("dashValuation").innerText = "₹" + totalVal.toLocaleString('en-IN');
     document.getElementById("dashSKUs").innerText = summaryData.length + " Catalog Items";
 
@@ -1368,7 +1405,7 @@
     spendGrid.innerHTML = spendHtml;
   }
 
-  // 6. Daybook Logic
+  // 6. Daybook Logic (Accurate Date Match)
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1419,7 +1456,7 @@
     document.getElementById("daybookContent").innerHTML = html;
   }
 
-  // 7. Service Kit Modal (Exact Rates Displayed & Saved)
+  // 7. Service Kit Modal (Standard Select & Rates Displayed)
   function openServiceModal() {
     document.getElementById("serviceModalTitle").innerText = `🛠️ ${activeServiceName}`;
     const container = document.getElementById("serviceItemsList");
@@ -1447,6 +1484,7 @@
 
     container.innerHTML = html;
     document.getElementById("serviceModalGrandTotal").innerText = "₹" + grandTot.toLocaleString('en-IN');
+    renderProductDropdowns();
     document.getElementById("serviceHoursModal").style.display = "flex";
   }
 
@@ -1465,6 +1503,19 @@
     openServiceModal();
   }
   function closeServiceModal() { document.getElementById("serviceHoursModal").style.display = "none"; }
+
+  function addSelectedModalExtraItem() {
+    const selName = document.getElementById("modalExtraPartSelect").value;
+    const qty = parseFloat(document.getElementById("modalExtraPartQty").value) || 1;
+    if (!selName) return alert("Pehle item choose karein!");
+
+    const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
+    const prod = items.find(p => p.name === selName);
+    const rate = prod ? (Number(prod.sellRate) || Number(prod.purchaseRate) || 0) : 0;
+
+    activeServiceParts.push({ itemName: selName, qty: qty, rate: rate, unit: prod ? prod.unit : "Nos" });
+    openServiceModal();
+  }
 
   async function confirmServiceOutward() {
     const vNo = document.getElementById("vehicleSelect").value;
@@ -1523,7 +1574,7 @@
     }
   }
 
-  // 8. Supplier Payment (Instant 0ms Sync)
+  // 8. Supplier Payment (Guaranteed Populated Dropdown & 0ms Sync)
   function openPaySupplierModal() {
     populateSupplierDropdowns();
     document.getElementById("payModalAmount").value = "";
@@ -1596,7 +1647,7 @@
     btn.disabled = true;
     btn.innerText = "Saving to KANPA STORE...";
 
-    const itm = document.getElementById("prodComboboxInput").value.trim();
+    const itm = document.getElementById("prodComboboxInput").value.trim() || document.getElementById("productSelect").value;
     const qty = document.getElementById("qtyInput").value;
     const unit = document.getElementById("unitSelect").value;
     const amt = parseFloat(document.getElementById("totalAmountInput").value) || 0;
@@ -1653,9 +1704,9 @@
     }
   });
 
-  // 10. Ledger Logic (With 1.5s Fallback Against Infinite Loading)
+  // 10. Ledger Logic (Original Clean Summary View Restored)
   async function loadLedger() {
-    renderActiveLedgerView(); // Instantly show whatever is in cache
+    renderActiveLedgerView();
 
     const fetchPromise = fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`).then(r => r.json());
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 1500));
@@ -1665,13 +1716,10 @@
       if (data && data.status === "success" && data.data) {
         ledgerData = data.data;
         saveLocal("KANPA_LEDGER_DATA", ledgerData);
-        supplierItemsMap = data.supplierItemsMap || {};
         ledgerData.forEach(l => { if (l.party && l.party.trim()) supplierSet.add(l.party.trim()); });
         populateSupplierDropdowns();
       }
-    } catch(e) {
-      // Graceful timeout fallback: keep cached data active without freezing
-    }
+    } catch(e) {}
     renderActiveLedgerView();
     renderDashboard();
   }
@@ -1718,7 +1766,7 @@
           <td>₹${item.totalDr.toLocaleString('en-IN')}</td>
           <td style="color:#16a34a;">₹${item.totalCr.toLocaleString('en-IN')}</td>
           <td style="font-weight:bold; color:${item.balance > 0 ? '#dc2626' : '#16a34a'};">₹${item.balance.toLocaleString('en-IN')} Dr</td>
-          <td><button type="button" onclick="openSinglePartyLedger('${name}')" style="background:#2563eb; color:white; border:none; padding:3px 7px; border-radius:4px; font-size:10px; cursor:pointer;">Statement</button></td>
+          <td><button type="button" onclick="openSinglePartyLedger('${name}')" style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:5px; font-size:10.5px; cursor:pointer;">Statement</button></td>
         </tr>`;
       }
     }
@@ -1768,21 +1816,30 @@
     document.getElementById("ledgerContent").innerHTML = html;
   }
 
-  // 11. Month Closing (Company-Wise Split Implementation)
+  // 11. Two-Tier Month Closing (Summary First ➔ Drill-Down Details)
   async function loadClosing() {
-    renderClosingReport();
+    renderClosingCurrentState();
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
       const data = await res.json();
       if (data && data.status === "success") {
         closingData = data.data;
         saveLocal("KANPA_CLOSING_DATA", closingData);
-        renderClosingReport();
+        renderClosingCurrentState();
       }
     } catch(e){}
   }
 
-  function renderClosingReport() {
+  function renderClosingCurrentState() {
+    if (activeDrillDownVehicle) renderClosingDetailedView(activeDrillDownVehicle);
+    else renderClosingSummaryView();
+  }
+
+  function renderClosingSummaryView() {
+    activeDrillDownVehicle = "";
+    document.getElementById("closingHeaderTitle").innerHTML = `<span>🔒 Month Closing (Machine Summary)</span>`;
+    document.getElementById("closingBackBtn").classList.add("hidden");
+
     const sDate = document.getElementById("closingSDate").value;
     const eDate = document.getElementById("closingEDate").value;
 
@@ -1793,83 +1850,95 @@
       return true;
     });
 
-    // Hierarchical Grouping: Company -> Vehicle -> Items
-    const companyGrouped = {
-      "GOKULESHWAR RD PVT. LTD": {},
-      "COMRAO PVT. LTD": {},
-      "OTHER FLEET": {}
-    };
-
+    // Grouping by Machine
+    const summaryMap = {};
     filtered.forEach(item => {
-      let comp = item.company || "";
-      if (!comp && vehicleMap.has(item.vehicle)) {
-        comp = vehicleMap.get(item.vehicle).company || "";
-      }
-      if (!comp || !companyGrouped[comp]) comp = "OTHER FLEET";
-
       const veh = item.vehicle || "UNKNOWN";
-      if (!companyGrouped[comp][veh]) companyGrouped[comp][veh] = [];
-      companyGrouped[comp][veh].push(item);
+      if (!summaryMap[veh]) {
+        let comp = item.company || (vehicleMap.has(veh) ? vehicleMap.get(veh).company : "GENERAL FLEET");
+        summaryMap[veh] = { vehicle: veh, company: comp, count: 0, totalCost: 0 };
+      }
+      summaryMap[veh].count += 1;
+      summaryMap[veh].totalCost += Number(item.amount || 0);
     });
 
     const container = document.getElementById("closingContent");
-    let html = "";
-    let grandFleetCost = 0;
-
-    Object.keys(companyGrouped).forEach(company => {
-      const vehMapObj = companyGrouped[company];
-      const vehKeys = Object.keys(vehMapObj);
-      if (vehKeys.length === 0) return;
-
-      let companyTotal = 0;
-      vehKeys.forEach(v => {
-        companyTotal += vehMapObj[v].reduce((a,b) => a + Number(b.amount || 0), 0);
-      });
-      grandFleetCost += companyTotal;
-
-      html += `
-        <div class="company-closing-card">
-          <div class="company-closing-header">
-            <span>🏢 ${company}</span>
-            <span>Spend: ₹${companyTotal.toLocaleString('en-IN')}</span>
-          </div>`;
-
-      vehKeys.forEach(veh => {
-        const items = vehMapObj[veh];
-        const vCost = items.reduce((a,b) => a + Number(b.amount || 0), 0);
-
-        html += `
-          <div class="vehicle-section-row">
-            <div class="vehicle-head-label">
-              <span>🚜 ${veh}</span>
-              <span>Subtotal: ₹${vCost.toLocaleString('en-IN')}</span>
-            </div>
-            <table class="custom-table" style="margin-top:4px;">
-              <thead><tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Cost</th></tr></thead><tbody>`;
-        items.forEach(it => {
-          html += `<tr><td>${it.displayDate || it.date}</td><td>${it.item}</td><td>${it.qty} ${it.unit || ''}</td><td>₹${Number(it.amount || 0).toLocaleString('en-IN')}</td></tr>`;
-        });
-        html += `</tbody></table></div>`;
-      });
-
-      html += `</div>`;
-    });
-
-    if (!html) {
+    const keys = Object.keys(summaryMap).sort();
+    if (keys.length === 0) {
       container.innerHTML = "<p style='text-align:center; color:#64748b; padding:12px;'>No records found for selected period.</p>";
       return;
     }
 
+    let grandTot = 0;
+    let html = "";
+    keys.forEach(veh => {
+      const row = summaryMap[veh];
+      grandTot += row.totalCost;
+      html += `
+        <div class="summary-veh-card">
+          <div>
+            <div style="font-size:12.5px; font-weight:800; color:#0f172a;">🚜 ${row.vehicle}</div>
+            <div style="font-size:10px; color:#64748b;">${row.company} • ${row.count} parts issued</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12.5px; font-weight:800; color:#2563eb; margin-bottom:3px;">₹${row.totalCost.toLocaleString('en-IN')}</div>
+            <button type="button" class="btn-detail-drill" onclick="drillDownMachineClosing('${row.vehicle}')">👁️ View Details</button>
+          </div>
+        </div>`;
+    });
+
     container.innerHTML = `
       <div style="padding:8px 10px; background:#eff6ff; border-radius:8px; margin-bottom:10px; font-weight:bold; font-size:12px; color:#1e40af; display:flex; justify-content:space-between;">
         <span>Total Fleet Spend:</span>
-        <span>₹${grandFleetCost.toLocaleString('en-IN')}</span>
+        <span>₹${grandTot.toLocaleString('en-IN')}</span>
       </div>
       ${html}
     `;
   }
 
-  // 12. Stock Summary
+  function drillDownMachineClosing(veh) {
+    activeDrillDownVehicle = veh;
+    renderClosingCurrentState();
+  }
+
+  function renderClosingDetailedView(veh) {
+    document.getElementById("closingHeaderTitle").innerHTML = `<span>Slip: 🚜 ${veh}</span>`;
+    document.getElementById("closingBackBtn").classList.remove("hidden");
+
+    const sDate = document.getElementById("closingSDate").value;
+    const eDate = document.getElementById("closingEDate").value;
+
+    const filtered = closingData.filter(c => {
+      if ((c.vehicle || "UNKNOWN") !== veh) return false;
+      const cDate = normalizeDateToYMD(c.date || c.displayDate);
+      if (sDate && cDate < sDate) return false;
+      if (eDate && cDate > eDate) return false;
+      return true;
+    });
+
+    const vCost = filtered.reduce((a,b) => a + Number(b.amount || 0), 0);
+    let html = `
+      <div style="padding:8px 10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:10px; font-weight:bold; font-size:11.5px; display:flex; justify-content:space-between;">
+        <span>Total Issues for ${veh}:</span>
+        <span style="color:#2563eb;">₹${vCost.toLocaleString('en-IN')}</span>
+      </div>
+      <table class="custom-table">
+        <thead><tr><th>Date</th><th>Part Name</th><th>Qty</th><th>Cost</th></tr></thead><tbody>`;
+
+    filtered.forEach(it => {
+      html += `<tr>
+        <td>${it.displayDate || it.date}</td>
+        <td><b>${it.item}</b></td>
+        <td>${it.qty} ${it.unit || ''}</td>
+        <td>₹${Number(it.amount || 0).toLocaleString('en-IN')}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+
+    document.getElementById("closingContent").innerHTML = html;
+  }
+
+  // 12. Stock Summary (Sticky Header Table & Valuation Card)
   async function loadSummary(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
@@ -1896,33 +1965,26 @@
   function renderSummaryTable() {
     const q = (document.getElementById("summarySearch").value || "").toLowerCase();
     const filtered = summaryData.filter(s => s.item.toLowerCase().includes(q));
-    const itemsToShow = (q.length > 0 || isStockExpanded) ? filtered : filtered.slice(0, 8);
+
+    const totalVal = summaryData.reduce((a,b) => a + Number(b.totalValue || 0), 0);
+    document.getElementById("stockTabValuationText").innerText = "₹" + totalVal.toLocaleString('en-IN');
+    document.getElementById("stockTabItemCount").innerText = summaryData.length + " Catalog Items";
 
     let html = `<table class="custom-table">
       <thead><tr><th>Spare Part / Cheat Code</th><th>In</th><th>Out</th><th>Left</th><th>Valuation</th></tr></thead><tbody>`;
     
-    itemsToShow.forEach(s => {
+    filtered.forEach(s => {
       html += `<tr>
         <td><b>${s.item}</b></td>
         <td>${s.totalIn}</td>
         <td>${s.totalOut}</td>
         <td style="font-weight:bold; color:${s.balance<=2?'#dc2626':'#16a34a'};">${s.balance}</td>
-        <td>₹${s.totalValue.toLocaleString('en-IN')}</td>
+        <td>₹${Number(s.totalValue).toLocaleString('en-IN')}</td>
       </tr>`;
     });
     html += `</tbody></table>`;
     document.getElementById("summaryTableContent").innerHTML = html;
-
-    const btn = document.getElementById("stockSeeMoreBtn");
-    if (q.length > 0 || filtered.length <= 8) btn.style.display = "none";
-    else {
-      btn.style.display = "block";
-      btn.innerText = isStockExpanded ? "▲ Show Less Items" : `👁️ See More Items (+${filtered.length - 8} More)`;
-    }
   }
-
-  function toggleStockSeeMore() { isStockExpanded = !isStockExpanded; renderSummaryTable(); }
-  function onSummarySearchInput(val) { if (val.trim().length > 0) isStockExpanded = true; renderSummaryTable(); }
 
   // 13. Scanner
   function openScannerModal(targetInputId) {
@@ -2091,7 +2153,6 @@
     renderVehicleDropdown();
     populateSupplierDropdowns();
 
-    // Default open on Home/Dashboard
     switchNav('HOME');
 
     fetchMasterData();
