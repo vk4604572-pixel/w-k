@@ -79,7 +79,6 @@
     }
     input:focus, select:focus { border-color: #2563eb; }
 
-    /* Mobile and Desktop Cross-Compatible Select Styling */
     select {
       -webkit-appearance: menulist;
       appearance: menulist;
@@ -97,7 +96,6 @@
     .btn-submit { width: 100%; padding: 13px; background: #16a34a; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }
     .hidden { display: none !important; }
 
-    /* Highlighted In-Store Qty Capsule */
     .stock-badge-highlight {
       display: inline-flex;
       align-items: center;
@@ -111,26 +109,28 @@
       border: 1.5px solid #4338ca;
     }
 
-    /* Full-Height Spacious Stock View */
-    .table-container-roomy {
-      min-height: 60vh;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
+    /* Fixed Sticky Header for Stock Table */
+    .table-container-sticky {
+      height: 65vh;
+      overflow-y: auto;
       overflow-x: auto;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      position: relative;
     }
-    .custom-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-    .custom-table th, .custom-table td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+    .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; }
+    .custom-table th, .custom-table td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 9px 8px; text-align: left; }
     .custom-table th { 
-      background: #0f172a; 
-      color: #fff; 
-      font-weight: 700; 
+      background: #0f172a !important; 
+      color: #ffffff !important; 
+      font-weight: 800; 
       font-size: 11px;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
 
-    /* Mobile Cross-Device Highlighted Dropdown Header */
     .combobox-container { position: relative; width: 100%; margin-bottom: 8px; }
     .combobox-input { width: 100%; padding: 9px 11px; border: 1.5px solid #2563eb; border-radius: 8px; font-size: 12px; background: #fffdf5; }
     .combobox-dropdown {
@@ -351,7 +351,7 @@
       </div>
     </div>
 
-    <!-- 2. MAIN VOUCHER ENTRY FORM (SEARCH ABOVE DROPDOWN + AUTO-PRICE) -->
+    <!-- 2. MAIN VOUCHER ENTRY FORM (CLEAN NAMES ONLY) -->
     <div id="viewVoucher" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="voucherFormTitle">
@@ -373,14 +373,13 @@
             </div>
           </div>
 
-          <!-- Search Upar, Dropdown Neeche -->
           <div class="form-group">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <label style="margin:0;">Select Item / Spare Part / Service Kit</label>
               <span id="stockInHandBadge" class="stock-badge-highlight hidden"></span>
             </div>
             
-            <!-- 1. Search Box Upar -->
+            <!-- Search Box Upar -->
             <div class="combobox-container">
               <input type="text" id="prodComboboxInput" class="combobox-input"
                      placeholder="🔍 Search Cheat Code / Part (Arrow Keys Supported)..."
@@ -390,7 +389,7 @@
               <div id="comboboxDropdown" class="combobox-dropdown"></div>
             </div>
 
-            <!-- 2. Standard Dropdown + Clean ➕ Button Neeche -->
+            <!-- Clean Dropdown (No emojis/prefixes in item name) -->
             <div style="display:flex; gap:6px;">
               <select id="productSelect" onchange="onStandardProductSelect(this.value)" style="flex:1;">
                 <option value="">-- Choose From Standard Dropdown --</option>
@@ -486,7 +485,7 @@
       </div>
     </div>
 
-    <!-- 3. STOCK INVENTORY TAB (ROOMY AND SPACIOUS) -->
+    <!-- 3. STOCK INVENTORY TAB (STICKY FROZEN HEADER) -->
     <div id="viewStock" style="display:none;">
       <div class="card-box">
         <div class="card-title">
@@ -508,7 +507,7 @@
         <input type="text" id="summarySearch" placeholder="🔍 Search part or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
         
         <div id="summaryPrintTarget">
-          <div class="table-container-roomy" id="summaryTableContent">Loading stock...</div>
+          <div class="table-container-sticky" id="summaryTableContent">Loading stock...</div>
         </div>
       </div>
     </div>
@@ -625,7 +624,7 @@
   </div>
 </div>
 
-<!-- Modals -->
+<!-- Clean Modals -->
 <div class="modal" id="addSupplierModal">
   <div class="modal-content" style="max-width:350px;">
     <h3 style="margin-top:0; font-size:14px; color:#d97706;">➕ Add New Supplier</h3>
@@ -672,7 +671,6 @@
   </div>
 </div>
 
-<!-- Modal 4: Clean Product Add Modal -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:350px;">
     <h3 style="margin-top:0; font-size:14px; color:#2563eb;">➕ Add New Product</h3>
@@ -873,7 +871,7 @@
       { itemName: "Z220-500-ENG-DSL", qty: 1, rate: 3200 },
       { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
       { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 600 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 450 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 450 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 }
     ],
@@ -976,7 +974,6 @@
     { vehicleNo: "ZAXIS-140", company: "GOKULESHWAR RD PVT. LTD" }
   ];
 
-  /* Universal Robust Date Normalizer */
   function normalizeDateToYMD(rawDate) {
     if (!rawDate) return "";
     try {
@@ -1160,7 +1157,7 @@
     document.getElementById("driverGroup").classList.toggle("hidden", isIn);
   }
 
-  /* Universal Dropdown Populator (Mobile + PC Compatible) */
+  /* Clean Product Dropdown: No icons or extra prefixes in item name */
   function renderProductDropdowns() {
     const sel = document.getElementById("productSelect");
     const modalSel = document.getElementById("modalExtraPartSelect");
@@ -1169,20 +1166,20 @@
     let html = '<option value="">-- Choose From Standard Dropdown --</option>';
     html += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
     Object.keys(MASTER_SERVICE_KITS).forEach(k => { 
-      html += `<option value="${k}">⚙️ ${k}</option>`; 
+      html += `<option value="${k}">${k}</option>`; 
     });
     html += '</optgroup>';
     
     html += '<optgroup label="📦 PARTS & OILS">';
     items.forEach(p => { 
-      html += `<option value="${p.name}">📦 ${p.name}</option>`; 
+      html += `<option value="${p.name}">${p.name}</option>`; 
     });
     html += '</optgroup>';
 
     if (sel) sel.innerHTML = html;
 
     let modalHtml = '<option value="">-- Choose Extra Part --</option>';
-    items.forEach(p => { modalHtml += `<option value="${p.name}">📦 ${p.name} (₹${p.sellRate || p.purchaseRate})</option>`; });
+    items.forEach(p => { modalHtml += `<option value="${p.name}">${p.name} (₹${p.sellRate || p.purchaseRate})</option>`; });
     if (modalSel) modalSel.innerHTML = modalHtml;
   }
 
@@ -1250,7 +1247,7 @@
     }
   }
 
-  /* Search with High-Contrast Mobile + Desktop Headers */
+  /* Search with High-Contrast Header and Clean Item Names */
   function handleComboboxInput(query) {
     const q = (query || "").toLowerCase().trim();
     const dropdown = document.getElementById("comboboxDropdown");
@@ -1283,11 +1280,11 @@
     let overallIdx = 0;
 
     if (matchedKits.length > 0) {
-      html += `<div class="combobox-group-header">⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)</div>`;
+      html += `<div class="combobox-group-header">SERVICE HOURS KITS (500 / 1000 Hrs)</div>`;
       matchedKits.slice(0, 8).forEach(item => {
         html += `
           <div class="combobox-item" id="cbItem_${overallIdx}" onclick="selectComboboxItem('${item.name.replace(/'/g, "\\'")}', '${item.type}')">
-            <span><b>⚙️ ${item.name}</b></span>
+            <span><b>${item.name}</b></span>
             <span style="font-size:9.5px; background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px; font-weight:800;">KIT</span>
           </div>`;
         overallIdx++;
@@ -1295,11 +1292,11 @@
     }
 
     if (matchedParts.length > 0) {
-      html += `<div class="combobox-group-header">📦 PARTS & OILS</div>`;
+      html += `<div class="combobox-group-header">PARTS & OILS</div>`;
       matchedParts.slice(0, 15).forEach(item => {
         html += `
           <div class="combobox-item" id="cbItem_${overallIdx}" onclick="selectComboboxItem('${item.name.replace(/'/g, "\\'")}', '${item.type}')">
-            <span><b>📦 ${item.name}</b></span>
+            <span><b>${item.name}</b></span>
             <span style="font-size:9.5px; background:#f1f5f9; color:#334155; padding:2px 6px; border-radius:4px; font-weight:800;">PART</span>
           </div>`;
         overallIdx++;
@@ -1333,7 +1330,6 @@
     }
   }
 
-  /* Reliable Auto-Price Logic & Dynamic Left Qty */
   function selectComboboxItem(val, type) {
     document.getElementById("prodComboboxInput").value = val;
     document.getElementById("comboboxDropdown").style.display = "none";
@@ -1353,7 +1349,7 @@
       document.getElementById("hsnInput").value = prod.hsn || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
-      // 100% Reliable Auto-Price Fill
+      // Auto-Price Fill
       let autoRate = 0;
       if (voucherMode === "IN") {
         autoRate = parseFloat(prod.purchaseRate) || 0;
@@ -1403,7 +1399,6 @@
     calculateTotal();
   }
 
-  /* Exact Dashboard Sync & Fleet Spend Matrix */
   function renderDashboard() {
     if (!summaryData || summaryData.length === 0) initDefaultSummary();
 
@@ -1413,7 +1408,6 @@
 
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
 
-    // Filter daybook & fleet matrix strictly with normalized date
     const dayFiltered = daybookTransactions.filter(d => {
       const raw = d.date || d.time || "";
       return normalizeDateToYMD(raw) === dVal;
@@ -1429,7 +1423,7 @@
     const totalDue = ledgerData.reduce((acc, l) => acc + ((Number(l.dr) || 0) - (Number(l.cr) || 0)), 0);
     document.getElementById("dashSupplierDue").innerText = "₹" + Math.max(0, totalDue).toLocaleString('en-IN');
 
-    // Fleet Spend Matrix for the chosen Date
+    // Fleet Spend Matrix strictly synchronized with the chosen date
     const spendMap = {};
     dayIssues.forEach(d => {
       if (d.entity) spendMap[d.entity] = (spendMap[d.entity] || 0) + Number(d.amount || 0);
@@ -1452,7 +1446,6 @@
     spendGrid.innerHTML = spendHtml;
   }
 
-  /* Reliable Daybook Movements Sync */
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1684,7 +1677,7 @@
     }
   }
 
-  /* Form submission (Zero Tampering, stays on the form) */
+  /* Form submission (Stays on the form without redirecting) */
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
@@ -1751,7 +1744,7 @@
     }
   });
 
-  /* Restored Supplier Ledger */
+  /* Supplier Ledger (Preserved Working Reference Logic) */
   async function loadLedger() {
     renderActiveLedgerView();
 
@@ -1890,7 +1883,7 @@
     container.innerHTML = html;
   }
 
-  /* Month Closing Company-Wise */
+  /* Two-Tier Month Closing */
   async function loadClosing() {
     renderClosingReport();
 
@@ -2042,7 +2035,7 @@
     container.innerHTML = html;
   }
 
-  // Stock Summary
+  // Stock Summary with Frozen Header
   async function loadSummary(silent = false) {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getSummary&t=${Date.now()}`);
@@ -2075,7 +2068,7 @@
     document.getElementById("stockTabItemCount").innerText = summaryData.length + " Catalog Items";
 
     let html = `<table class="custom-table">
-      <thead><tr><th>Spare Part / Cheat Code</th><th>In</th><th>Out</th><th>Left</th><th>Valuation</th></tr></thead><tbody>`;
+      <thead><tr><th>Part Name / Cheat Code</th><th>Total In</th><th>Total Out</th><th>Left</th><th>Valuation</th></tr></thead><tbody>`;
     
     filtered.forEach(s => {
       html += `<tr>
