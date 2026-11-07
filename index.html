@@ -11,7 +11,6 @@
     
     .app-shell { max-width: 640px; margin: auto; background: #ffffff; min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.06); }
     
-    /* Top Header Bar */
     .top-bar {
       position: sticky;
       top: 0;
@@ -29,7 +28,6 @@
 
     .content-area { padding: 14px; }
 
-    /* Executive KPI Cards */
     .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
     .kpi-card { 
       background: #f8fafc; 
@@ -64,9 +62,9 @@
       margin-bottom: 10px;
     }
 
-    /* Forms */
     .form-group { margin-bottom: 11px; position: relative; }
     label { display: block; margin-bottom: 4px; font-weight: 700; font-size: 11px; color: #475569; }
+    
     input, select { 
       width: 100%; 
       padding: 9px 11px; 
@@ -75,8 +73,25 @@
       font-size: 12px !important; 
       background: #fff; 
       outline: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     input:focus, select:focus { border-color: #2563eb; }
+
+    /* Highlighted Optgroup Headers in Native Select */
+    select optgroup {
+      font-weight: 900 !important;
+      color: #1e3a8a !important;
+      background-color: #e0e7ff !important;
+      padding: 6px;
+    }
+    select option {
+      font-weight: normal;
+      color: #0f172a;
+      background-color: #ffffff;
+      padding: 4px 6px;
+    }
 
     .qty-stepper-row { display: flex; gap: 6px; }
     .stepper-btn { width: 44px; background: #e2e8f0; border: 1.5px solid #cbd5e1; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; }
@@ -84,12 +99,27 @@
 
     .barcode-row { display: flex; gap: 6px; }
     .btn-scan { background: #0d9488; color: white; border: none; padding: 0 14px; border-radius: 8px; font-weight: bold; font-size: 11.5px; cursor: pointer; }
-    .btn-add-mini { background: #2563eb; color: white; border: none; padding: 0 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .btn-add-mini { background: #2563eb; color: white; border: none; padding: 0 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; flex-shrink: 0; }
 
     .btn-submit { width: 100%; padding: 13px; background: #16a34a; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }
     .hidden { display: none !important; }
 
-    /* Tables */
+    /* Left Qty Highlighted Capsule */
+    .stock-badge-highlight {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 16px;
+      letter-spacing: 0.3px;
+      background: #e0e7ff;
+      color: #1e1b4b;
+      border: 1.5px solid #4338ca;
+      box-shadow: 0 2px 6px rgba(67, 56, 202, 0.2);
+    }
+
     .table-container-sticky {
       max-height: 420px;
       overflow-y: auto;
@@ -108,7 +138,6 @@
       z-index: 10;
     }
 
-    /* Combobox Styling */
     .combobox-container { position: relative; width: 100%; }
     .combobox-input { width: 100%; padding: 9px 11px; border: 1.5px solid #2563eb; border-radius: 8px; font-size: 12px; background: #fffdf5; }
     .combobox-dropdown {
@@ -120,11 +149,26 @@
       border: 1.5px solid #2563eb;
       border-top: none;
       border-radius: 0 0 10px 10px;
-      max-height: 230px;
+      max-height: 250px;
       overflow-y: auto;
       z-index: 1000;
       box-shadow: 0 12px 24px rgba(0,0,0,0.18);
       display: none;
+    }
+    
+    /* Highlighted Custom Search Group Headers */
+    .combobox-group-header {
+      background: #e0e7ff;
+      color: #1e3a8a;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 7px 10px;
+      letter-spacing: 0.5px;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
     .combobox-item {
       padding: 9px 12px;
@@ -134,13 +178,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .combobox-item:hover, .combobox-item.active { background: #eff6ff !important; color: #1d4ed8 !important; font-weight: 800 !important; }
-    .badge-tag { font-size: 9.5px; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
-    .badge-tag-kit { background: #fef3c7; color: #92400e; }
-    .badge-tag-part { background: #e2e8f0; color: #334155; }
 
-    /* Summarized Closing Machine Cards */
     .summary-veh-card {
       background: #ffffff;
       border: 1.5px solid #cbd5e1;
@@ -161,9 +204,7 @@
       font-size: 11px;
       cursor: pointer;
     }
-    .btn-detail-drill:active { background: #1d4ed8; }
 
-    /* Bottom App Bar (72px) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -267,7 +308,7 @@
 
   <div class="content-area">
 
-    <!-- 1. HOME / DASHBOARD (MERGED WITH DAYBOOK) -->
+    <!-- 1. HOME / DASHBOARD -->
     <div id="viewHome">
       <div class="kpi-grid">
         <div class="kpi-card kpi-card-val">
@@ -320,7 +361,7 @@
       </div>
     </div>
 
-    <!-- 2. MAIN VOUCHER ENTRY FORM -->
+    <!-- 2. MAIN VOUCHER ENTRY FORM (STAYS ON FORM AFTER SAVE) -->
     <div id="viewVoucher" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="voucherFormTitle">
@@ -343,16 +384,18 @@
           </div>
 
           <div class="form-group">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label>Select Item / Spare Part / Service Kit</label>
-              <span id="stockInHandBadge" class="stock-badge hidden"></span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label style="margin:0;">Select Item / Spare Part / Service Kit</label>
+              <!-- Bold Highlighted Qty Capsule -->
+              <span id="stockInHandBadge" class="stock-badge-highlight hidden"></span>
             </div>
             
             <div style="display:flex; gap:6px; margin-bottom:6px;">
               <select id="productSelect" onchange="onStandardProductSelect(this.value)" style="flex:1;">
                 <option value="">-- Choose From Standard Dropdown --</option>
               </select>
-              <button type="button" class="btn-add-mini" onclick="openAddProductModal()" title="Add Product">➕</button>
+              <!-- Clean Add Product ➕ Button -->
+              <button type="button" class="btn-add-mini" onclick="openAddProductModal()" title="Add Clean Item Name">➕</button>
             </div>
 
             <div class="combobox-container">
@@ -479,11 +522,11 @@
       </div>
     </div>
 
-    <!-- 4. SUPPLIER LEDGER TAB -->
+    <!-- 4. SUPPLIER LEDGER TAB (ORIGINAL RELIABLE LOGIC RESTORED) -->
     <div id="viewLedger" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="ledgerHeadingTitle">
-          <span>Supplier Ledger Summary</span>
+          <span>Supplier Balances Summary</span>
           <div style="display:flex; gap:6px;">
             <button type="button" onclick="openPaySupplierModal()" style="padding:4px 8px; font-size:10px; background:#dc2626; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">💳 Pay</button>
             <button type="button" id="ledgerBackBtn" class="hidden" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10px; background:#2563eb; color:white; border:none; border-radius:5px; cursor:pointer;">⬅ All</button>
@@ -491,9 +534,12 @@
           </div>
         </div>
 
-        <div style="display:flex; gap:6px; margin-bottom:8px;">
-          <input type="date" id="ledgerSDate" onchange="renderActiveLedgerView()" style="flex:1;">
-          <input type="date" id="ledgerEDate" onchange="renderActiveLedgerView()" style="flex:1;">
+        <div style="display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
+          <input type="date" id="ledgerSDate" onchange="renderActiveLedgerView()" style="flex:1; min-width:130px;">
+          <input type="date" id="ledgerEDate" onchange="renderActiveLedgerView()" style="flex:1; min-width:130px;">
+          <select id="ledgerPartyFilter" onchange="onLedgerPartyDropdownChange(this.value)" style="flex:1.5; min-width:160px;">
+            <option value="">-- All Suppliers (Summary) --</option>
+          </select>
         </div>
         
         <div id="ledgerPrintTarget">
@@ -502,11 +548,11 @@
       </div>
     </div>
 
-    <!-- 5. MONTH CLOSING (TWO-TIER DRILL-DOWN: SUMMARY FIRST) -->
+    <!-- 5. MONTH CLOSING (COMPANY-WISE & MACHINE-WISE SUMMARY FIRST) -->
     <div id="viewClosing" style="display:none;">
       <div class="card-box">
         <div class="card-title">
-          <span id="closingHeaderTitle">🔒 Month Closing (Machine Summary)</span>
+          <span id="closingHeaderTitle">🔒 Month Closing (Company & Machine Summary)</span>
           <div style="display:flex; gap:6px;">
             <button type="button" id="closingBackBtn" class="hidden" onclick="renderClosingSummaryView()" style="padding:4px 8px; font-size:10px; background:#2563eb; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">⬅ Back to Summary</button>
             <button type="button" onclick="printTargetSection('closingPrintTarget', 'KANPA STORE - Month Closing')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">🖨️ Print</button>
@@ -635,12 +681,13 @@
   </div>
 </div>
 
+<!-- Modal 4: Clean Product Add Modal (Extra fields removed) -->
 <div class="modal" id="addProductModal">
-  <div class="modal-content" style="max-width:380px;">
-    <h3 style="margin-top:0; font-size:14px; color:#2563eb;">➕ Add Product</h3>
+  <div class="modal-content" style="max-width:350px;">
+    <h3 style="margin-top:0; font-size:14px; color:#2563eb;">➕ Add New Product</h3>
     <div class="form-group">
-      <label>Cheat Code / Item Name</label>
-      <input type="text" id="newProdName" placeholder="e.g. S210-500-ENG-DSL">
+      <label>Product Name / Cheat Code</label>
+      <input type="text" id="newProdName" placeholder="Enter clean product name" required>
     </div>
     <div class="form-group">
       <label>Unit</label>
@@ -652,35 +699,14 @@
         <option value="Mtr">Mtr</option>
       </select>
     </div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-      <div class="form-group">
-        <label>Purchase Price (₹)</label>
-        <input type="number" id="newProdPurchaseRate" placeholder="Kharid Rate">
-      </div>
-      <div class="form-group">
-        <label>Sell Price (₹)</label>
-        <input type="number" id="newProdSellRate" placeholder="Bikri Rate">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>HSN Code</label>
-      <input type="text" id="newProdHsn" value="8421">
-    </div>
-    <div class="form-group">
-      <label>Barcode</label>
-      <div class="barcode-row">
-        <input type="text" id="newProdBarcode" placeholder="Barcode...">
-        <button type="button" class="btn-scan" onclick="openScannerModal('newProdBarcode')">📷</button>
-      </div>
-    </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#16a34a; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save</button>
-      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
+      <button type="button" id="saveProdBtn" onclick="saveNewProductAction()" style="flex:1; background:#16a34a; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Save Product</button>
+      <button type="button" onclick="closeAddProductModal()" style="flex:1; background:#64748b; color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- PAY SUPPLIER MODAL -->
+<!-- PAY SUPPLIER MODAL (FULLY POPULATED DROPDOWN) -->
 <div class="modal" id="paySupplierModal">
   <div class="modal-content" style="max-width:360px;">
     <h3 style="margin-top:0; font-size:14px; color:#dc2626;">💳 Pay to Supplier</h3>
@@ -751,7 +777,7 @@
         <select id="modalExtraPartSelect" style="flex:2; font-size:11px;">
           <option value="">-- Choose Extra Part --</option>
         </select>
-        <button type="button" class="btn-add-mini" style="background:#2563eb;" onclick="openAddProductModal()" title="Add New Product">➕</button>
+        <button type="button" class="btn-add-mini" style="background:#2563eb;" onclick="openAddProductModal()" title="Add Clean Item">➕</button>
       </div>
       <div style="display:flex; gap:5px;">
         <input type="number" id="modalExtraPartQty" placeholder="Qty" value="1" style="width:55px; font-size:11px;">
@@ -866,7 +892,7 @@
       { itemName: "Z220-500-AIR-FLT", qty: 1, rate: 3300 },
       { itemName: "Z220-1000-HYD-KIT", qty: 1, rate: 6500 },
       { itemName: "Z220-500-HYD-PLT", qty: 1, rate: 600 },
-      { itemName: "Z220-500-AIR-BRTH", qty: 1, rate: 450 },
+      { itemName: "Z220-500-AIR-BRTH", qty: 450 },
       { itemName: "CASTROL ENGINE OIL(Mobil) -210L", qty: 20, rate: 300 },
       { itemName: "PENSOL GEAR OIL", qty: 20, rate: 300 },
       { itemName: "PENSOL CHASSIS GREASE", qty: 1, rate: 3500 },
@@ -959,30 +985,6 @@
     { vehicleNo: "XCMG-230", company: "COMRAO PVT. LTD" },
     { vehicleNo: "ZAXIS-140", company: "GOKULESHWAR RD PVT. LTD" }
   ];
-
-  // Robust Date Parser (Safe against null/undefined)
-  function normalizeDateToYMD(rawDate) {
-    if (!rawDate) return "";
-    try {
-      rawDate = String(rawDate).trim();
-      if (rawDate.includes("/") || (rawDate.includes("-") && rawDate.indexOf("-") <= 2)) {
-        const sep = rawDate.includes("/") ? "/" : "-";
-        const datePart = rawDate.split(" ")[0];
-        const parts = datePart.split(sep);
-        if (parts.length === 3) {
-          const d = parts[0].padStart(2, "0");
-          const m = parts[1].padStart(2, "0");
-          let y = parts[2];
-          if (y.length === 2) y = "20" + y;
-          return `${y}-${m}-${d}`;
-        }
-      }
-      if (rawDate.includes("-")) {
-        return rawDate.split("T")[0].split(" ")[0];
-      }
-    } catch(e) {}
-    return String(rawDate);
-  }
 
   function extractTimeOnly(rawDate) {
     if (!rawDate) return "10:00 AM";
@@ -1130,6 +1132,7 @@
 
     document.getElementById("productSelect").value = "";
     document.getElementById("prodComboboxInput").value = "";
+    document.getElementById("stockInHandBadge").classList.add("hidden");
     document.getElementById("stockForm").reset();
     document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
   }
@@ -1143,15 +1146,17 @@
     document.getElementById("driverGroup").classList.toggle("hidden", isIn);
   }
 
+  /* Render Dropdown with Highlighted and Bold Optgroups */
   function renderProductDropdowns() {
     const sel = document.getElementById("productSelect");
     const modalSel = document.getElementById("modalExtraPartSelect");
     const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
 
     let html = '<option value="">-- Choose From Standard Dropdown --</option>';
-    html += '<optgroup label="⚙️ SERVICE HOURS KITS">';
+    html += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
     Object.keys(MASTER_SERVICE_KITS).forEach(k => { html += `<option value="${k}">${k}</option>`; });
-    html += '</optgroup><optgroup label="📦 PARTS & OILS">';
+    html += '</optgroup>';
+    html += '<optgroup label="📦 PARTS & OILS">';
     items.forEach(p => { html += `<option value="${p.name}">${p.name}</option>`; });
     html += '</optgroup>';
 
@@ -1196,21 +1201,25 @@
   function populateSupplierDropdowns() {
     const pIn = document.getElementById("partySelectInput");
     const pModal = document.getElementById("payModalSupplierSelect");
+    const ledSup = document.getElementById("ledgerPartyFilter");
 
     const allSupps = new Set(supplierSet);
-    ledgerData.forEach(l => { if (l.party && l.party.trim()) allSupps.add(l.party.trim()); });
+    ledgerData.forEach(l => { if (l && (l.party || l.partyName)) allSupps.add((l.party || l.partyName).trim()); });
     daybookTransactions.forEach(d => { if (d.type === 'PURCHASE' && d.entity) allSupps.add(d.entity.trim()); });
 
     let pInHtml = '<option value="">-- Select Supplier --</option>';
     let pModalHtml = '<option value="">-- Choose Supplier --</option>';
+    let ledSupHtml = '<option value="">-- All Suppliers (Summary) --</option>';
 
     Array.from(allSupps).filter(s => s && s.trim()).sort().forEach(s => {
       pInHtml += `<option value="${s}">${s}</option>`;
       pModalHtml += `<option value="${s}">${s}</option>`;
+      ledSupHtml += `<option value="${s}">${s}</option>`;
     });
 
     if (pIn) pIn.innerHTML = pInHtml;
     if (pModal) pModal.innerHTML = pModalHtml;
+    if (ledSup) ledSup.innerHTML = ledSupHtml;
   }
 
   function onVehicleSelect(vNo) {
@@ -1222,6 +1231,7 @@
     }
   }
 
+  /* Search with Highlighted Headers */
   function handleComboboxInput(query) {
     const q = (query || "").toLowerCase().trim();
     const dropdown = document.getElementById("comboboxDropdown");
@@ -1230,15 +1240,19 @@
 
     const items = productList.length > 0 ? productList : DEFAULT_FALLBACK_PRODUCTS;
 
+    const matchedKits = [];
     Object.keys(MASTER_SERVICE_KITS).forEach(k => {
-      if (!q || k.toLowerCase().includes(q)) comboboxFiltered.push({ name: k, type: "KIT" });
+      if (!q || k.toLowerCase().includes(q)) matchedKits.push({ name: k, type: "KIT" });
     });
 
+    const matchedParts = [];
     items.forEach(p => {
       if (!q || p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.toLowerCase().includes(q))) {
-        comboboxFiltered.push({ name: p.name, type: "PART", partObj: p });
+        matchedParts.push({ name: p.name, type: "PART", partObj: p });
       }
     });
+
+    comboboxFiltered = [...matchedKits, ...matchedParts];
 
     if (comboboxFiltered.length === 0) {
       dropdown.innerHTML = `<div style="padding:10px; font-size:11px; color:#64748b;">Koi item match nahi hua...</div>`;
@@ -1247,13 +1261,31 @@
     }
 
     let html = "";
-    comboboxFiltered.slice(0, 15).forEach((item, idx) => {
-      html += `
-        <div class="combobox-item" id="cbItem_${idx}" onclick="selectComboboxItem('${item.name.replace(/'/g, "\\'")}', '${item.type}')">
-          <span><b>${item.name}</b></span>
-          <span class="badge-tag ${item.type==='KIT'?'badge-tag-kit':'badge-tag-part'}">${item.type}</span>
-        </div>`;
-    });
+    let overallIdx = 0;
+
+    if (matchedKits.length > 0) {
+      html += `<div class="combobox-group-header">⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)</div>`;
+      matchedKits.slice(0, 8).forEach(item => {
+        html += `
+          <div class="combobox-item" id="cbItem_${overallIdx}" onclick="selectComboboxItem('${item.name.replace(/'/g, "\\'")}', '${item.type}')">
+            <span><b>${item.name}</b></span>
+            <span class="badge-tag badge-tag-kit">${item.type}</span>
+          </div>`;
+        overallIdx++;
+      });
+    }
+
+    if (matchedParts.length > 0) {
+      html += `<div class="combobox-group-header">📦 PARTS & OILS</div>`;
+      matchedParts.slice(0, 15).forEach(item => {
+        html += `
+          <div class="combobox-item" id="cbItem_${overallIdx}" onclick="selectComboboxItem('${item.name.replace(/'/g, "\\'")}', '${item.type}')">
+            <span><b>${item.name}</b></span>
+            <span class="badge-tag badge-tag-part">${item.type}</span>
+          </div>`;
+        overallIdx++;
+      });
+    }
 
     dropdown.innerHTML = html;
     dropdown.style.display = "block";
@@ -1262,7 +1294,7 @@
   function handleComboboxKeydown(e) {
     const dropdown = document.getElementById("comboboxDropdown");
     if (dropdown.style.display !== "block" || comboboxFiltered.length === 0) return;
-    const maxItems = Math.min(comboboxFiltered.length, 15);
+    const maxItems = Math.min(comboboxFiltered.length, 20);
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -1282,6 +1314,7 @@
     }
   }
 
+  /* Stock Out Auto Price & Left Qty Highlighting */
   function selectComboboxItem(val, type) {
     document.getElementById("prodComboboxInput").value = val;
     document.getElementById("comboboxDropdown").style.display = "none";
@@ -1301,6 +1334,7 @@
       document.getElementById("hsnInput").value = prod.hsn || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
+      // 100% Reliable Auto-Price Fetching
       let autoRate = 0;
       if (voucherMode === "IN") {
         autoRate = Number(prod.purchaseRate) || 0;
@@ -1309,12 +1343,12 @@
       }
       document.getElementById("rateInput").value = autoRate;
 
+      // Left Qty Highlighted Display
       const itemStock = summaryData.find(s => s.item === val);
       const badge = document.getElementById("stockInHandBadge");
       if (itemStock && voucherMode === "OUT") {
         badge.classList.remove("hidden");
-        badge.innerText = `Left: ${itemStock.balance} ${prod.unit || 'Nos'}`;
-        badge.className = itemStock.balance <= 2 ? "stock-badge stock-low" : "stock-badge stock-in-hand";
+        badge.innerHTML = `📦 In Store: <b>${itemStock.balance} ${prod.unit || 'Nos'}</b>`;
       } else {
         badge.classList.add("hidden");
       }
@@ -1360,7 +1394,7 @@
     const todayYMD = new Date().toISOString().split('T')[0];
     const todayIssues = daybookTransactions.filter(d => {
       const isIssue = (d.type === "ISSUE" || (d.category && d.category.includes("OUT")));
-      const normDate = normalizeDateToYMD(d.date || d.time);
+      const normDate = (d.date || d.time || "").split('T')[0].split(' ')[0];
       return isIssue && normDate === todayYMD;
     });
     const todayIssuedAmt = todayIssues.reduce((a,b) => a + Number(b.amount || 0), 0);
@@ -1406,19 +1440,12 @@
       const res = await fetch(`${SCRIPT_URL}?action=getDaybook&date=${dVal}&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success" && data.data && data.data.length > 0) {
-        const matched = data.data.filter(r => {
-          const raw = r.date || r.time || "";
-          return normalizeDateToYMD(raw) === dVal;
-        });
-        renderDaybookTable(matched);
+        renderDaybookTable(data.data);
         return;
       }
     } catch(e) {}
 
-    const filtered = daybookTransactions.filter(d => {
-      const raw = d.date || d.time || "";
-      return normalizeDateToYMD(raw) === dVal;
-    });
+    const filtered = daybookTransactions.filter(d => (d.date || d.time || "").includes(dVal));
     renderDaybookTable(filtered);
   }
 
@@ -1506,6 +1533,7 @@
     openServiceModal();
   }
 
+  /* Service outward without redirecting to dashboard */
   async function confirmServiceOutward() {
     const vNo = document.getElementById("vehicleSelect").value;
     if (!vNo) return alert("Pehle Machine select karein!");
@@ -1552,14 +1580,17 @@
     try {
       await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
       playSuccessSound();
-      alert("✅ KANPA STORE: " + activeServiceName + " issued with exact rates saved!");
+      alert("✅ KANPA STORE: " + activeServiceName + " issued successfully!");
     } catch(e) {
       playSuccessSound();
       alert("✅ Service kit recorded locally!");
     } finally {
+      document.getElementById("stockForm").reset();
+      document.getElementById("stockInHandBadge").classList.add("hidden");
+      document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
       btn.disabled = false;
       btn.innerText = "Save Voucher Entry";
-      switchNav('HOME');
+      // Stays on form
     }
   }
 
@@ -1628,6 +1659,7 @@
     }
   }
 
+  /* Form submission: Stays on the form */
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
@@ -1685,35 +1717,33 @@
       alert("✅ Entry saved locally!");
     } finally {
       document.getElementById("stockForm").reset();
+      document.getElementById("prodComboboxInput").value = "";
+      document.getElementById("stockInHandBadge").classList.add("hidden");
+      document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
       btn.disabled = false;
       btn.innerText = "Save Voucher Entry";
-      switchNav('HOME');
+      // Form wahi stay karega, no redirect
     }
   });
 
-  // ==================== FAIL-SAFE LEDGER LOGIC ====================
+  /* ==================== ORIGINAL WORKING LEDGER LOGIC ==================== */
   async function loadLedger() {
     renderActiveLedgerView();
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      
+      const res = await fetch(`${SCRIPT_URL}?action=getPartyLedger&t=${Date.now()}`);
       const data = await res.json();
-      if (data && data.status === "success" && Array.isArray(data.data)) {
+      if (data && data.status === "success" && data.data) {
         ledgerData = data.data;
         saveLocal("KANPA_LEDGER_DATA", ledgerData);
-        ledgerData.forEach(l => { if (l && l.party && l.party.trim()) supplierSet.add(l.party.trim()); });
+        ledgerData.forEach(l => { 
+          const p = l.party || l.partyName;
+          if (p && p.trim()) supplierSet.add(p.trim()); 
+        });
         populateSupplierDropdowns();
+        renderActiveLedgerView();
       }
-    } catch (err) {
-      console.warn("Ledger online sync timed out, using cached ledger.");
-    }
-
-    renderActiveLedgerView();
+    } catch(e) {}
     renderDashboard();
   }
 
@@ -1726,21 +1756,16 @@
     const container = document.getElementById("ledgerContent");
     if (!container) return;
 
-    const heading = document.getElementById("ledgerHeadingTitle");
-    if (heading) {
-      heading.innerHTML = `<span>Supplier Ledger Summary</span><div style="display:flex; gap:6px;"><button type="button" onclick="openPaySupplierModal()" style="padding:4px 8px; font-size:10px; background:#dc2626; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">💳 Pay</button><button type="button" onclick="loadLedger()" style="padding:4px 8px; font-size:10px; background:#475569; color:white; border:none; border-radius:5px; cursor:pointer;">🔄</button><button type="button" onclick="printTargetSection('ledgerPrintTarget', 'KANPA STORE - Ledger')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️</button></div>`;
-    }
+    document.getElementById("ledgerHeadingTitle").innerText = "Supplier Balances Summary";
     const backBtn = document.getElementById("ledgerBackBtn");
     if (backBtn) backBtn.classList.add("hidden");
 
     const sDate = document.getElementById("ledgerSDate").value;
     const eDate = document.getElementById("ledgerEDate").value;
 
-    const safeData = (Array.isArray(ledgerData) && ledgerData.length > 0) ? ledgerData : [];
-
-    const filtered = safeData.filter(l => {
-      if (!l) return false;
-      const lDate = normalizeDateToYMD(l.date || l.displayDate);
+    // Purana exact working filter logic
+    const filtered = ledgerData.filter(l => {
+      const lDate = l.date || l.displayDate || "";
       if (sDate && lDate < sDate) return false;
       if (eDate && lDate > eDate) return false;
       return true;
@@ -1748,7 +1773,7 @@
 
     const summaryMap = {};
     filtered.forEach(l => {
-      const p = (l.party || "Unknown Supplier").trim();
+      const p = (l.party || l.partyName || "UNKNOWN").trim();
       if (!summaryMap[p]) summaryMap[p] = { totalDr: 0, totalCr: 0, balance: 0 };
       summaryMap[p].totalDr += Number(l.dr || 0);
       summaryMap[p].totalCr += Number(l.cr || 0);
@@ -1761,13 +1786,13 @@
         <div style="text-align:center; padding:24px 10px; color:#64748b;">
           <div style="font-size:24px; margin-bottom:6px;">📂</div>
           <b>Koi Supplier Ledger Data Nahi Hai</b>
-          <div style="font-size:10px; margin-top:4px;">Stock In voucher ya supplier payment karein.</div>
+          <div style="font-size:10px; margin-top:4px;">Date filter check karein ya naya entry add karein.</div>
         </div>`;
       return;
     }
 
     let html = `<table class="custom-table">
-      <thead><tr><th>Supplier</th><th>Purchases</th><th>Payments</th><th>Due</th><th>Action</th></tr></thead><tbody>`;
+      <thead><tr><th>Supplier Name</th><th>Purchases (Dr)</th><th>Payments (Cr)</th><th>Balance Due</th><th>Action</th></tr></thead><tbody>`;
 
     keys.forEach(name => {
       const item = summaryMap[name];
@@ -1786,11 +1811,20 @@
 
   function openSinglePartyLedger(party) {
     activeSelectedLedgerParty = party;
+    const filter = document.getElementById("ledgerPartyFilter");
+    if (filter) filter.value = party;
     renderActiveLedgerView();
   }
 
   function showAllSupplierSummary() {
     activeSelectedLedgerParty = "";
+    const filter = document.getElementById("ledgerPartyFilter");
+    if (filter) filter.value = "";
+    renderActiveLedgerView();
+  }
+
+  function onLedgerPartyDropdownChange(party) {
+    activeSelectedLedgerParty = party;
     renderActiveLedgerView();
   }
 
@@ -1798,19 +1832,17 @@
     const container = document.getElementById("ledgerContent");
     if (!container) return;
 
-    const heading = document.getElementById("ledgerHeadingTitle");
-    if (heading) {
-      heading.innerHTML = `<span>Statement: ${party}</span><div style="display:flex; gap:6px;"><button type="button" onclick="showAllSupplierSummary()" style="padding:4px 8px; font-size:10px; background:#2563eb; color:white; border:none; border-radius:5px; cursor:pointer;">⬅ All</button><button type="button" onclick="printTargetSection('ledgerPrintTarget', 'KANPA STORE - Statement')" style="padding:4px 8px; font-size:10px; background:#0d9488; color:white; border:none; border-radius:5px; cursor:pointer;">🖨️</button></div>`;
-    }
+    document.getElementById("ledgerHeadingTitle").innerText = `Statement: ${party}`;
+    const backBtn = document.getElementById("ledgerBackBtn");
+    if (backBtn) backBtn.classList.remove("hidden");
 
     const sDate = document.getElementById("ledgerSDate").value;
     const eDate = document.getElementById("ledgerEDate").value;
 
-    const safeData = (Array.isArray(ledgerData) && ledgerData.length > 0) ? ledgerData : [];
-
-    const filtered = safeData.filter(l => {
-      if (!l || l.party !== party) return false;
-      const lDate = normalizeDateToYMD(l.date || l.displayDate);
+    const filtered = ledgerData.filter(l => {
+      const p = (l.party || l.partyName || "").trim();
+      if (p !== party) return false;
+      const lDate = l.date || l.displayDate || "";
       if (sDate && lDate < sDate) return false;
       if (eDate && lDate > eDate) return false;
       return true;
@@ -1818,13 +1850,13 @@
 
     let running = 0;
     let html = `<table class="custom-table">
-      <thead><tr><th>Date</th><th>Particulars</th><th>Dr</th><th>Cr</th><th>Balance</th></tr></thead><tbody>`;
+      <thead><tr><th>Date</th><th>Particulars</th><th>Dr (Purchases)</th><th>Cr (Payments)</th><th>Balance Due</th></tr></thead><tbody>`;
     
     filtered.forEach(l => {
       running += (Number(l.dr || 0) - Number(l.cr || 0));
       html += `<tr>
         <td>${l.displayDate || l.date}</td>
-        <td>${l.particulars}</td>
+        <td>${l.particulars || 'Transaction'}</td>
         <td>${l.dr > 0 ? '₹' + Number(l.dr).toLocaleString('en-IN') : '-'}</td>
         <td style="color:#16a34a;">${l.cr > 0 ? '₹' + Number(l.cr).toLocaleString('en-IN') : '-'}</td>
         <td style="font-weight:bold; color:${running > 0 ? '#dc2626' : '#16a34a'};">₹${running.toLocaleString('en-IN')} Dr</td>
@@ -1834,36 +1866,24 @@
     container.innerHTML = html;
   }
 
-  // ==================== TWO-TIER CRASH-PROOF CLOSING LOGIC ====================
+  /* ==================== TWO-TIER COMPANY & MACHINE CLOSING ==================== */
   async function loadClosing() {
     renderClosingReport();
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`, { signal: controller.signal });
-      clearTimeout(timeoutId);
-
+      const res = await fetch(`${SCRIPT_URL}?action=getClosingData&t=${Date.now()}`);
       const data = await res.json();
-      if (data && data.status === "success" && Array.isArray(data.data)) {
+      if (data && data.status === "success" && data.data) {
         closingData = data.data;
         saveLocal("KANPA_CLOSING_DATA", closingData);
+        renderClosingReport();
       }
-    } catch (err) {
-      console.warn("Closing online sync timed out, using cached data.");
-    }
-
-    renderClosingReport();
+    } catch(e) {}
   }
 
-  // Universal Closing Entry Point (Matches onchange="renderClosingReport()")
   function renderClosingReport() {
-    if (activeDrillDownVehicle) {
-      renderClosingDetailedView(activeDrillDownVehicle);
-    } else {
-      renderClosingSummaryView();
-    }
+    if (activeDrillDownVehicle) renderClosingDetailedView(activeDrillDownVehicle);
+    else renderClosingSummaryView();
   }
 
   function renderClosingSummaryView() {
@@ -1871,62 +1891,78 @@
     const container = document.getElementById("closingContent");
     if (!container) return;
 
-    const titleEl = document.getElementById("closingHeaderTitle");
-    if (titleEl) titleEl.innerText = "🔒 Month Closing (Machine Summary)";
-
+    document.getElementById("closingHeaderTitle").innerText = "🔒 Month Closing (Company & Machine Summary)";
     const backBtn = document.getElementById("closingBackBtn");
     if (backBtn) backBtn.classList.add("hidden");
 
     const sDate = document.getElementById("closingSDate").value;
     const eDate = document.getElementById("closingEDate").value;
 
-    const safeData = (Array.isArray(closingData) && closingData.length > 0) ? closingData : [];
-
-    const filtered = safeData.filter(c => {
+    const filtered = closingData.filter(c => {
       if (!c) return false;
-      const cDate = normalizeDateToYMD(c.date || c.displayDate);
+      const cDate = c.date || c.displayDate || "";
       if (sDate && cDate < sDate) return false;
       if (eDate && cDate > eDate) return false;
       return true;
     });
 
-    const summaryMap = {};
+    // Grouping by Company -> Machine
+    const companyGrouped = {};
     filtered.forEach(item => {
       const veh = (item.vehicle || "GENERAL FLEET").trim();
-      if (!summaryMap[veh]) {
-        let comp = item.company || (vehicleMap.has(veh) ? vehicleMap.get(veh).company : "GOKULESHWAR / COMRAO");
-        summaryMap[veh] = { vehicle: veh, company: comp, count: 0, totalCost: 0 };
+      let comp = item.company || (vehicleMap.has(veh) ? vehicleMap.get(veh).company : "GOKULESHWAR / COMRAO");
+      if (!companyGrouped[comp]) companyGrouped[comp] = {};
+      if (!companyGrouped[comp][veh]) {
+        companyGrouped[comp][veh] = { vehicle: veh, company: comp, count: 0, totalCost: 0 };
       }
-      summaryMap[veh].count += 1;
-      summaryMap[veh].totalCost += Number(item.amount || 0);
+      companyGrouped[comp][veh].count += 1;
+      companyGrouped[comp][veh].totalCost += Number(item.amount || 0);
     });
 
-    const keys = Object.keys(summaryMap).sort();
-    if (keys.length === 0) {
+    const compKeys = Object.keys(companyGrouped).sort();
+    if (compKeys.length === 0) {
       container.innerHTML = `
         <div style="text-align:center; padding:24px 10px; color:#64748b;">
           <div style="font-size:24px; margin-bottom:6px;">🚜</div>
-          <b>Is Selected Period Me Koi Machine Issue Record Nahi Hai</b>
+          <b>Is Period Me Koi Closing Data Nahi Hai</b>
         </div>`;
       return;
     }
 
     let grandTot = 0;
     let html = "";
-    keys.forEach(veh => {
-      const row = summaryMap[veh];
-      grandTot += row.totalCost;
+
+    compKeys.forEach(company => {
+      const vehsMap = companyGrouped[company];
+      const vehKeys = Object.keys(vehsMap).sort();
+      let companyTotal = 0;
+      vehKeys.forEach(v => companyTotal += vehsMap[v].totalCost);
+      grandTot += companyTotal;
+
       html += `
-        <div class="summary-veh-card">
-          <div>
-            <div style="font-size:13px; font-weight:800; color:#0f172a;">🚜 ${row.vehicle}</div>
-            <div style="font-size:10.5px; color:#64748b;">${row.company} • ${row.count} parts issued</div>
+        <div style="margin-bottom:14px; border:1px solid #cbd5e1; border-radius:10px; overflow:hidden;">
+          <div style="background:#0f172a; color:#ffffff; padding:8px 12px; font-weight:800; font-size:12px; display:flex; justify-content:space-between;">
+            <span>🏢 ${company}</span>
+            <span>Spend: ₹${companyTotal.toLocaleString('en-IN')}</span>
           </div>
-          <div style="text-align:right;">
-            <div style="font-size:13px; font-weight:800; color:#2563eb; margin-bottom:4px;">₹${row.totalCost.toLocaleString('en-IN')}</div>
-            <button type="button" class="btn-detail-drill" onclick="drillDownMachineClosing('${row.vehicle.replace(/'/g, "\\'")}')">👁️ View Details</button>
-          </div>
-        </div>`;
+          <div style="padding:8px;">`;
+
+      vehKeys.forEach(veh => {
+        const row = vehsMap[veh];
+        html += `
+          <div class="summary-veh-card">
+            <div>
+              <div style="font-size:12.5px; font-weight:800; color:#0f172a;">🚜 ${row.vehicle}</div>
+              <div style="font-size:10px; color:#64748b;">${row.count} parts issued</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:12.5px; font-weight:800; color:#2563eb; margin-bottom:3px;">₹${row.totalCost.toLocaleString('en-IN')}</div>
+              <button type="button" class="btn-detail-drill" onclick="drillDownMachineClosing('${row.vehicle.replace(/'/g, "\\'")}')">👁️ View Details</button>
+            </div>
+          </div>`;
+      });
+
+      html += `</div></div>`;
     });
 
     container.innerHTML = `
@@ -1946,20 +1982,16 @@
     const container = document.getElementById("closingContent");
     if (!container) return;
 
-    const titleEl = document.getElementById("closingHeaderTitle");
-    if (titleEl) titleEl.innerText = `Slip: 🚜 ${veh}`;
-
+    document.getElementById("closingHeaderTitle").innerText = `Slip: 🚜 ${veh}`;
     const backBtn = document.getElementById("closingBackBtn");
     if (backBtn) backBtn.classList.remove("hidden");
 
     const sDate = document.getElementById("closingSDate").value;
     const eDate = document.getElementById("closingEDate").value;
 
-    const safeData = (Array.isArray(closingData) && closingData.length > 0) ? closingData : [];
-
-    const filtered = safeData.filter(c => {
+    const filtered = closingData.filter(c => {
       if (!c || (c.vehicle || "GENERAL FLEET").trim() !== veh) return false;
-      const cDate = normalizeDateToYMD(c.date || c.displayDate);
+      const cDate = c.date || c.displayDate || "";
       if (sDate && cDate < sDate) return false;
       if (eDate && cDate > eDate) return false;
       return true;
@@ -2071,7 +2103,7 @@
     document.getElementById("scannerModal").style.display = "none";
   }
 
-  // Quick Add Modals
+  // Clean Modals
   function openAddSupplierModal() { document.getElementById("newSuppName").value = ""; document.getElementById("addSupplierModal").style.display = "flex"; }
   function closeAddSupplierModal() { document.getElementById("addSupplierModal").style.display = "none"; }
   function saveNewSupplierAction() {
@@ -2113,18 +2145,16 @@
     closeAddCompanyModal();
   }
 
+  /* Clean Product Add Handler */
   function openAddProductModal() { document.getElementById("newProdName").value = ""; document.getElementById("addProductModal").style.display = "flex"; }
   function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
-  function saveNewProductAction() {
+  async function saveNewProductAction() {
     const name = document.getElementById("newProdName").value.trim();
     const unit = document.getElementById("newProdUnit").value;
-    const pRate = parseFloat(document.getElementById("newProdPurchaseRate").value) || 0;
-    const sRate = parseFloat(document.getElementById("newProdSellRate").value) || pRate;
-    const hsn = document.getElementById("newProdHsn").value.trim() || "8421";
-    const barcode = document.getElementById("newProdBarcode").value.trim() || name;
 
     if (!name) return alert("Product name daalein!");
-    const newObj = { name: name, unit: unit, purchaseRate: pRate, sellRate: sRate, hsn: hsn, barcode: barcode };
+    const newObj = { name: name, unit: unit, purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: name };
+    
     productList.unshift(newObj);
     saveLocal("KANPA_PROD_LIST", productList);
     renderProductDropdowns();
@@ -2132,6 +2162,13 @@
     playSuccessSound();
     alert("✅ Product Add Ho Gaya!");
     closeAddProductModal();
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ type: "ADD_PRODUCT", itemName: name, unit: unit, purchaseRate: 0, sellRate: 0, hsn: "8421", barcode: name })
+      });
+    } catch(e) {}
   }
 
   function printTargetSection(targetId, title) {
