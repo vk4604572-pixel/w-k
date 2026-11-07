@@ -79,18 +79,11 @@
     }
     input:focus, select:focus { border-color: #2563eb; }
 
-    /* Highlighted Optgroup Headers in Native Select */
-    select optgroup {
-      font-weight: 900 !important;
-      color: #1e3a8a !important;
-      background-color: #e0e7ff !important;
-      padding: 6px;
-    }
-    select option {
-      font-weight: normal;
-      color: #0f172a;
-      background-color: #ffffff;
-      padding: 4px 6px;
+    /* Mobile and Desktop Cross-Compatible Select Styling */
+    select {
+      -webkit-appearance: menulist;
+      appearance: menulist;
+      font-weight: 600;
     }
 
     .qty-stepper-row { display: flex; gap: 6px; }
@@ -104,7 +97,7 @@
     .btn-submit { width: 100%; padding: 13px; background: #16a34a; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }
     .hidden { display: none !important; }
 
-    /* Left Qty Highlighted Capsule */
+    /* Highlighted In-Store Qty Capsule */
     .stock-badge-highlight {
       display: inline-flex;
       align-items: center;
@@ -113,18 +106,17 @@
       font-weight: 900;
       padding: 3px 10px;
       border-radius: 16px;
-      letter-spacing: 0.3px;
       background: #e0e7ff;
       color: #1e1b4b;
       border: 1.5px solid #4338ca;
-      box-shadow: 0 2px 6px rgba(67, 56, 202, 0.2);
     }
 
-    .table-container-sticky {
-      max-height: 420px;
-      overflow-y: auto;
+    /* Full-Height Spacious Stock View */
+    .table-container-roomy {
+      min-height: 60vh;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
+      overflow-x: auto;
     }
     .custom-table { width: 100%; border-collapse: collapse; font-size: 11px; }
     .custom-table th, .custom-table td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 8px; text-align: left; }
@@ -138,7 +130,8 @@
       z-index: 10;
     }
 
-    .combobox-container { position: relative; width: 100%; }
+    /* Mobile Cross-Device Highlighted Dropdown Header */
+    .combobox-container { position: relative; width: 100%; margin-bottom: 8px; }
     .combobox-input { width: 100%; padding: 9px 11px; border: 1.5px solid #2563eb; border-radius: 8px; font-size: 12px; background: #fffdf5; }
     .combobox-dropdown {
       position: absolute;
@@ -156,16 +149,13 @@
       display: none;
     }
     
-    /* Highlighted Custom Search Group Headers */
     .combobox-group-header {
-      background: #e0e7ff;
-      color: #1e3a8a;
+      background: #1e3a8a !important;
+      color: #ffffff !important;
       font-weight: 900;
-      font-size: 11px;
-      padding: 7px 10px;
+      font-size: 11.5px;
+      padding: 8px 10px;
       letter-spacing: 0.5px;
-      border-top: 1px solid #cbd5e1;
-      border-bottom: 1px solid #cbd5e1;
       position: sticky;
       top: 0;
       z-index: 5;
@@ -361,7 +351,7 @@
       </div>
     </div>
 
-    <!-- 2. MAIN VOUCHER ENTRY FORM (STAYS ON FORM AFTER SAVE) -->
+    <!-- 2. MAIN VOUCHER ENTRY FORM (SEARCH ABOVE DROPDOWN + AUTO-PRICE) -->
     <div id="viewVoucher" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="voucherFormTitle">
@@ -383,28 +373,29 @@
             </div>
           </div>
 
+          <!-- Search Upar, Dropdown Neeche -->
           <div class="form-group">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <label style="margin:0;">Select Item / Spare Part / Service Kit</label>
-              <!-- Bold Highlighted Qty Capsule -->
               <span id="stockInHandBadge" class="stock-badge-highlight hidden"></span>
             </div>
             
-            <div style="display:flex; gap:6px; margin-bottom:6px;">
-              <select id="productSelect" onchange="onStandardProductSelect(this.value)" style="flex:1;">
-                <option value="">-- Choose From Standard Dropdown --</option>
-              </select>
-              <!-- Clean Add Product ➕ Button -->
-              <button type="button" class="btn-add-mini" onclick="openAddProductModal()" title="Add Clean Item Name">➕</button>
-            </div>
-
+            <!-- 1. Search Box Upar -->
             <div class="combobox-container">
               <input type="text" id="prodComboboxInput" class="combobox-input"
-                     placeholder="🔍 Or type to search (⬇️ ⬆️ Enter supported)..."
+                     placeholder="🔍 Search Cheat Code / Part (Arrow Keys Supported)..."
                      oninput="handleComboboxInput(this.value)"
                      onkeydown="handleComboboxKeydown(event)"
                      autocomplete="off">
               <div id="comboboxDropdown" class="combobox-dropdown"></div>
+            </div>
+
+            <!-- 2. Standard Dropdown + Clean ➕ Button Neeche -->
+            <div style="display:flex; gap:6px;">
+              <select id="productSelect" onchange="onStandardProductSelect(this.value)" style="flex:1;">
+                <option value="">-- Choose From Standard Dropdown --</option>
+              </select>
+              <button type="button" class="btn-add-mini" onclick="openAddProductModal()" title="Add Product">➕</button>
             </div>
           </div>
 
@@ -495,7 +486,7 @@
       </div>
     </div>
 
-    <!-- 3. STOCK INVENTORY TAB -->
+    <!-- 3. STOCK INVENTORY TAB (ROOMY AND SPACIOUS) -->
     <div id="viewStock" style="display:none;">
       <div class="card-box">
         <div class="card-title">
@@ -517,12 +508,12 @@
         <input type="text" id="summarySearch" placeholder="🔍 Search part or oil..." oninput="renderSummaryTable()" style="margin-bottom:8px;">
         
         <div id="summaryPrintTarget">
-          <div class="table-container-sticky" id="summaryTableContent">Loading stock...</div>
+          <div class="table-container-roomy" id="summaryTableContent">Loading stock...</div>
         </div>
       </div>
     </div>
 
-    <!-- 4. SUPPLIER LEDGER TAB (ORIGINAL RELIABLE LOGIC RESTORED) -->
+    <!-- 4. SUPPLIER LEDGER TAB -->
     <div id="viewLedger" style="display:none;">
       <div class="card-box">
         <div class="card-title" id="ledgerHeadingTitle">
@@ -548,7 +539,7 @@
       </div>
     </div>
 
-    <!-- 5. MONTH CLOSING (COMPANY-WISE & MACHINE-WISE SUMMARY FIRST) -->
+    <!-- 5. MONTH CLOSING -->
     <div id="viewClosing" style="display:none;">
       <div class="card-box">
         <div class="card-title">
@@ -634,7 +625,7 @@
   </div>
 </div>
 
-<!-- Quick Modals -->
+<!-- Modals -->
 <div class="modal" id="addSupplierModal">
   <div class="modal-content" style="max-width:350px;">
     <h3 style="margin-top:0; font-size:14px; color:#d97706;">➕ Add New Supplier</h3>
@@ -681,7 +672,7 @@
   </div>
 </div>
 
-<!-- Modal 4: Clean Product Add Modal (Extra fields removed) -->
+<!-- Modal 4: Clean Product Add Modal -->
 <div class="modal" id="addProductModal">
   <div class="modal-content" style="max-width:350px;">
     <h3 style="margin-top:0; font-size:14px; color:#2563eb;">➕ Add New Product</h3>
@@ -706,7 +697,6 @@
   </div>
 </div>
 
-<!-- PAY SUPPLIER MODAL (FULLY POPULATED DROPDOWN) -->
 <div class="modal" id="paySupplierModal">
   <div class="modal-content" style="max-width:360px;">
     <h3 style="margin-top:0; font-size:14px; color:#dc2626;">💳 Pay to Supplier</h3>
@@ -986,6 +976,30 @@
     { vehicleNo: "ZAXIS-140", company: "GOKULESHWAR RD PVT. LTD" }
   ];
 
+  /* Universal Robust Date Normalizer */
+  function normalizeDateToYMD(rawDate) {
+    if (!rawDate) return "";
+    try {
+      rawDate = String(rawDate).trim();
+      if (rawDate.includes("/") || (rawDate.includes("-") && rawDate.indexOf("-") <= 2)) {
+        const sep = rawDate.includes("/") ? "/" : "-";
+        const datePart = rawDate.split(" ")[0];
+        const parts = datePart.split(sep);
+        if (parts.length === 3) {
+          const d = parts[0].padStart(2, "0");
+          const m = parts[1].padStart(2, "0");
+          let y = parts[2];
+          if (y.length === 2) y = "20" + y;
+          return `${y}-${m}-${d}`;
+        }
+      }
+      if (rawDate.includes("-")) {
+        return rawDate.split("T")[0].split(" ")[0];
+      }
+    } catch(e) {}
+    return String(rawDate);
+  }
+
   function extractTimeOnly(rawDate) {
     if (!rawDate) return "10:00 AM";
     const s = String(rawDate).trim();
@@ -1146,7 +1160,7 @@
     document.getElementById("driverGroup").classList.toggle("hidden", isIn);
   }
 
-  /* Render Dropdown with Highlighted and Bold Optgroups */
+  /* Universal Dropdown Populator (Mobile + PC Compatible) */
   function renderProductDropdowns() {
     const sel = document.getElementById("productSelect");
     const modalSel = document.getElementById("modalExtraPartSelect");
@@ -1154,16 +1168,21 @@
 
     let html = '<option value="">-- Choose From Standard Dropdown --</option>';
     html += '<optgroup label="⚙️ SERVICE HOURS KITS (500 / 1000 Hrs)">';
-    Object.keys(MASTER_SERVICE_KITS).forEach(k => { html += `<option value="${k}">${k}</option>`; });
+    Object.keys(MASTER_SERVICE_KITS).forEach(k => { 
+      html += `<option value="${k}">⚙️ ${k}</option>`; 
+    });
     html += '</optgroup>';
+    
     html += '<optgroup label="📦 PARTS & OILS">';
-    items.forEach(p => { html += `<option value="${p.name}">${p.name}</option>`; });
+    items.forEach(p => { 
+      html += `<option value="${p.name}">📦 ${p.name}</option>`; 
+    });
     html += '</optgroup>';
 
     if (sel) sel.innerHTML = html;
 
     let modalHtml = '<option value="">-- Choose Extra Part --</option>';
-    items.forEach(p => { modalHtml += `<option value="${p.name}">${p.name} (₹${p.sellRate || p.purchaseRate})</option>`; });
+    items.forEach(p => { modalHtml += `<option value="${p.name}">📦 ${p.name} (₹${p.sellRate || p.purchaseRate})</option>`; });
     if (modalSel) modalSel.innerHTML = modalHtml;
   }
 
@@ -1231,7 +1250,7 @@
     }
   }
 
-  /* Search with Highlighted Headers */
+  /* Search with High-Contrast Mobile + Desktop Headers */
   function handleComboboxInput(query) {
     const q = (query || "").toLowerCase().trim();
     const dropdown = document.getElementById("comboboxDropdown");
@@ -1268,8 +1287,8 @@
       matchedKits.slice(0, 8).forEach(item => {
         html += `
           <div class="combobox-item" id="cbItem_${overallIdx}" onclick="selectComboboxItem('${item.name.replace(/'/g, "\\'")}', '${item.type}')">
-            <span><b>${item.name}</b></span>
-            <span class="badge-tag badge-tag-kit">${item.type}</span>
+            <span><b>⚙️ ${item.name}</b></span>
+            <span style="font-size:9.5px; background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px; font-weight:800;">KIT</span>
           </div>`;
         overallIdx++;
       });
@@ -1280,8 +1299,8 @@
       matchedParts.slice(0, 15).forEach(item => {
         html += `
           <div class="combobox-item" id="cbItem_${overallIdx}" onclick="selectComboboxItem('${item.name.replace(/'/g, "\\'")}', '${item.type}')">
-            <span><b>${item.name}</b></span>
-            <span class="badge-tag badge-tag-part">${item.type}</span>
+            <span><b>📦 ${item.name}</b></span>
+            <span style="font-size:9.5px; background:#f1f5f9; color:#334155; padding:2px 6px; border-radius:4px; font-weight:800;">PART</span>
           </div>`;
         overallIdx++;
       });
@@ -1314,7 +1333,7 @@
     }
   }
 
-  /* Stock Out Auto Price & Left Qty Highlighting */
+  /* Reliable Auto-Price Logic & Dynamic Left Qty */
   function selectComboboxItem(val, type) {
     document.getElementById("prodComboboxInput").value = val;
     document.getElementById("comboboxDropdown").style.display = "none";
@@ -1334,16 +1353,16 @@
       document.getElementById("hsnInput").value = prod.hsn || "";
       document.getElementById("unitSelect").value = prod.unit || "Nos";
 
-      // 100% Reliable Auto-Price Fetching
+      // 100% Reliable Auto-Price Fill
       let autoRate = 0;
       if (voucherMode === "IN") {
-        autoRate = Number(prod.purchaseRate) || 0;
+        autoRate = parseFloat(prod.purchaseRate) || 0;
       } else {
-        autoRate = Number(prod.sellRate) || Number(prod.purchaseRate) || 0;
+        autoRate = parseFloat(prod.sellRate) || parseFloat(prod.purchaseRate) || 0;
       }
       document.getElementById("rateInput").value = autoRate;
 
-      // Left Qty Highlighted Display
+      // In-Store Highlight Capsule
       const itemStock = summaryData.find(s => s.item === val);
       const badge = document.getElementById("stockInHandBadge");
       if (itemStock && voucherMode === "OUT") {
@@ -1384,6 +1403,7 @@
     calculateTotal();
   }
 
+  /* Exact Dashboard Sync & Fleet Spend Matrix */
   function renderDashboard() {
     if (!summaryData || summaryData.length === 0) initDefaultSummary();
 
@@ -1391,33 +1411,35 @@
     document.getElementById("dashValuation").innerText = "₹" + totalVal.toLocaleString('en-IN');
     document.getElementById("dashSKUs").innerText = summaryData.length + " Catalog Items";
 
-    const todayYMD = new Date().toISOString().split('T')[0];
-    const todayIssues = daybookTransactions.filter(d => {
-      const isIssue = (d.type === "ISSUE" || (d.category && d.category.includes("OUT")));
-      const normDate = (d.date || d.time || "").split('T')[0].split(' ')[0];
-      return isIssue && normDate === todayYMD;
+    const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
+
+    // Filter daybook & fleet matrix strictly with normalized date
+    const dayFiltered = daybookTransactions.filter(d => {
+      const raw = d.date || d.time || "";
+      return normalizeDateToYMD(raw) === dVal;
     });
-    const todayIssuedAmt = todayIssues.reduce((a,b) => a + Number(b.amount || 0), 0);
-    document.getElementById("dashTodayIssued").innerText = "₹" + todayIssuedAmt.toLocaleString('en-IN');
-    document.getElementById("dashIssueEntries").innerText = todayIssues.length + " Issue entries today";
+
+    const dayIssues = dayFiltered.filter(d => (d.type === "ISSUE" || (d.category && d.category.includes("OUT"))));
+    const dayIssuedAmt = dayIssues.reduce((a,b) => a + Number(b.amount || 0), 0);
+    document.getElementById("dashTodayIssued").innerText = "₹" + dayIssuedAmt.toLocaleString('en-IN');
+    document.getElementById("dashIssueEntries").innerText = dayIssues.length + " Parts issued";
 
     document.getElementById("dashActiveFleet").innerText = vehicleMap.size + " Models";
 
     const totalDue = ledgerData.reduce((acc, l) => acc + ((Number(l.dr) || 0) - (Number(l.cr) || 0)), 0);
     document.getElementById("dashSupplierDue").innerText = "₹" + Math.max(0, totalDue).toLocaleString('en-IN');
 
+    // Fleet Spend Matrix for the chosen Date
     const spendMap = {};
-    daybookTransactions.forEach(d => {
-      if ((d.type === "ISSUE" || (d.category && d.category.includes("OUT"))) && d.entity) {
-        spendMap[d.entity] = (spendMap[d.entity] || 0) + Number(d.amount || 0);
-      }
+    dayIssues.forEach(d => {
+      if (d.entity) spendMap[d.entity] = (spendMap[d.entity] || 0) + Number(d.amount || 0);
     });
 
     const spendGrid = document.getElementById("dashFleetSpendGrid");
     let spendHtml = "";
     const spendKeys = Object.keys(spendMap);
     if (spendKeys.length === 0) {
-      spendHtml = `<div style="font-size:10.5px; color:#64748b; padding:4px;">Koi machine issue record nahi hai.</div>`;
+      spendHtml = `<div style="font-size:10.5px; color:#64748b; padding:4px;">Is date par koi machine kharcha nahi hai.</div>`;
     } else {
       spendKeys.sort().forEach(veh => {
         spendHtml += `
@@ -1430,6 +1452,7 @@
     spendGrid.innerHTML = spendHtml;
   }
 
+  /* Reliable Daybook Movements Sync */
   async function loadDaybook() {
     const dVal = document.getElementById("daybookDate").value || new Date().toISOString().split('T')[0];
     document.getElementById("daybookDate").value = dVal;
@@ -1440,13 +1463,16 @@
       const res = await fetch(`${SCRIPT_URL}?action=getDaybook&date=${dVal}&t=${Date.now()}`);
       const data = await res.json();
       if (data.status === "success" && data.data && data.data.length > 0) {
-        renderDaybookTable(data.data);
+        const matched = data.data.filter(r => normalizeDateToYMD(r.date || r.time) === dVal);
+        renderDaybookTable(matched);
+        renderDashboard();
         return;
       }
     } catch(e) {}
 
-    const filtered = daybookTransactions.filter(d => (d.date || d.time || "").includes(dVal));
+    const filtered = daybookTransactions.filter(d => normalizeDateToYMD(d.date || d.time) === dVal);
     renderDaybookTable(filtered);
+    renderDashboard();
   }
 
   function renderDaybookTable(dataList) {
@@ -1533,7 +1559,6 @@
     openServiceModal();
   }
 
-  /* Service outward without redirecting to dashboard */
   async function confirmServiceOutward() {
     const vNo = document.getElementById("vehicleSelect").value;
     if (!vNo) return alert("Pehle Machine select karein!");
@@ -1590,7 +1615,7 @@
       document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
       btn.disabled = false;
       btn.innerText = "Save Voucher Entry";
-      // Stays on form
+      renderDashboard();
     }
   }
 
@@ -1659,7 +1684,7 @@
     }
   }
 
-  /* Form submission: Stays on the form */
+  /* Form submission (Zero Tampering, stays on the form) */
   document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("submitBtn");
@@ -1722,11 +1747,11 @@
       document.getElementById("dateTimeDisplay").value = new Date().toLocaleString('en-GB');
       btn.disabled = false;
       btn.innerText = "Save Voucher Entry";
-      // Form wahi stay karega, no redirect
+      renderDashboard();
     }
   });
 
-  /* ==================== ORIGINAL WORKING LEDGER LOGIC ==================== */
+  /* Restored Supplier Ledger */
   async function loadLedger() {
     renderActiveLedgerView();
 
@@ -1763,7 +1788,6 @@
     const sDate = document.getElementById("ledgerSDate").value;
     const eDate = document.getElementById("ledgerEDate").value;
 
-    // Purana exact working filter logic
     const filtered = ledgerData.filter(l => {
       const lDate = l.date || l.displayDate || "";
       if (sDate && lDate < sDate) return false;
@@ -1866,7 +1890,7 @@
     container.innerHTML = html;
   }
 
-  /* ==================== TWO-TIER COMPANY & MACHINE CLOSING ==================== */
+  /* Month Closing Company-Wise */
   async function loadClosing() {
     renderClosingReport();
 
@@ -1906,7 +1930,6 @@
       return true;
     });
 
-    // Grouping by Company -> Machine
     const companyGrouped = {};
     filtered.forEach(item => {
       const veh = (item.vehicle || "GENERAL FLEET").trim();
